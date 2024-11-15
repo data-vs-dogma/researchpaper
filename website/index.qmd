@@ -1,11 +1,10 @@
 ---
-title: "website"
+title: "Abortion Policy: Determinants of Women's Wellbeing"
+subtitle: "What Factors Might Influence Womens' Choice to Get an Abortion?"
 ---
 
-This is a Quarto website.
+Problem & objectives
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+Your Introduction will fully explain and describe the problem (or question or issue), its history, who it affects, why it matters, etc.
 
-```{r}
-1 + 1
-```
+For example, start with a clearly defined problem: A government contractor is experiencing rising costs and is no longer able to submit competitive contract proposals. One of many questions to solve this business problem might include: Can the company reduce its staff without compromising quality?

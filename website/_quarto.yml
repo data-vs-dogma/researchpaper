@@ -7,7 +7,29 @@ website:
     left:
       - href: index.qmd
         text: Home
-      - about.qmd
+      - href: overall_findings.qmd
+        text: Findings
+      - text: Cleaning
+        menu: 
+          - href: cleaning/cleaning_1.qmd
+            text: Cleaning This Data
+          - href: cleaning/cleaning_2.qmd
+            text: Cleaning That Data
+      - text: Analysis
+        menu: 
+          - href: analysis/analysis_placeholder.qmd
+            text: Placeholder Analysis
+          - href: analysis/another_analysis.qmd
+            text: Another Analysis
+      - text: Interpretation
+        menu: 
+          - href: interpretation/interpretation_1.qmd
+            text: Interpretation 1
+
+
+
+      
+
 
 format:
   html:
