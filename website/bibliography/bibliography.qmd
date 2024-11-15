@@ -1,0 +1,12 @@
+---
+title: "Bibliography"
+bibliography: references.bib
+format:
+  html:
+    number-sections: true
+---
+
+```         
+::: {#refs}
+:::
+```

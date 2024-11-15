@@ -8,3 +8,5 @@ Problem & objectives
 Your Introduction will fully explain and describe the problem (or question or issue), its history, who it affects, why it matters, etc.
 
 For example, start with a clearly defined problem: A government contractor is experiencing rising costs and is no longer able to submit competitive contract proposals. One of many questions to solve this business problem might include: Can the company reduce its staff without compromising quality?
+
+![](images/policy_map.png)

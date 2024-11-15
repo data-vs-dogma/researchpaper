@@ -12,5 +12,19 @@
     "title": "Abortion Policy: Determinants of Women’s Wellbeing",
     "section": "",
     "text": "Problem & objectives\nYour Introduction will fully explain and describe the problem (or question or issue), its history, who it affects, why it matters, etc.\nFor example, start with a clearly defined problem: A government contractor is experiencing rising costs and is no longer able to submit competitive contract proposals. One of many questions to solve this business problem might include: Can the company reduce its staff without compromising quality?"
+  },
+  {
+    "objectID": "bibliography/bibliography.html",
+    "href": "bibliography/bibliography.html",
+    "title": "Bibliography",
+    "section": "",
+    "text": "::: {#refs}\n:::"
+  },
+  {
+    "objectID": "cleaning/cleaning_1.html",
+    "href": "cleaning/cleaning_1.html",
+    "title": "website",
+    "section": "",
+    "text": "Missing values\nIncorrect values\nValues with improper formatting\nGeneral data consistency\nData formatting\nOutliers\nNormalization\nTransformation (as needed)\nRemoving unnecessary columns"
   }
 ]

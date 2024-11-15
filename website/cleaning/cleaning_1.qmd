@@ -1,0 +1,17 @@
+1.  Missing values
+
+2.  Incorrect values
+
+3.  Values with improper formatting
+
+4.  General data consistency
+
+5.  Data formatting
+
+6.  Outliers
+
+7.  Normalization
+
+8.  Transformation (as needed)
+
+9.  Removing unnecessary columns
