@@ -27,3 +27,153 @@ library(dplyr)
 
 ```
 
+```{r}
+
+head(df)
+colnames(df) 
+
+```
+
+```{r}
+
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+
+# Ensure column names are valid and consistent
+colnames(df) <- make.names(colnames(df))
+
+# Convert data to long format for easier plotting
+df_long <- df %>%
+  pivot_longer(
+    cols = c(maternal_mortality_mothers_race_is_black_2017.2022, maternal_mortality_mothers_race_is_white_2017.2022),
+    names_to = "Race",
+    values_to = "MortalityRate"
+  )
+
+# Clean up race names for clarity
+df_long <- df_long %>%
+  mutate(Race = case_when(
+    Race == "maternal_mortality_mothers_race_is_black_2017.2022" ~ "Black",
+    Race == "maternal_mortality_mothers_race_is_white_2017.2022" ~ "White",
+    TRUE ~ Race
+  ))
+
+# Create a boxplot for the distribution of maternal mortality rates
+ggplot(df_long, aes(x = Race, y = MortalityRate, fill = Race)) +
+  geom_boxplot() +
+  labs(
+    title = "Distribution of Maternal Mortality Rates by Race",
+    x = "Race",
+    y = "Maternal Mortality Rate"
+  ) +
+  scale_fill_manual(values = c("Black" = "#1f77b4", "White" = "#ff7f0e")) +
+  theme_minimal()
+
+```
+
+> Create null and alternate hypothesis
+
+```{r}
+
+# Perform a t-test to compare maternal mortality rates between Black and White mothers
+black_rates <- na.omit(df$maternal_mortality_mothers_race_is_black_2017.2022)
+white_rates <- na.omit(df$maternal_mortality_mothers_race_is_white_2017.2022)
+
+# Conduct the t-test
+t_test_result <- t.test(black_rates, white_rates, alternative = "greater")
+
+# Print the t-test results
+print(t_test_result)
+
+```
+
+> The p-value is extremely small, much less
+than the typical significance level of 0.05.
+This means that we can reject the null hypothesis that the maternal mortality rates for Black and White mothers are the same.
+
+```{r}
+
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+
+# Ensure column names are valid and consistent
+colnames(df) <- make.names(colnames(df))
+
+# Convert data to long format for easier plotting
+df_long_infant <- df %>%
+  pivot_longer(
+    cols = c(total_infant_mortality_white, 
+             total_infant_mortality_black, 
+             total_infant_mortality_hispanic),
+    names_to = "Group",
+    values_to = "InfantMortalityRate"
+  )
+
+# Clean up group names for clarity
+df_long_infant <- df_long_infant %>%
+  mutate(Group = case_when(
+    Group == "total_infant_mortality_white" ~ "White",
+    Group == "total_infant_mortality_black" ~ "Black",
+    Group == "total_infant_mortality_hispanic" ~ "Hispanic",
+    TRUE ~ Group
+  ))
+
+# Create the boxplot
+ggplot(df_long_infant, aes(x = Group, y = InfantMortalityRate, fill = Group)) +
+  geom_boxplot() +
+  labs(
+    title = "Comparison of Infant Mortality Rates by Group",
+    x = "Group",
+    y = "Infant Mortality Rate"
+  ) +
+  scale_fill_manual(values = c("White" = "#1f77b4", "Black" = "#ff7f0e", "Hispanic" = "#2ca02c")) +
+  theme_minimal()
+
+```
+
+```{r}
+
+# Perform a t-test to compare total infant mortality rates between Black and White groups
+black_infant_mortality <- na.omit(df$total_infant_mortality_black)
+white_infant_mortality <- na.omit(df$total_infant_mortality_white)
+
+# Conduct the t-test
+t_test_black_white <- t.test(black_infant_mortality, white_infant_mortality, alternative = "greater")
+
+# Print the t-test results
+print(t_test_black_white)
+
+```
+
+```{r}
+
+# Perform a t-test to compare total infant mortality rates between Hispanic and White groups
+hispanic_infant_mortality <- na.omit(df$total_infant_mortality_hispanic)
+white_infant_mortality <- na.omit(df$total_infant_mortality_white)
+
+# Conduct the t-test
+t_test_hispanic_white <- t.test(hispanic_infant_mortality, white_infant_mortality, alternative = "greater")
+
+# Print the t-test results
+print(t_test_hispanic_white)
+
+
+```
+
+```{r}
+
+# Perform a t-test to compare total infant mortality rates between Black and Hispanic groups
+black_infant_mortality <- na.omit(df$total_infant_mortality_black)
+hispanic_infant_mortality <- na.omit(df$total_infant_mortality_hispanic)
+
+# Conduct the t-test
+t_test_black_hispanic <- t.test(black_infant_mortality, hispanic_infant_mortality, alternative = "greater")
+
+# Print the t-test results
+print(t_test_black_hispanic)
+
+```
+
+> Insert observation here
