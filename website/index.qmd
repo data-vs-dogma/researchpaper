@@ -1,6 +1,6 @@
 ---
-title: "Abortion Policy: Determinants of Women's Wellbeing"
-subtitle: "What Factors Might Influence Womens' Choice to Get an Abortion?"
+title: "Conditions Impacting Maternal Wellness by US State"
+subtitle: "(abortion is good)"
 ---
 
 Problem & objectives
