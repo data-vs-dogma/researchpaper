@@ -1,0 +1,29 @@
+---
+title: ""
+author: “Healthcare Data EDA”
+format: 
+  html:
+    embed-resources: true
+    code-fold: true
+---
+
+```{r}
+
+# Load necessary libraries and read in the data
+library(readr)
+df <- read_csv("data/clean_data/merged_data.csv")
+
+# Display the first few rows to inspect the data
+head(df)
+
+```
+
+```{r}
+
+# Ensure that dplyr package is installed and loaded
+options(repos = c(CRAN = "https://cran.r-project.org"))
+install.packages("dplyr")
+library(dplyr)
+
+```
+
