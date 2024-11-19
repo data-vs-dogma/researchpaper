@@ -177,3 +177,50 @@ print(t_test_black_hispanic)
 ```
 
 > Insert observation here
+
+###
+
+```{r}
+
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+
+# Create plot for infant mortality rates by abortion policies
+mortality_plot <- df %>%
+  pivot_longer(
+    cols = starts_with("infant_mortality_"),
+    names_to = "year",
+    values_to = "mortality_rate"
+  ) %>%
+  # Extract year from column names (e.g., "infant_mortality_2017" -> 2017)
+  mutate(year = as.numeric(substr(year, nchar("infant_mortality_") + 1, nchar(year)))) %>%
+  # Keep abortion_policies for grouping
+  filter(!is.na(abortion_policies)) 
+
+# Create the combined plot
+ggplot(mortality_plot, aes(x = year, y = mortality_rate, 
+                          color = State, group = State, 
+                          linetype = abortion_policies)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  theme_minimal() +
+  facet_wrap(~abortion_policies) +
+  labs(
+    title = "Infant Mortality Rates by Abortion Policy (2017-2022)",
+    x = "Year",
+    y = "Infant Mortality Rate",
+    color = "State",
+    linetype = "Abortion Policy"
+  ) +
+  scale_x_continuous(breaks = 2017:2022) +
+  theme(
+    legend.position = "right",
+    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+    axis.title = element_text(size = 12),
+    axis.text = element_text(size = 10),
+    strip.text = element_text(size = 12, face = "bold")
+  )
+
+```
+

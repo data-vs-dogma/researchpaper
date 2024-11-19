@@ -6,7 +6,6 @@ format:
     embed-resources: true
     code-fold: true
 ---
-
 ```{python}
 
 import pandas as pd
@@ -26,6 +25,10 @@ def clean_state_name(state):
 economic_data["State"] = economic_data["State"].apply(clean_state_name)
 health_data["State"] = health_data["State"].apply(clean_state_name)
 policy_data["State"] = policy_data["State"].apply(clean_state_name)
+
+# Convert all rows in abortion_policies column to lowercase
+if "abortion_policies" in policy_data.columns:
+    policy_data["abortion_policies"] = policy_data["abortion_policies"].str.strip().str.lower()
 
 # Merge datasets
 merged_data = economic_data.merge(health_data, on="State", how="outer")\
