@@ -31,8 +31,8 @@ if "abortion_policies" in policy_data.columns:
     policy_data["abortion_policies"] = policy_data["abortion_policies"].str.strip().str.lower()
 
 # Merge datasets
-merged_data = economic_data.merge(health_data, on="State", how="outer")\
-                           .merge(policy_data, on="State", how="outer")
+merged_data = economic_data.merge(health_data, on="State", how="left")\
+                           .merge(policy_data, on="State", how="left")
 
 # Save the cleaned and merged data
 merged_data.to_csv("../data/clean_data/merged_data.csv", index=False)
