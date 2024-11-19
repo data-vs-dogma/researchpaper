@@ -11,9 +11,10 @@ format:
 import pandas as pd
 
 # Load datasets
-economic_data = pd.read_excel("../data/raw_data/EconomicData.xlsx")
-health_data = pd.read_excel("../data/raw_data/HealthData.xlsx")
-policy_data = pd.read_excel("../data/raw_data/PolicyData.xlsx")
+# Add this at the start to prevent pandas from converting strings to NaN
+economic_data = pd.read_excel("../data/raw_data/EconomicData.xlsx", keep_default_na=False, na_values=[])
+health_data = pd.read_excel("../data/raw_data/HealthData.xlsx", keep_default_na=False, na_values=[])
+policy_data = pd.read_excel("../data/raw_data/PolicyData.xlsx", keep_default_na=False, na_values=[])
 
 # Standardize 'State' names
 def clean_state_name(state):
@@ -31,8 +32,8 @@ if "abortion_policies" in policy_data.columns:
     policy_data["abortion_policies"] = policy_data["abortion_policies"].str.strip().str.lower()
 
 # Merge datasets
-merged_data = economic_data.merge(health_data, on="State", how="left")\
-                           .merge(policy_data, on="State", how="left")
+merged_data = economic_data.merge(health_data, on="State", how="outer")\
+                           .merge(policy_data, on="State", how="outer")
 
 # Save the cleaned and merged data
 merged_data.to_csv("../data/clean_data/merged_data.csv", index=False)
