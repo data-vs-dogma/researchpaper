@@ -69,14 +69,11 @@ ggplot(df_long, aes(x = Race, y = MortalityRate, fill = Race)) +
 
 ```{r}
 
-# Perform a t-test to compare maternal mortality rates between Black and White mothers
 black_rates <- na.omit(df$maternal_mortality_mothers_race_is_black_2017-2022)
 white_rates <- na.omit(df$maternal_mortality_mothers_race_is_white_2017-2022)
 
-# Conduct the t-test
 t_test_result <- t.test(black_rates, white_rates, alternative = "greater")
 
-# Print the t-test results
 print(t_test_result)
 
 ```
