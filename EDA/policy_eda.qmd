@@ -1,6 +1,6 @@
 ---
-title: ""
-author: “Policy Data EDA”
+title: “Policy Data EDA”
+author: "Courtney Green"
 format: 
   html:
     embed-resources: true
