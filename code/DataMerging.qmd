@@ -6,15 +6,15 @@ format:
     embed-resources: true
     code-fold: true
 ---
-
 ```{python}
 
 import pandas as pd
 
 # Load datasets
-economic_data = pd.read_excel("../data/raw_data/EconomicData.xlsx")
-health_data = pd.read_excel("../data/raw_data/HealthData.xlsx")
-policy_data = pd.read_excel("../data/raw_data/PolicyData.xlsx")
+# Add this at the start to prevent pandas from converting strings to NaN
+economic_data = pd.read_excel("../data/raw_data/EconomicData.xlsx", keep_default_na=False, na_values=[])
+health_data = pd.read_excel("../data/raw_data/HealthData.xlsx", keep_default_na=False, na_values=[])
+policy_data = pd.read_excel("../data/raw_data/PolicyData.xlsx", keep_default_na=False, na_values=[])
 
 # Standardize 'State' names
 def clean_state_name(state):
@@ -26,6 +26,10 @@ def clean_state_name(state):
 economic_data["State"] = economic_data["State"].apply(clean_state_name)
 health_data["State"] = health_data["State"].apply(clean_state_name)
 policy_data["State"] = policy_data["State"].apply(clean_state_name)
+
+# Convert all rows in abortion_policies column to lowercase
+if "abortion_policies" in policy_data.columns:
+    policy_data["abortion_policies"] = policy_data["abortion_policies"].str.strip().str.lower()
 
 # Merge datasets
 merged_data = economic_data.merge(health_data, on="State", how="outer")\

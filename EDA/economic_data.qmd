@@ -1,0 +1,24 @@
+---
+title: ""
+author: “Economic Data EDA”
+format: 
+  html:
+    embed-resources: true
+---
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(readr)
+```
+
+```{r, warning=FALSE, message=FALSE}
+df <- read_csv("../data/clean_data/merged_data.csv")
+```
+
+```{r}
+
+```
+
+```{r}
+
+```
