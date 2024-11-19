@@ -364,7 +364,7 @@ create_policy_plot <- function(data, metric_col, title, y_label) {
     )
 }
 
-healthcare_cost <- create_policy_plot(df, "women_18-44_who_went_without_care_because_of_cost",
+healthcare_cost <- create_policy_plot(df, "women_18.44_who_went_without_care_because_of_cost.1",
                                     "Women Who Went Without Care Due to Cost",
                                     "Percentage")
 
@@ -391,7 +391,7 @@ create_policy_scatter_plot <- function(data, metric_col, title, y_label) {
   # Preprocess the data
   processed_data <- data %>%
     filter(!is.na(abortion_policies) & 
-           abortion_policies != "" & 
+           abortion_policies != "women_18.44_who_went_without_care_because_of_cost.1" & 
            abortion_policies != "NA") %>%
     mutate(abortion_policies = tolower(trimws(abortion_policies))) %>%
     group_by(abortion_policies) %>%
@@ -434,7 +434,7 @@ create_policy_scatter_plot <- function(data, metric_col, title, y_label) {
 # Create scatter plot
 healthcare_cost_scatter <- create_policy_scatter_plot(
   df,
-  "women_18-44_who_went_without_care_because_of_cost",
+  "women_18.44_who_went_without_care_because_of_cost.1",
   "Women Who Went Without Care Due to Cost (Scatter Plot)",
   "Percentage"
 )
@@ -712,5 +712,33 @@ print(coverage_access_scatter)
 ```{r}
 
 print(healthcare_quality_scatter)
+
+```
+
+```{r}
+
+# Define the custom order for abortion policies
+policy_order <- c("most restrictive", "very restrictive", "restrictive", 
+                  "protective", "very protective", "most protective")
+
+# Remove NAs and create the plot
+df %>%
+  filter(!is.na(medicaid_expansion_status) & !is.na(abortion_policies) & !is.na(State)) %>%
+  ggplot(aes(x = abortion_policies, y = State, fill = factor(medicaid_expansion_status))) +
+  geom_tile(color = "white") +
+  scale_fill_manual(values = c("0" = "grey", "1" = "steelblue"),
+                   labels = c("No", "Yes")) +
+  labs(
+    title = "State Abortion Policies and Medicaid Expansion Status",
+    x = "Abortion Policy",
+    y = "State",
+    fill = "Has Medicaid Expansion"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    axis.title = element_text(size = 12),
+    plot.title = element_text(hjust = 0.5, size = 14, face = "bold")
+  )
 
 ```
