@@ -9,18 +9,15 @@ format:
 
 ```{r}
 
-# Load necessary libraries and read in the data
 library(readr)
 df <- read_csv("data/clean_data/merged_data.csv")
 
-# Display the first few rows to inspect the data
 head(df)
 
 ```
 
 ```{r}
 
-# Ensure that dplyr package is installed and loaded
 options(repos = c(CRAN = "https://cran.r-project.org"))
 install.packages("dplyr")
 library(dplyr)
@@ -40,10 +37,8 @@ library(ggplot2)
 library(tidyr)
 library(dplyr)
 
-# Ensure column names are valid and consistent
 colnames(df) <- make.names(colnames(df))
 
-# Convert data to long format for easier plotting
 df_long <- df %>%
   pivot_longer(
     cols = c(maternal_mortality_mothers_race_is_black_2017.2022, maternal_mortality_mothers_race_is_white_2017.2022),
@@ -51,7 +46,6 @@ df_long <- df %>%
     values_to = "MortalityRate"
   )
 
-# Clean up race names for clarity
 df_long <- df_long %>%
   mutate(Race = case_when(
     Race == "maternal_mortality_mothers_race_is_black_2017.2022" ~ "Black",
@@ -59,7 +53,6 @@ df_long <- df_long %>%
     TRUE ~ Race
   ))
 
-# Create a boxplot for the distribution of maternal mortality rates
 ggplot(df_long, aes(x = Race, y = MortalityRate, fill = Race)) +
   geom_boxplot() +
   labs(
@@ -93,10 +86,6 @@ than the typical significance level of 0.05.
 This means that we can reject the null hypothesis that the maternal mortality rates for Black and White mothers are the same.
 
 ```{r}
-
-library(ggplot2)
-library(tidyr)
-library(dplyr)
 
 # Ensure column names are valid and consistent
 colnames(df) <- make.names(colnames(df))
@@ -182,10 +171,6 @@ print(t_test_black_hispanic)
 
 ```{r}
 
-library(tidyr)
-library(dplyr)
-library(ggplot2)
-
 # Create plot for infant mortality rates by abortion policies
 mortality_plot <- df %>%
   pivot_longer(
@@ -224,3 +209,508 @@ ggplot(mortality_plot, aes(x = year, y = mortality_rate,
 
 ```
 
+```{r}
+
+# Calculate the average infant mortality rates by abortion policy
+avg_infant_mortality <- df %>%
+  select(abortion_policies, starts_with("infant_mortality_")) %>%
+  rowwise() %>%
+  mutate(average_infant_mortality = mean(c_across(starts_with("infant_mortality_")), na.rm = TRUE)) %>%
+  ungroup() %>%
+  group_by(abortion_policies) %>%
+  summarise(avg_mortality_rate = mean(average_infant_mortality, na.rm = TRUE))
+
+# Create the bar chart
+ggplot(avg_infant_mortality, aes(x = reorder(abortion_policies, avg_mortality_rate), y = avg_mortality_rate, fill = abortion_policies)) +
+  geom_bar(stat = "identity") +
+  labs(
+    title = "Average Infant Mortality Rate by Abortion Policy (2017-2022)",
+    x = "Abortion Policy",
+    y = "Average Infant Mortality Rate"
+  ) +
+  scale_fill_brewer(palette = "Set2") +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+    axis.title = element_text(size = 12),
+    legend.position = "none"
+  )
+
+```
+
+```{r}
+
+# Define the custom order for abortion policies
+policy_order <- c("most protective", "protective", "some restrictions/protections", 
+                  "restrictive", "very restrictive", "most restrictive")
+
+# Clean and filter abortion_policies column
+avg_infant_mortality <- df %>%
+  # Remove rows where abortion_policies is NA, blank, or "NA" string
+  filter(!is.na(abortion_policies) & 
+         abortion_policies != "" & 
+         abortion_policies != "NA") %>%
+  # Trim whitespace and ensure consistent case
+  mutate(abortion_policies = tolower(trimws(abortion_policies))) %>%
+  select(abortion_policies, starts_with("infant_mortality_")) %>%
+  rowwise() %>%
+  mutate(average_infant_mortality = mean(c_across(starts_with("infant_mortality_")), na.rm = TRUE)) %>%
+  ungroup() %>%
+  group_by(abortion_policies) %>%
+  summarise(avg_mortality_rate = mean(average_infant_mortality, na.rm = TRUE)) %>%
+  # Filter out any rows where abortion_policies is not in our defined levels
+  filter(abortion_policies %in% policy_order) %>%
+  # Convert abortion_policies to a factor with custom order AND add numeric version
+  mutate(
+    abortion_policies = factor(abortion_policies, levels = policy_order),
+    policy_numeric = as.numeric(factor(abortion_policies, levels = policy_order))
+  )
+
+# Calculate R-squared
+model <- lm(avg_mortality_rate ~ policy_numeric, data = avg_infant_mortality)
+r_squared <- round(summary(model)$r.squared, 3)
+
+# Create the scatter plot with regression line
+ggplot(avg_infant_mortality, aes(x = abortion_policies, y = avg_mortality_rate)) +
+  geom_point(size = 4, color = "blue") +
+  # Add regression line using the numeric values
+  geom_smooth(aes(x = as.numeric(abortion_policies)), method = "lm", se = TRUE, color = "red") +
+  labs(
+    title = paste0("Average Infant Mortality Rate by Abortion Policy\nR² = ", r_squared),
+    x = "Abortion Policy",
+    y = "Average Infant Mortality Rate"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+    axis.title = element_text(size = 12)
+  )
+
+```
+
+```{r}
+
+# Define the custom order for abortion policies (now in correct order)
+policy_order <- c("most protective", "protective", "some restrictions/protections", 
+                  "restrictive", "very restrictive", "most restrictive")
+
+# Calculate average number of OB/GYNs by policy
+obgyn_by_policy <- df %>%
+  filter(!is.na(abortion_policies) & 
+         abortion_policies != "" & 
+         abortion_policies != "NA") %>%
+  mutate(abortion_policies = tolower(trimws(abortion_policies))) %>%
+  group_by(abortion_policies) %>%
+  summarise(avg_obgyn = mean(number_of_obstetricians_and_gynecologists_employed_2023, na.rm = TRUE)) %>%
+  filter(abortion_policies %in% policy_order) %>%
+  # Making sure the factor levels are in the exact order we want
+  mutate(abortion_policies = factor(abortion_policies, 
+                                  levels = policy_order,
+                                  ordered = TRUE)) %>%
+  # Arrange the data in this order for good measure
+  arrange(abortion_policies)
+
+# Create bar chart
+ggplot(obgyn_by_policy, aes(x = abortion_policies, y = avg_obgyn)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  labs(
+    title = "Average Number of OB/GYNs by Abortion Policy (2023)",
+    x = "Abortion Policy",
+    y = "Average Number of OB/GYNs"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+    axis.title = element_text(size = 12)
+  )
+
+```
+
+> Idk do another chart this is bad
+
+```{r}
+
+# Define the custom order for abortion policies (now in correct order)
+policy_order <- c("most protective", "protective", "some restrictions/protections", 
+                  "restrictive", "very restrictive", "most restrictive")
+
+create_policy_plot <- function(data, metric_col, title, y_label) {
+  data %>%
+    filter(!is.na(abortion_policies) & 
+           abortion_policies != "" & 
+           abortion_policies != "NA") %>%
+    mutate(abortion_policies = tolower(trimws(abortion_policies))) %>%
+    group_by(abortion_policies) %>%
+    summarise(avg_value = mean(!!sym(metric_col), na.rm = TRUE)) %>%
+    filter(abortion_policies %in% policy_order) %>%
+    mutate(abortion_policies = factor(abortion_policies, 
+                                    levels = policy_order,
+                                    ordered = TRUE)) %>%
+    ggplot(aes(x = abortion_policies, y = avg_value)) +
+    geom_bar(stat = "identity", fill = "steelblue") +
+    labs(
+      title = title,
+      x = "Abortion Policy",
+      y = y_label
+    ) +
+    theme_minimal() +
+    theme(
+      axis.text.x = element_text(angle = 45, hjust = 1),
+      plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+      axis.title = element_text(size = 12)
+    )
+}
+
+healthcare_cost <- create_policy_plot(df, "women_18-44_who_went_without_care_because_of_cost",
+                                    "Women Who Went Without Care Due to Cost",
+                                    "Percentage")
+
+```
+
+```{r}
+
+# Healthcare Access
+print(healthcare_cost)
+
+```
+
+```{r}
+
+library(dplyr)
+library(ggplot2)
+
+# Define the custom order for abortion policies
+policy_order <- c("most protective", "protective", "some restrictions/protections", 
+                  "restrictive", "very restrictive", "most restrictive")
+
+# Update function to create a scatter plot with linear regression and policy names on x-axis
+create_policy_scatter_plot <- function(data, metric_col, title, y_label) {
+  # Preprocess the data
+  processed_data <- data %>%
+    filter(!is.na(abortion_policies) & 
+           abortion_policies != "" & 
+           abortion_policies != "NA") %>%
+    mutate(abortion_policies = tolower(trimws(abortion_policies))) %>%
+    group_by(abortion_policies) %>%
+    summarise(avg_value = mean(!!sym(metric_col), na.rm = TRUE)) %>%
+    filter(abortion_policies %in% policy_order) %>%
+    mutate(
+      abortion_policies = factor(abortion_policies, 
+                               levels = policy_order,
+                               ordered = TRUE),
+      # Capitalize first letter of each word in policy names
+      abortion_policies = tools::toTitleCase(as.character(abortion_policies))
+    )
+  
+  # Calculate the linear model and R^2 value
+  lm_model <- lm(avg_value ~ as.numeric(abortion_policies), data = processed_data)
+  r_squared <- summary(lm_model)$r.squared
+  
+  # Create the scatter plot
+  ggplot(processed_data, aes(x = abortion_policies, y = avg_value)) +
+    geom_point(size = 4, color = "steelblue") +
+    geom_smooth(aes(group = 1), method = "lm", se = TRUE, color = "red", linetype = "dashed") +
+    annotate("text", x = length(policy_order) - 0.5, 
+             y = max(processed_data$avg_value), 
+             label = paste0("R² = ", round(r_squared, 3)), 
+             size = 5, hjust = 1) +
+    labs(
+      title = title,
+      x = "Abortion Policy",
+      y = y_label
+    ) +
+    theme_minimal() +
+    theme(
+      axis.text.x = element_text(angle = 45, hjust = 1),
+      plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+      axis.title = element_text(size = 12),
+      plot.margin = margin(t = 20, r = 20, b = 50, l = 20)  # Increased bottom margin
+    )
+}
+
+# Create scatter plot
+healthcare_cost_scatter <- create_policy_scatter_plot(
+  df,
+  "women_18-44_who_went_without_care_because_of_cost",
+  "Women Who Went Without Care Due to Cost (Scatter Plot)",
+  "Percentage"
+)
+
+# Print the scatter plot
+print(healthcare_cost_scatter)
+
+```
+
+> Im getting annoyed it wont print out the abortion policy names at the bottom
+
+```{r}
+
+health_ranking <- create_policy_plot(df, "overall_health_ranking",
+                                   "Overall Health Ranking by Policy",
+                                   "Ranking")
+
+```
+
+```{r}
+
+print(health_ranking)
+
+```
+
+```{r}
+
+# Define the custom order for abortion policies
+policy_order <- c("most protective", "protective", "some restrictions/protections", 
+                  "restrictive", "very restrictive", "most restrictive")
+
+# Update function to create a scatter plot with linear regression and policy names on x-axis
+create_policy_scatter_plot <- function(data, metric_col, title, y_label) {
+  # Preprocess the data
+  processed_data <- data %>%
+    filter(!is.na(abortion_policies) & 
+           abortion_policies != "" & 
+           abortion_policies != "NA") %>%
+    mutate(abortion_policies = tolower(trimws(abortion_policies))) %>%
+    group_by(abortion_policies) %>%
+    summarise(avg_value = mean(!!sym(metric_col), na.rm = TRUE)) %>%
+    filter(abortion_policies %in% policy_order) %>%
+    mutate(abortion_policies = factor(abortion_policies, 
+                                      levels = policy_order,
+                                      ordered = TRUE))
+  
+  # Calculate the linear model and R^2 value
+  lm_model <- lm(avg_value ~ as.numeric(abortion_policies), data = processed_data)
+  r_squared <- summary(lm_model)$r.squared
+  
+  # Create the scatter plot
+  ggplot(processed_data, aes(x = abortion_policies, y = avg_value)) +
+    geom_point(size = 4, color = "steelblue") +
+    geom_smooth(aes(group = 1), method = "lm", se = TRUE, color = "red", linetype = "dashed") +
+    annotate("text", x = length(policy_order) - 0.5, 
+             y = max(processed_data$avg_value), 
+             label = paste0("R² = ", round(r_squared, 3)), 
+             size = 5, hjust = 1) +
+    labs(
+      title = title,
+      x = "Abortion Policy",
+      y = y_label
+    ) +
+    theme_minimal() +
+    theme(
+      axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
+      plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+      axis.title = element_text(size = 12),
+      axis.text.x.top = element_blank() # Ensures labels stay at the bottom
+    )
+}
+
+# Create scatter plot for overall health ranking
+health_ranking <- create_policy_scatter_plot(
+  df,
+  "overall_health_ranking",
+  "Overall Health Ranking by Abortion Policy (Scatter Plot)",
+  "Ranking"
+)
+
+# Print the scatter plot
+print(health_ranking)
+
+```
+
+
+```{r}
+
+medicaid_births <- create_policy_plot(df, "percent_of_births_financed_by_medicaid",
+                                    "Percent of Births Financed by Medicaid",
+                                    "Percentage")
+
+```
+
+```{r}
+
+print(medicaid_births)
+
+```
+
+```{r}
+
+# 5. Mental Health and Preventive Care
+depression <- create_policy_plot(df, "women_with_depression_before_or_during_pregnancy_2021",
+                               "Women with Depression Before/During Pregnancy (2021)",
+                               "Percentage")
+
+
+```
+
+```{r}
+
+print(depression)
+
+```
+
+```{r}
+
+postpartum_depression <- create_policy_plot(df, "%_women_with_postpartum_depression_2021",
+                                          "Women with Postpartum Depression (2021)",
+                                          "Percentage")
+
+```
+
+```{r}
+
+print(postpartum_depression)
+
+```
+
+```{r}
+
+depression_screening <- create_policy_plot(df, "X._women_who_received_a_postpartum_depression_screening_2021",
+                                         "Women Receiving Postpartum Depression Screening (2021)",
+                                         "Percentage")
+
+```
+
+```{r}
+
+print(depression_screening)
+
+```
+
+```{r}
+
+# Define the custom order for abortion policies
+policy_order <- c("most protective", "protective", "some restrictions/protections", 
+                  "restrictive", "very restrictive", "most restrictive")
+
+# Update function to create a scatter plot with linear regression and policy names on x-axis
+create_policy_scatter_plot <- function(data, metric_col, title, y_label) {
+  # Preprocess the data
+  processed_data <- data %>%
+    filter(!is.na(abortion_policies) & 
+           abortion_policies != "" & 
+           abortion_policies != "NA") %>%
+    mutate(abortion_policies = tolower(trimws(abortion_policies))) %>%
+    group_by(abortion_policies) %>%
+    summarise(avg_value = mean(!!sym(metric_col), na.rm = TRUE)) %>%
+    filter(abortion_policies %in% policy_order) %>%
+    mutate(abortion_policies = factor(abortion_policies, 
+                                      levels = policy_order,
+                                      ordered = TRUE))
+  
+  # Calculate the linear model and R^2 value
+  lm_model <- lm(avg_value ~ as.numeric(abortion_policies), data = processed_data)
+  r_squared <- summary(lm_model)$r.squared
+  
+  # Create the scatter plot
+  ggplot(processed_data, aes(x = abortion_policies, y = avg_value)) +
+    geom_point(size = 4, color = "steelblue") +
+    geom_smooth(aes(group = 1), method = "lm", se = TRUE, color = "red", linetype = "dashed") +
+    annotate("text", x = length(policy_order) - 0.5, 
+             y = max(processed_data$avg_value), 
+             label = paste0("R² = ", round(r_squared, 3)), 
+             size = 5, hjust = 1) +
+    labs(
+      title = title,
+      x = "Abortion Policy",
+      y = y_label
+    ) +
+    theme_minimal() +
+    theme(
+      axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
+      plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+      axis.title = element_text(size = 12),
+      axis.text.x.top = element_blank() # Ensures labels stay at the bottom
+    )
+}
+
+# Create scatter plot for depression screening
+depression_screening_scatter <- create_policy_scatter_plot(
+  df,
+  "X._women_who_received_a_postpartum_depression_screening_2021",
+  "Women Receiving Postpartum Depression Screening (2021)",
+  "Percentage"
+)
+
+# Print the scatter plot
+print(depression_screening_scatter)
+
+```
+
+```{r}
+
+# Define the custom order for abortion policies
+policy_order <- c("most protective", "protective", "some restrictions/protections", 
+                  "restrictive", "very restrictive", "most restrictive")
+
+# Update function to create a scatter plot with linear regression and policy names on x-axis
+create_policy_scatter_plot <- function(data, metric_col, title, y_label) {
+  # Preprocess the data
+  processed_data <- data %>%
+    filter(!is.na(abortion_policies) & 
+           abortion_policies != "" & 
+           abortion_policies != "NA") %>%
+    mutate(abortion_policies = tolower(trimws(abortion_policies))) %>%
+    group_by(abortion_policies) %>%
+    summarise(avg_value = mean(!!sym(metric_col), na.rm = TRUE)) %>%
+    filter(abortion_policies %in% policy_order) %>%
+    mutate(abortion_policies = factor(abortion_policies, 
+                                      levels = policy_order,
+                                      ordered = TRUE))
+  
+  # Calculate the linear model and R^2 value
+  lm_model <- lm(avg_value ~ as.numeric(abortion_policies), data = processed_data)
+  r_squared <- summary(lm_model)$r.squared
+  
+  # Create the scatter plot
+  ggplot(processed_data, aes(x = abortion_policies, y = avg_value)) +
+    geom_point(size = 4, color = "steelblue") +
+    geom_smooth(aes(group = 1), method = "lm", se = TRUE, color = "red", linetype = "dashed") +
+    annotate("text", x = length(policy_order) - 0.5, 
+             y = max(processed_data$avg_value), 
+             label = paste0("R² = ", round(r_squared, 3)), 
+             size = 5, hjust = 1) +
+    labs(
+      title = title,
+      x = "Abortion Policy",
+      y = y_label
+    ) +
+    theme_minimal() +
+    theme(
+      axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
+      plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+      axis.title = element_text(size = 12),
+      axis.text.x.top = element_blank() # Ensures labels stay at the bottom
+    )
+}
+
+# Create scatter plots
+coverage_access_scatter <- create_policy_scatter_plot(
+  df,
+  "coverage_access_and_affordability",
+  "Coverage Access and Affordability by Abortion Policy",
+  "Score"
+)
+
+healthcare_quality_scatter <- create_policy_scatter_plot(
+  df,
+  "health_care_quality_and_prevention",
+  "Healthcare Quality and Prevention by Abortion Policy",
+  "Score"
+)
+
+```
+
+```{r}
+
+print(coverage_access_scatter)
+
+```
+
+```{r}
+
+print(healthcare_quality_scatter)
+
+```
