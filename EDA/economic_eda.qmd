@@ -1,6 +1,6 @@
 ---
-title: ""
-author: “Economic Data EDA”
+title: "Economic Data EDA"
+author: “”
 format: 
   html:
     embed-resources: true
@@ -16,15 +16,21 @@ df <- read_csv("../data/clean_data/merged_data.csv")
 df <- df |>
   filter(!is.na(parental_leave_mandatory_enacted)) |> 
   filter(State != "US")
-# Combine the two columns into one
+```
+
+
+```{r}
+sum(df$parental_leave_mandatory_enacted)
+sum(df$parental_leave_mandatory_not_yet_enacted)
+```
+
+As of 2023, there were 10 states with laws that mandate companies to guarantee parental leave to their employees. In that year, 4 additional states voted to add a law to mandate parental leave, but they are not yet enacted at the time. For exploratory purposes, we will combine these two columns to represent the states taking measures to provide parental leave in consideration of the conditions they ameliorate for women and families.
+
+```{r}
 df$parental_leave_mandatory <- pmax(df$parental_leave_mandatory_enacted, df$parental_leave_mandatory_not_yet_enacted)
 ```
 
-```{r}
 
-glm(parental_leave_mandatory_enacted ~ infant_mortality_2022, family = binomial, data = df)
-
-```
 
 ```{r}
 ggplot(df, aes(x = as.factor(parental_leave_mandatory), fill = as.factor(parental_leave_mandatory))) +
@@ -44,21 +50,66 @@ sum(df$parental_leave_mandatory)
 > Only 14 states mandate parental leave.
 
 
-
+Number of weeks of parental leave
 ```{r}
+# bar chart
 ggplot(df, aes(x = as.factor(num_weeks_parental_leave), fill = as.factor(num_weeks_parental_leave))) +
   geom_bar(alpha = 0.8) +
   labs(
-    title = "Distribution of Parental Leave Policy",
-    x = "Parental Leave Policy",
+    title = "Number of States by Weeks of Parental Leave Mandated by Law",
+    x = "Number of Weeks of Parental Leave",
     y = "Number of States"
   ) + 
   scale_x_discrete(labels = c("0" = "Not Mandated", "1" = "Mandated")) +
   theme_classic() +
   theme(legend.position = "none")
+
+
+# histograms with infant mortality rate
+ggplot(df, aes(x = as.factor(num_weeks_parental_leave), 
+                     y = infant_mortality_2022, 
+                     fill = as.factor(num_weeks_parental_leave))) +
+  geom_boxplot() +
+  labs(x = "Parental Leave Policy", y = "Infant Mortality Rate" , title = "Infant Mortality Rate by Number of Weeks of \nParental Leave Mandated by Law") +
+  theme_classic() +
+  theme(legend.position = "none")
 ```
 
+ > Let's examine why the range of infant maternal mortality rates of states with a 12 week parental leave mandate is high: 
+ 
+```{r}
+outlier <- df[df$num_weeks_parental_leave == 12 & df$infant_mortality_2022 > 5,]
+outlier$State
+outlier$parental_leave_mandatory_enacted
+outlier$parental_leave_mandatory_not_yet_enacted
+outlier$infant_mortality_2022
+```
 
+> Four states have infant mortality rates of over 5 infant deaths per 100,000 births: They are Delaware, DC, Maine, and Maryland. Only DC had enacted a mandatory parental leave law with this number of weeks guaranteed prior to 2023; the other three states had just voted to include the law, but not yet enacted it. This may provide insight that Delaware, Maine, and Maryland are looking to take measures to address their high infant mortality rates by making conditions better for women and parents. 
+
+
+Parental leave policy x abortion policy 
+```{r}
+# reorder the levels of abortion policies
+df$abortion_policies <- factor(df$abortion_policies, 
+                              levels = c("most protective", "very protective", 
+                                         "protective", "some restrictions/protections", 
+                                         "restrictive", "very restrictive", "most restrictive"))
+
+
+# stacked bar plot
+ggplot(df, aes(x = as.factor(parental_leave_mandatory), fill = abortion_policies)) +
+  geom_bar(position = "fill") +
+  labs(x = "Parental leave policy", y = "Proportion", fill = "Level of state abortion policy") +
+  scale_x_discrete(labels = c("0" = "Not Mandated", "1" = "Mandated")) +
+  scale_fill_manual(values = c("palegreen", "palegreen3", "palegreen4",  "olivedrab4", "sienna", "sienna3", "red")) + # Adjust colors as needed
+  theme_classic()
+```
+
+> This plot shows us that while the vast majority of states that have not enacted mandatory parental leave have more restrictive abortion policies, the vast majority of states that do mandate parental leave have protective abortion policies. So, the states that want to prohibit women from accessing contraceptive care also enable the worst conditions for a woman when she has a baby: an unfavorable and unprotected employment situation. 
+
+
+Parental leave policy x infant mortality rate 
 ```{r}
 # boxplot
 ggplot(df, aes(x = as.factor(parental_leave_mandatory), 
@@ -71,15 +122,71 @@ ggplot(df, aes(x = as.factor(parental_leave_mandatory),
   theme_classic() +
   theme(legend.position = "none")
 
+
+# density plot 
+ggplot(df, aes(x = infant_mortality_2022, fill = as.factor(parental_leave_mandatory))) +
+  geom_density(alpha = 0.5) +
+  labs(x = "Infant Mortality Rate", fill = "Parental Leave Policy") +
+  theme_classic()
+
+
+# logistic regression
+df <- df |> filter(!is.na(infant_mortality_2022))
+
+model <- glm(parental_leave_mandatory ~ infant_mortality_2022, data = df, family = binomial)
+
+predictor_seq <- data.frame(infant_mortality_2022 = seq(min(df$infant_mortality_2022), max(df$infant_mortality_2022), length.out = 100))
+predictor_seq$predicted_prob <- predict(model, newdata = predictor_seq, type = "response")
+
+ggplot(df, aes(x = infant_mortality_2022, y = parental_leave_mandatory)) +
+  geom_point(alpha = 0.5) +  # Add data points
+  geom_line(data = predictor_seq, aes(x = infant_mortality_2022, y = predicted_prob), color = "blue", size = 1) +
+  labs(x = "Parental leave policy (1=mandatory)", y = "Infant mortality rate per 100,000 births, 2022", title = "Logistic Regression Curve") +
+  theme_minimal()
+
 ```
+
 
 Parental leave policy x Infant mortality rates
 ```{r}
 ggplot(df, aes(x = infant_mortality_2022, fill = as.factor(parental_leave_mandatory))) +
-  geom_density(alpha = 0.5) +
-  labs(x = "Infant Mortality Rate", fill = "Parental Leave Mandate") +
+  geom_density(alpha = 0.8) +
+  labs(x = "Infant Mortality Rate", fill = "Parental Leave Policy") +
+  scale_fill_manual(values = c("salmon", "lightblue"), 
+                    labels = c("Not mandated", "Mandated")) +
   theme_classic()
 ```
+
+Parental leave policy x maternal mortality rates
+```{r}
+# boxplot
+ggplot(df, aes(x = as.factor(parental_leave_mandatory), 
+                     y = maternal_mortality_rates_2018_2022, 
+                     fill = as.factor(parental_leave_mandatory))) +
+  geom_boxplot() +
+  labs(x = "Parental Leave Policy", y = "Maternal Mortality Rate") +
+  scale_x_discrete(labels = c("0" = "Not Mandated", "1" = "Mandated")) +
+  scale_fill_manual(values = c("salmon", "skyblue")) +
+  theme_classic() +
+  theme(legend.position = "none")
+
+
+# logistic regression
+df <- df |> filter(!is.na(maternal_mortality_rates_2018_2022))
+
+model <- glm(parental_leave_mandatory ~ maternal_mortality_rates_2018_2022, data = df, family = binomial)
+
+predictor_seq <- data.frame(maternal_mortality_rates_2018_2022 = seq(min(df$maternal_mortality_rates_2018_2022), max(df$maternal_mortality_rates_2018_2022), length.out = 100))
+predictor_seq$predicted_prob <- predict(model, newdata = predictor_seq, type = "response")
+
+ggplot(df, aes(x = maternal_mortality_rates_2018_2022, y = parental_leave_mandatory)) +
+  geom_point(alpha = 0.5) +  # Add data points
+  geom_line(data = predictor_seq, aes(x = maternal_mortality_rates_2018_2022, y = predicted_prob), color = "blue", size = 1) +
+  labs(x = "Parental leave policy (1=mandatory)", y = "Maternal mortality rate per 100,000 women", title = "Logistic Regression Curve") +
+  theme_minimal()
+```
+
+
 
 Parental leave policy x percentage of uninsured women
 ```{r}
@@ -97,26 +204,74 @@ ggplot(df, aes(x = as.factor(parental_leave_mandatory),
 > There are more uninsured women in states that do not mandate parental leave.
 
 
-```{r}
-# Reorder the levels of abortion policies
-df$abortion_policies <- factor(df$abortion_policies, 
-                              levels = c("most protective", "very protective", 
-                                         "protective", "some restrictions/protections", 
-                                         "restrictive", "very restrictive", "most restrictive"))
+> There is an outlier in the plot above that represents a state with more than 20% of uninsured women. 
 
-# Create the plot
-ggplot(df, aes(x = as.factor(parental_leave_mandatory), fill = abortion_policies)) +
+```{r}
+uninsured_outlier <- df[df$pctg_women_uninsured>20,]
+uninsured_outlier$State
+uninsured_outlier$parental_leave_mandatory
+uninsured_outlier$health_outcomes
+uninsured_outlier$overall_health_ranking
+uninsured_outlier$coverage_access_and_affordability
+uninsured_outlier$abortion_policies
+```
+> From this, we understand that Texas is the state with more than 20% uninsured women. Looking at the other conditions in this state, we see that it does not mandate parental leave, it has poor health outcome rankings, it is ranked second to last in overall health ranking, it has the WORST coverage access and affordability ranking in the country, and it is categorized as having most restrictive abortion policies. Texas has terrible conditions for women's health, yet it continues to pursue the most oppressive policies. 
+
+Parental leave policy x health ranking 
+```{r}
+# boxplot
+ggplot(df, aes(x = as.factor(parental_leave_mandatory), y = overall_health_ranking)) +
+  geom_boxplot(fill = c("lightblue", "salmon")) +
+  labs(x = "Parental Leave Policy", y = "Overall Health Ranking", 
+       title = "Health Ranking by Parental Leave Policy") +
+  scale_x_discrete(labels = c("0" = "Not Mandated", "1" = "Mandated")) +
+  theme_minimal()
+
+
+# violin plot
+ggplot(df, aes(x = as.factor(parental_leave_mandatory), y = overall_health_ranking, fill = as.factor(parental_leave_mandatory))) +
+  geom_violin(alpha = 0.6) +
+  labs(x = "Parental Leave Policy", y = "Overall Health Ranking", 
+       title = "Health Ranking Density by Parental Leave Policy") +
+  scale_x_discrete(labels = c("0" = "Not Mandated", "1" = "Mandated")) +
+  scale_fill_manual(values = c("pink", "lightblue")) +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+
+# stacked bar graph 
+df$top_health_state <- ifelse(df$overall_health_ranking <= 10, 1, 0)
+ggplot(df, aes(x = as.factor(parental_leave_mandatory), fill = as.factor(top_health_state))) +
   geom_bar(position = "fill") +
-  labs(x = "Binary Variable", y = "Proportion", fill = "Level of state abortion policy") +
-  scale_fill_manual(values = c("palegreen", "palegreen3", "palegreen4",  "olivedrab4", "sienna", "sienna3", "red")) + # Adjust colors as needed
+  labs(x = "Parental Leave Policy", y = "Proportion", fill = "Top Health State") +
+  scale_x_discrete(labels = c("0" = "Not Mandated", "1" = "Mandated")) +
+  scale_fill_manual(labels = c("Not Top 10", "Top 10"), values = c("gray", "palegreen1")) +
   theme_classic()
 
 ```
 
-> This plot shows us that while the vast majority of states that have not enacted mandatory parental leave have more restrictive abortion policies, the vast majority of states that do mandate parental leave have protective abortion policies. So, the states that want to prohibit women from accessing contraceptive care also enable the worst conditions for a woman when she has a baby: an unfavorable and unprotected employment situation. 
-
+> From these plots, we can see that states that have mandated parental leave have, on average, better overall health rankings than states that have not mandated parental leave (the lower the ranking value, the better). The stacked bar plot shows that of states with 
 
 ```{r}
-
+tophealthstate <- df[df$overall_health_ranking ==1,]
+tophealthstate$State
+tophealthstate$parental_leave_mandatory
+tophealthstate$num_weeks_parental_leave
 ```
+
+> The state with the top overall health ranking (Massachusetts) mandates 12 weeks of parental leave. 
+
+
+Female employment 
+```{r}
+ggplot(df, aes(x = as.factor(parental_leave_mandatory), 
+               y = percent_women_working)) +
+  geom_boxplot(fill = c("lightblue", "salmon")) +
+  labs(x = "Parental Leave Policy", y = "Percentage of Women Employed", 
+       title = "Percentage of Women Employed, by Parental Leave Policy") +
+  scale_x_discrete(labels = c("0" = "Not Mandated", "1" = "Mandated")) +
+  theme_classic()
+```
+
+
 
