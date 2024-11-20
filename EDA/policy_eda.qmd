@@ -1,11 +1,71 @@
 ---
-title: ""
-author: “Policy Data EDA”
+title: “Policy Data EDA”
+author: "Courtney Green"
 format: 
   html:
     embed-resources: true
     code-fold: true
 ---
 
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(readr)
+```
+
+```{r}
+df <- read_csv("../data/clean_data/merged_data.csv")
+head(df)
+cat(colnames(df), sep = "\n")
+```
+```{r}
+# Policy subset
+policy_data <- df %>%
+  select(State, abortion_policies, abortion_related_legislative_actions_introduced_2023, 
+         medicaid_expansion_status, total_abortion_ban, `X6_week_ban`, `X12_week_ban`,
+         `X15_week_ban`, `X18_to_23_week_ban`, `X24_to_26_week_ban`, no_gestational_ban,
+         state_constitution_excludes_abortion_rights, waiting_period_after_counseling, 
+         waiting_period_after_required_in_person_counseling, forced_ultrasound,
+         state_medicaid_coverage_ban, private_insurance_coverage_ban,
+         medication_abortion_in_person_requirement, mailing_abortion_pills_banned,
+         medically_unnecessary_clinic_regulations, parental_consent_required_for_minors_abortion,
+         parental_notice_required_for_a_minors_abortion, only_physicians_can_provide_abortions,
+         state_constitution_protects_abortion_rights, state_medicaid_funds_cover_abortion,
+         private_health_plans_required_to_cover_abortion, healthcare_professionals_besides_physicians_provide_abortions,
+         state_fund_for_abortion_care, protections_to_enter_a_clinic, shield_law_protecting_providers,
+         patient_reproductive_health_data_privacy)
+
+head(policy_data)
+```
+
+```{r}
+# Frequency counts and proportions for categorical variables
+policy_summary <- policy_data %>%
+  select(-abortion_policies) %>%  
+  summarise(across(everything(), ~ list(Count = table(.), Proportion = prop.table(table(.)))))
+
+print(policy_summary)
+
+# total_abortion_ban
+table(policy_data$total_abortion_ban)
+prop.table(table(policy_data$total_abortion_ban))  # Proportion
+
+```
+
+```{r}
+table(policy_data$total_abortion_ban)
+
+# Proportion of states with total abortion bans
+prop.table(table(policy_data$total_abortion_ban))
+
+# Bar plot for categorical variables
+ggplot(policy_data, aes(x = as.factor(total_abortion_ban))) +
+  geom_bar(fill = "skyblue") +
+  labs(title = "Distribution of Total Abortion Bans", x = "Abortion Ban (1 = Yes, 0 = No)", y = "Count")
+```
+
 ```{r}
 ```
+
+```{r}
+```
+
