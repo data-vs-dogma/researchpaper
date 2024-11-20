@@ -10,7 +10,7 @@ format:
 ```{r}
 
 library(readr)
-df <- read_csv("data/clean_data/merged_data.csv")
+df <- read_csv("../data/clean_data/merged_data.csv")
 
 head(df)
 
@@ -90,13 +90,12 @@ ggplot(data = df_racial_mortality,
 
 ```
 
-```{markdown}
+###
 
 Null hypothesis: The maternal mortality rate for Black mothers is less than or equal to the rate for White mothers.
 
 Alternate hypothesis: The maternal mortality rate for Black mothers is greater than the rate for White mothers
 
-```
 
 ```{r}
 
@@ -109,17 +108,14 @@ print(t_test_result)
 
 ```
 
-```{markdown}
+###
 
 The p value is extremely small and less than .05. Therefore, we can reject the null hypothesis and say that black maternal mortality rates are greater than White maternal mortality rates. The lower bound, 4.91, says that we are 95% confident the true difference in means is greater than 4.91. 
 
-```
-
-```{markdown}
+###
 
 Need to use a different statistical test for this since there are three groups with different variances. Or we can do 3 separate t-tests.
 
-```
 
 ```{r}
 
@@ -211,11 +207,9 @@ ggplot(data = mortality_plot,
 
 ```
 
-```{markdown}
+###
 
 Some go up, some go down. Not very telling!
-
-```
 
 ```{r}
 
@@ -227,7 +221,6 @@ policy_order <- c("most protective", "very protective", "protective",
 
 ```{r}
 
-# 2. Define the function
 create_policy_viz <- function(data, metric_col, title, y_label, plot_type = "bar") {
   processed_data <- data %>%
     filter(!is.na(abortion_policies) & 
@@ -597,17 +590,16 @@ ggplot(obgyn_proportion_grouped,
    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
    plot.subtitle = element_text(hjust = 0.5, size = 10),
    axis.title = element_text(size = 12),
-   legend.position = "none"  
+   legend.position = "none")
 
 ```
 
-```{markdown}
+###
 
 Null hypothesis: The mean OB/GYN proportion for the "Protective" and "Restrictive" policy groups is equal. 
 
 Alternate hypothesis: The mean OB/GYN proportion for the "Protective" and "Restrictive" policy groups is not equal.
 
-```
 
 ```{r}
 
@@ -621,11 +613,10 @@ print(t_test_result)
 
 ```
 
-```{markdown}
+###
 
 The small p-value (0.009633) suggests rejecting the null hypothesis at a 5% significance level, indicating a significant difference in OB/GYN proportions between the two groups.
 
-```
 
 ```{r}
 
@@ -701,16 +692,226 @@ print(all_cause_mortality)
 
 ```
 
-```{markdown}
+###
 
-The total abortion ban category is significantly higher despite all of the other categories being someone stable. 
+The total abortion ban category is significantly higher despite all of the other categories being somewhat stable. 
+
+```{r}
+
+df_clean <- data.frame(
+  State = c("Tennessee", "Mississippi", "Alabama", "Arkansas", "Louisiana", "Kentucky", "Virginia", 
+            "South Carolina", "Georgia", "Indiana", "Arizona", "Oklahoma", "Texas", "New Mexico", 
+            "North Carolina", "New Jersey", "Nebraska", "Ohio", "Florida", "West Virginia", "Missouri",
+            "US Average", "Kansas", "New York", "Maryland", "Nevada", "Idaho", "Iowa", "Michigan",
+            "Illinois", "Washington", "Pennsylvania", "Oregon", "Massachusetts", "Colorado", 
+            "Connecticut", "Utah", "Wisconsin", "Minnesota", "California"),
+  
+  maternal_mortality = c(41.1, 39.1, 38.6, 38.3, 37.3, 34.6, 32.7, 32.3, 32.1, 30.9, 30.0, 
+                        29.6, 28.2, 28.0, 26.7, 26.0, 25.1, 24.5, 24.1, 23.9, 23.8, 23.2, 
+                        22.8, 22.4, 21.3, 20.4, 20.0, 19.5, 19.1, 18.1, 18.0, 17.5, 16.6, 
+                        16.4, 16.0, 15.6, 15.5, 13.2, 12.3, 10.5),
+  
+  abortion_policies = c("most restrictive", "most restrictive", 
+                       "very restrictive", "US Average", "restrictive", "very protective",
+                       "protective", "most restrictive",
+                       "most protective")
+)
+
+# Set the policy order
+policy_order <- c("most protective", "very protective", "protective",
+                 "some restrictions/protections", "restrictive",
+                 "very restrictive", "most restrictive", "US Average")
+
+# Convert abortion_policies to factor with specified order
+df_clean$abortion_policies <- factor(df_clean$abortion_policies, levels = policy_order)
+
+# Define colors for the abortion policies
+policy_colors <- c(
+  "most restrictive" = "#8B0000",     # Dark red
+  "very restrictive" = "#FF4E50",     # Bright red
+  "restrictive" = "#FFC857",          # Yellow
+  "some restrictions/protections" = "#90EE90",  # Light green
+  "protective" = "#98FB98",           # Pale green
+  "very protective" = "#228B22",      # Forest green
+  "most protective" = "#006400",      # Dark green
+  "US Average" = "#1f77b4"           # Blue
+)
+
+# Create the plot
+ggplot(df_clean, 
+       aes(x = reorder(State, maternal_mortality),
+           y = maternal_mortality,
+           fill = abortion_policies)) +
+  geom_bar(stat = "identity", width = 0.8) +
+  scale_fill_manual(values = policy_colors) +
+  coord_flip() +
+  theme_minimal() +
+  labs(
+    title = "Maternal Mortality Rates (2018-2022) per 100,000 Live Births by State",
+    x = "",
+    y = "Maternal Mortality Rate per 100,000 Live Births",
+    fill = "Abortion Policy"
+  ) +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 12, face = "bold", margin = margin(b = 10)),
+    axis.title.x = element_text(size = 10, margin = margin(t = 10)),
+    axis.text.y = element_text(size = 8),
+    axis.text.x = element_text(size = 8),
+    legend.title = element_text(size = 9, face = "bold"),
+    legend.text = element_text(size = 8),
+    legend.position = "right",
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor = element_blank()
+  ) +
+  geom_text(
+    aes(label = sprintf("%.1f", maternal_mortality)),
+    hjust = -0.2, 
+    size = 3,
+    color = "black"
+  ) +
+  scale_y_continuous(
+    limits = c(0, max(df_clean$maternal_mortality) * 1.15),
+    expand = expansion(mult = c(0, 0.1))
+  )
 
 ```
 
-```{markdown}
+```{r}
+
+df_clean$abortion_policies <- factor(df_clean$abortion_policies, levels = policy_order)
+
+policy_colors <- c(
+  "most restrictive" = "#8B0000",    
+  "very restrictive" = "#FF4E50", 
+  "restrictive" = "#FFC857",     
+  "some restrictions/protections" = "#90EE90", 
+  "protective" = "#98FB98",      
+  "very protective" = "#228B22",  
+  "most protective" = "#006400",     
+  "US Average" = "#1f77b4"        
+)
+
+ggplot(df_clean, 
+       aes(x = reorder(State, maternal_mortality),
+           y = maternal_mortality,
+           fill = abortion_policies)) +
+  geom_bar(stat = "identity", width = 0.8) +
+  scale_fill_manual(values = policy_colors) +
+  coord_flip() +
+  theme_minimal() +
+  labs(
+    title = "Maternal Mortality Rates (2018-2022) per 100,000 Live Births by State",
+    x = "",
+    y = "Maternal Mortality Rate per 100,000 Live Births",
+    fill = "Abortion Policy"
+  ) +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 12, face = "bold", margin = margin(b = 10)),
+    axis.title.x = element_text(size = 10, margin = margin(t = 10)),
+    axis.text.y = element_text(size = 8),
+    axis.text.x = element_text(size = 8),
+    legend.title = element_text(size = 9, face = "bold"),
+    legend.text = element_text(size = 8),
+    legend.position = "right",
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor = element_blank()
+  ) +
+  geom_text(
+    aes(label = sprintf("%.1f", maternal_mortality)),
+    hjust = -0.2, 
+    size = 3,
+    color = "black"
+  ) +
+  scale_y_continuous(
+    limits = c(0, max(df_clean$maternal_mortality) * 1.15),
+    expand = expansion(mult = c(0, 0.1))
+  )
+
+```
+
+```{r}
+
+df_clean_filtered <- df_clean %>%
+  filter(!is.na(abortion_policies))
+
+policy_order <- c("most restrictive", "very restrictive", "restrictive",
+                 "some restrictions/protections", "protective",
+                 "very protective", "most protective")
+
+df_clean_filtered$abortion_policies <- factor(df_clean_filtered$abortion_policies, 
+                                   levels = rev(policy_order))  
+
+us_average <- 23.2
+
+policy_colors <- c(
+  "most restrictive" = "#8B0000",     
+  "very restrictive" = "#FF6B6B",   
+  "restrictive" = "#FFB347",  
+  "some restrictions/protections" = "#FFD700",  
+  "protective" = "#90EE90",          
+  "very protective" = "#228B22", 
+  "most protective" = "#006400"       
+)
+
+
+ggplot(df_clean_filtered, 
+       aes(y = abortion_policies, 
+           x = maternal_mortality,
+           fill = abortion_policies)) +
+
+  geom_boxplot(width = 0.7, 
+               outlier.shape = NA,     
+               color = "black") +    
+
+  geom_vline(xintercept = us_average, 
+             linetype = "dashed", 
+             color = "#0066CC",        
+             size = 0.5) +
+
+  annotate("text", 
+           x = us_average, 
+           y = 0.5,                
+           label = "US National Average (23.2)",
+           color = "#0066CC",
+           angle = 90,
+           hjust = 0) +
+
+  scale_fill_manual(values = policy_colors) +
+
+  theme_minimal() +
+
+  labs(
+    title = "Distribution of Maternal Mortality Rates by Abortion Policy",
+    x = "Maternal Mortality Rate per 100,000 Live Births",
+    y = "Abortion Policy"
+  ) +
+
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 12, face = "bold"),
+    axis.title = element_text(size = 10),
+    axis.text = element_text(size = 9, color = "grey30"),
+    legend.position = "none",
+    panel.grid.major = element_line(color = "grey90"),
+    panel.grid.minor = element_blank(),
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.background = element_rect(fill = "white", color = NA)
+  ) +
+
+  scale_x_continuous(
+    limits = c(10, 40),
+    breaks = seq(10, 40, by = 5)
+  )
+
+```
+
+###
+
+Can I do some sort of ANOVA that does not require equal amounts in each group?
+
+###
 
 Missing visualization on this
 
 percent_increase_in_clinician_provided_abortions_since_2020
 
-```
+
