@@ -16,7 +16,7 @@ library(dplyr)
 ```
 
 ```{r}
-df <- read_csv("../data/clean_data/merged_data.csv")
+#df <- read_csv("../data/clean_data/merged_data.csv")
 #df <- read_csv("data/clean_data/merged_data.csv")
 # cat(colnames(df), sep = "\n")
 ```
