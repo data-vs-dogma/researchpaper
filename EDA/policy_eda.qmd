@@ -9,63 +9,284 @@ format:
 
 ```{r, warning=FALSE, message=FALSE}
 library(tidyverse)
-library(readr)
+library(tidyr)
+library(reshape2)
+library(usmap)
+library(dplyr)
 ```
 
 ```{r}
 df <- read_csv("../data/clean_data/merged_data.csv")
-head(df)
-cat(colnames(df), sep = "\n")
+#df <- read_csv("data/clean_data/merged_data.csv")
+# cat(colnames(df), sep = "\n")
 ```
-```{r}
-# Policy subset
-policy_data <- df %>%
-  select(State, abortion_policies, abortion_related_legislative_actions_introduced_2023, 
-         medicaid_expansion_status, total_abortion_ban, `X6_week_ban`, `X12_week_ban`,
-         `X15_week_ban`, `X18_to_23_week_ban`, `X24_to_26_week_ban`, no_gestational_ban,
-         state_constitution_excludes_abortion_rights, waiting_period_after_counseling, 
-         waiting_period_after_required_in_person_counseling, forced_ultrasound,
-         state_medicaid_coverage_ban, private_insurance_coverage_ban,
-         medication_abortion_in_person_requirement, mailing_abortion_pills_banned,
-         medically_unnecessary_clinic_regulations, parental_consent_required_for_minors_abortion,
-         parental_notice_required_for_a_minors_abortion, only_physicians_can_provide_abortions,
-         state_constitution_protects_abortion_rights, state_medicaid_funds_cover_abortion,
-         private_health_plans_required_to_cover_abortion, healthcare_professionals_besides_physicians_provide_abortions,
-         state_fund_for_abortion_care, protections_to_enter_a_clinic, shield_law_protecting_providers,
-         patient_reproductive_health_data_privacy)
 
-head(policy_data)
-```
+## Distribution of Abortion Ban Types by State
 
 ```{r}
-# Frequency counts and proportions for categorical variables
-policy_summary <- policy_data %>%
-  select(-abortion_policies) %>%  
-  summarise(across(everything(), ~ list(Count = table(.), Proportion = prop.table(table(.)))))
+ban_data_long <- df %>%
+  select(total_abortion_ban, `6_week_ban`, `12_week_ban`, `15_week_ban`, 
+         `18_to_23_week_ban`, `24_to_26_week_ban`, 'no_gestational_ban') %>%
+  pivot_longer(cols = everything(), names_to = "Policy", values_to = "Value")
 
-print(policy_summary)
+ban_data_yes <- ban_data_long %>%
+  filter(Value == 1)
 
-# total_abortion_ban
-table(policy_data$total_abortion_ban)
-prop.table(table(policy_data$total_abortion_ban))  # Proportion
+ggplot(ban_data_yes, aes(x = Policy, fill = Policy)) +
+  geom_bar(alpha = 0.8) +
+  labs(
+    title = "Distribution of Abortion Policy",
+    x = "Abortion Policy",
+    y = "Number of States",
+    fill = "Policy Type"
+  ) +
+  scale_fill_manual(values = c(
+    "12_week_ban" = "#a6bddb",
+    "15_week_ban" = "#74a9cf",
+    "18_to_23_week_ban" = "#3690c0",
+    "24_to_26_week_ban" = "#034e7b",
+    "6_week_ban" = "#0570b0",
+    "no_gestational_ban" = "#bdbdbd",
+    "total_abortion_ban" = "#4d4d4d"
+  )) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(hjust = 0.5)
+  )
+```
+
+
+```{r}
+# Map of Abortion Ban Types by State 
+
+df_map <- df %>%
+  rename(state = State) %>%  # Rename State to state
+  mutate(
+    ban_type = case_when(
+      `total_abortion_ban` == 1 ~ "Total Ban",  # Priority given to total ban
+      `6_week_ban` == 1 ~ "6 Week Ban",
+      `12_week_ban` == 1 ~ "12 Week Ban",
+      `15_week_ban` == 1 ~ "15 Week Ban",
+      `18_to_23_week_ban` == 1 ~ "18-23 Week Ban",
+      `24_to_26_week_ban` == 1 ~ "24-26 Week Ban",
+      `no_gestational_ban` == 1 ~ "No Gestational Ban",
+      TRUE ~ "None"
+    )
+  )
+
+plot_usmap(data = df_map, values = "ban_type", regions = "states") +
+  scale_fill_manual(
+    values = c(
+      "Total Ban" = "#4d4d4d",          # Neutral dark gray for total ban
+      "6 Week Ban" = "#a6bddb",         # Light blue for 6-week ban
+      "12 Week Ban" = "#74a9cf",        # Medium blue for 12-week ban
+      "15 Week Ban" = "#3690c0",        # Muted teal for 15-week ban
+      "18-23 Week Ban" = "#0570b0",     # Soft darker blue for 18-23 week ban
+      "24-26 Week Ban" = "#034e7b",     # Deep navy for 24-26 week ban
+      "No Gestational Ban" = "#bdbdbd", # Light gray for no gestational ban
+      "None" = "#f0f0f0"                # Pale gray for no ban
+    )
+  ) +
+  labs(
+    title = "Abortion Ban Types by State",
+    fill = "Abortion Ban Type"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "right",
+    plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
+    legend.title = element_text(size = 12),
+    legend.text = element_text(size = 10)
+  )
 
 ```
 
 ```{r}
-table(policy_data$total_abortion_ban)
+policy_columns <- c("total_abortion_ban", "6_week_ban", "12_week_ban", "15_week_ban", 
+                    "18_to_23_week_ban", "24_to_26_week_ban", "no_gestational_ban", 
+                    "state_constitution_excludes_abortion_rights", "waiting_period_after_counseling", 
+                    "waiting_period_after_required_in_person_counseling", "forced_ultrasound", 
+                    "state_medicaid_coverage_ban", "private_insurance_coverage_ban", 
+                    "medication_abortion_in_person_requirement", "mailing_abortion_pills_banned", 
+                    "medically_unnecessary_clinic_regulations", "parental_consent_required_for_minors_abortion", 
+                    "parental_notice_required_for_a_minors_abortion", "only_physicians_can_provide_abortions", 
+                    "state_constitution_protects_abortion_rights", "state_medicaid_funds_cover_abortion", 
+                    "private_health_plans_required_to_cover_abortion", "healthcare_professionals_besides_physicians_provide_abortions", 
+                    "state_fund_for_abortion_care", "protections_to_enter_a_clinic", "shield_law_protecting_providers", 
+                    "patient_reproductive_health_data_privacy")
 
-# Proportion of states with total abortion bans
-prop.table(table(policy_data$total_abortion_ban))
+# Sums the policy columns and gives a restrictiveness score based on how many abortion policies are implemented. 
 
-# Bar plot for categorical variables
-ggplot(policy_data, aes(x = as.factor(total_abortion_ban))) +
-  geom_bar(fill = "skyblue") +
-  labs(title = "Distribution of Total Abortion Bans", x = "Abortion Ban (1 = Yes, 0 = No)", y = "Count")
+df_restrictiveness <- df %>%
+  mutate(Restrictiveness_Score = rowSums(select(., all_of(policy_columns)), na.rm = TRUE)) %>%
+  select(State, Restrictiveness_Score) %>%
+  rename(state = State) # Rename to 'state' for usmap compatibility
+
+plot_usmap(data = df_restrictiveness, values = "Restrictiveness_Score", regions = "states") +
+  scale_fill_continuous(low = "lightblue", high = "darkblue", name = "Restrictiveness Score") +
+  labs(title = "State Restrictiveness Based on Abortion Policies") +
+  theme(legend.position = "right")
 ```
 
 ```{r}
+
 ```
 
 ```{r}
+protection_vars <- c("protections_to_enter_a_clinic", "shield_law_protecting_providers",
+                     "patient_reproductive_health_data_privacy")
+
+df %>%
+  select(State, all_of(protection_vars)) %>%
+  pivot_longer(cols = -State, names_to = "Protection_Law", values_to = "Implemented") %>%
+  filter(Implemented == 1) %>%
+  ggplot(aes(x = Protection_Law, fill = Protection_Law)) +
+  geom_bar() +
+  labs(title = "Protections and Access Laws Across States", 
+       x = "Protection Laws", y = "Count") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
 ```
 
+```{r}
+policy_counts <- df %>%
+  select(State, all_of(policy_columns)) %>%
+  pivot_longer(
+    cols = -State,
+    names_to = "Policy",
+    values_to = "Implemented"
+  ) %>%
+  filter(Implemented == 1) %>%
+  count(Policy, name = "Count")
+
+# 'policy_long` to retain the "Yes/No" implementation status
+policy_long <- df %>%
+  select(State, all_of(policy_columns)) %>%
+  pivot_longer(-State, names_to = "Policy", values_to = "Implemented") %>%
+  mutate(Implemented = ifelse(is.na(Implemented) | Implemented == 0, "No", "Yes"))
+
+ggplot(policy_counts, aes(x = reorder(Policy, -Count), y = Count, fill = Policy)) +
+  geom_bar(stat = "identity", alpha = 0.8) +
+  coord_flip() +
+  labs(
+    title = "Number of States Implementing Each Policy",
+    x = "Policy",
+    y = "Number of States"
+  ) +
+  theme_minimal() +
+  theme(axis.text.y = element_text(size = 10), legend.position = "none")
+
+```
+
+```{r}
+
+## This UpSet plot shows the overlaps and distribution of abortion-related policies across states.
+
+## 1. Top Bar Chart (Intersection Size):
+##    - Each bar represents the number of states implementing a specific combination of policies.
+##    - Dots below show the policies included in that combination.
+
+## 2. Left Bar Chart (Policy Totals):
+##    - Horizontal bars show how many states implement each individual policy.
+
+## 3. Matrix (Bottom):
+##    - Dots and connections indicate which policies are combined in each bar above.
+
+## Insights:
+## - Common policies: Tall horizontal bars (e.g., "state_medicaid_coverage_ban").
+## - Frequent combinations: Tall vertical bars with multiple connected dots.
+## - Unique or rare policies: Short horizontal bars or isolated dots.
+
+library(UpSetR)
+
+# Subset relevant columns for overlaps
+overlap_data <- df %>%
+  select(all_of(policy_columns)) %>%
+  mutate(across(everything(), ~ ifelse(is.na(.) | . == 0, 0, 1)))
+
+# Convert data to binary matrix for UpSetR
+upset_data <- as.data.frame(overlap_data)
+colnames(upset_data) <- gsub("_", " ", colnames(upset_data)) 
+
+upset(
+  upset_data,
+  sets = colnames(upset_data),
+  keep.order = TRUE,
+  order.by = "freq",
+  main.bar.color = "steelblue",
+  matrix.color = "tomato",
+  text.scale = c(2, 1.5, 1.5, 1.5, 1.5, 1), 
+  sets.x.label = "Number of States",
+  sets.bar.color = "gray40",
+  point.size = 3, 
+  line.size = 0.8, 
+  number.angles = 30 
+)
+
+```
+
+```{r}
+# Group states by Medicaid expansion and total abortion ban
+medicaid_policy <- df %>%
+  group_by(medicaid_expansion_status, total_abortion_ban) %>%
+  summarise(Count = n(), .groups = "drop") %>%
+  mutate(total_abortion_ban = ifelse(total_abortion_ban == 1, "Yes", "No"),
+         medicaid_expansion_status = ifelse(medicaid_expansion_status == 1, "Expanded", "Not Expanded"))
+
+# Plot
+ggplot(medicaid_policy, aes(x = medicaid_expansion_status, y = Count, fill = total_abortion_ban)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(
+    title = "Medicaid Expansion vs. Total Abortion Ban",
+    x = "Medicaid Expansion Status",
+    y = "Number of States",
+    fill = "Total Abortion Ban"
+  ) +
+  theme_minimal()
+
+```
+
+
+
+```{r}
+library(ggcorrplot)
+
+# Pairwise correlations
+correlation_matrix <- cor(select(df, all_of(policy_columns)), use = "pairwise.complete.obs")
+
+# Plot heatmap
+ggcorrplot(correlation_matrix, 
+           hc.order = TRUE, 
+           type = "lower", 
+           lab = TRUE, 
+           lab_size = 3, 
+           colors = c("tomato", "white", "steelblue"),
+           title = "Policy Correlations")
+
+```
+
+```{r}
+specific_interaction <- df %>%
+  group_by(forced_ultrasound, waiting_period_after_counseling) %>%
+  summarise(Count = n(), .groups = "drop")
+
+# Plot
+ggplot(specific_interaction, aes(x = factor(forced_ultrasound), y = Count, fill = factor(waiting_period_after_counseling))) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(
+    title = "Forced Ultrasound vs. Waiting Period After Counseling",
+    x = "Forced Ultrasound",
+    y = "Number of States",
+    fill = "Waiting Period After Counseling"
+  ) +
+  theme_minimal()
+
+```
+
+
+```{r}
+
+
+```
