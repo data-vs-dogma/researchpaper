@@ -4,7 +4,6 @@ author: "Courtney Green"
 format: 
   html:
     embed-resources: true
-    code-fold: true
 ---
 
 ```{r, warning=FALSE, message=FALSE}
@@ -13,25 +12,29 @@ library(tidyr)
 library(reshape2)
 library(usmap)
 library(dplyr)
+library(knitr)
+library(UpSetR)
+library(gt)
 ```
 
-```{r}
-df <- read_csv("../data/clean_data/merged_data.csv") # use if running in r studio
+```{r, message = FALSE}
+df <- read_csv("../data/clean_data/merged_dataset.csv") # use if running in r studio
 exceptions_data <- read_csv("../data/clean_data/exceptions_data.csv")
 
 #df <- read_csv("data/clean_data/merged_data.csv") # use if running in VSC
 #exceptions_data <- read_csv("data/clean_data/exceptions_data.csv")
 # cat(colnames(df), sep = "\n")
 
-df <- df %>%
-  rename(
-    `6_week_ban` = week_ban_6,
-    `12_week_ban` = week_ban_12,
-    `15_week_ban` = week_ban_15,
-    `18_to_23_week_ban` = week_ban_18_to_23,
-    `24_to_26_week_ban` = week_ban_24_to_26
-  )
-
+#df <- df  %>%
+ # filter(State != "US") %>% 
+  #rename(
+   # `6_week_ban` = week_ban_6,
+    #`12_week_ban` = week_ban_12,
+    #`15_week_ban` = week_ban_15,
+    #`18_to_23_week_ban` = week_ban_18_to_23,
+    #`24_to_26_week_ban` = week_ban_24_to_26
+  #)
+df <- df  %>% filter(State != "US") 
 exceptions_data <- exceptions_data[, colSums(!is.na(exceptions_data)) > 0]
 ```
 
@@ -170,23 +173,50 @@ ggplot(policy_counts, aes(x = reorder(Policy, -Count), y = Count, fill = Policy)
 ## Restrictive Abortion Policy Analysis 
 
 ```{r}
-# Sums the policy columns and gives a restrictiveness score based on how many abortion policies are implemented. 
+# Sums restrictive policy columns and gives a restrictiveness score based on how many policies are implemented. 
+
+restrictive_policy_columns <- c("total_abortion_ban", "6_week_ban", "12_week_ban", "15_week_ban", 
+                    "18_to_23_week_ban", "24_to_26_week_ban", "no_gestational_ban", 
+                    "state_constitution_excludes_abortion_rights", "waiting_period_after_counseling", 
+                    "waiting_period_after_required_in_person_counseling", "forced_ultrasound", 
+                    "state_medicaid_coverage_ban", "private_insurance_coverage_ban", 
+                    "medication_abortion_in_person_requirement", "mailing_abortion_pills_banned", 
+                    "medically_unnecessary_clinic_regulations", "parental_consent_required_for_minors_abortion", 
+                    "parental_notice_required_for_a_minors_abortion", "only_physicians_can_provide_abortions")
+
 df_restrictiveness <- df %>%
   mutate(Restrictiveness_Score = rowSums(select(., all_of(policy_columns)), na.rm = TRUE)) %>%
   select(State, Restrictiveness_Score) %>%
   rename(state = State) # Rename to 'state' for usmap compatibility
 
 plot_usmap(data = df_restrictiveness, values = "Restrictiveness_Score", regions = "states") +
-  scale_fill_continuous(low = "lightblue", high = "darkblue", name = "Restrictiveness Score") +
+  scale_fill_continuous(low = "lightpink", high = "darkred", name = "Restrictiveness Score") +
   labs(title = "State Restrictiveness Based on Abortion Policies") +   theme_minimal() +
   theme(legend.position = "right",plot.title = element_text(hjust = 0.5, size = 14),
   legend.title = element_text(size = 12), legend.text = element_text(size = 10))
 
 ```
 
+```{r, out.width="100%"}
+# View in Table and categorize 
+df_restrictiveness_table <- df_restrictiveness %>%
+  arrange(desc(Restrictiveness_Score)) %>%  # Sort by restrictiveness score (descending)
+  mutate(Rank = row_number())  # Add rank column
+
+df_restrictiveness_table <- df_restrictiveness_table %>%
+  mutate(Category = case_when(
+    Restrictiveness_Score >= 10 ~ "Most Restrictive",
+    Restrictiveness_Score >= 8 & Restrictiveness_Score <= 9 ~ "Very Restrictive",
+    Restrictiveness_Score >= 6 & Restrictiveness_Score <= 7 ~ "Moderately Restrictive",
+    Restrictiveness_Score <= 5 ~ "Least Restrictive"
+  ))
+
+gt(df_restrictiveness_table)
+```
+
+
 ```{r}
 #Exceptions by Bans Across States
-
 exceptions_data %>%
   pivot_longer(
     cols = c(life, health, rape_incest),
@@ -206,16 +236,11 @@ exceptions_data %>%
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-```{r}
-
-```
-
-
 
 ## Abortion Policy Protections Analysis 
 
 ```{r}
-# Protections and Access Laws 
+# State Map of Protections and Access Laws
 
 protection_vars <- c(
   "protections_to_enter_a_clinic", 
@@ -228,6 +253,33 @@ protection_vars <- c(
   "state_fund_for_abortion_care"
 )
 
+df_protectiveness <- df %>%
+  mutate(Protectiveness_Score = rowSums(select(., all_of(protection_vars)), na.rm = TRUE)) %>%
+  select(State, Protectiveness_Score) %>%
+  rename(state = State) # Rename to 'state' for usmap compatibility
+
+plot_usmap(data = df_protectiveness, values = "Protectiveness_Score", regions = "states") +
+  scale_fill_continuous(low = "lavender", high = "purple", name = "Protectiveness Score") +
+  labs(title = "State Protectiveness Based on Abortion Protection Laws") +   theme_minimal() +
+  theme(legend.position = "right",plot.title = element_text(hjust = 0.5, size = 14),
+  legend.title = element_text(size = 12), legend.text = element_text(size = 10))
+```
+```{r}
+df_protectiveness_table <- df_protectiveness %>%
+  arrange(desc(Protectiveness_Score)) %>%  # Sort by protectiveness score (descending)
+  mutate(Rank = row_number()) %>%        
+  mutate(Category = case_when(
+    Protectiveness_Score >= 7 ~ "Most Protective",
+    Protectiveness_Score >= 5 & Protectiveness_Score <= 6 ~ "Very Protective",
+    Protectiveness_Score >= 3 & Protectiveness_Score <= 4 ~ "Moderately Protective",
+    Protectiveness_Score == 0 ~ "Not Protective",  
+    Protectiveness_Score <= 2 ~ "Least Protective"
+  ))
+gt(df_protectiveness_table)
+```
+
+```{r}
+# Protections and Access Laws 
 df %>%
   select(State, all_of(protection_vars)) %>%
   pivot_longer(cols = -State, names_to = "Protection_Law", values_to = "Implemented") %>%
@@ -291,7 +343,36 @@ ggplot(ban_medicaid_data, aes(x = Ban_Type, fill = Medicaid_Expansion)) +
 ```{r}
 
 ```
+
 ## Advanced Analysis 
+
+```{r,out.width="100%"}
+# Exploring the relationship between Protectiveness and Restrictiveness by State 
+
+df_combined <- df_protectiveness_table %>%
+  inner_join(df_restrictiveness_table, by = "state", suffix = c("_Protectiveness", "_Restrictiveness"))
+
+# Select and reorder columns as specified
+df_combined <- df_combined %>%
+  select(state, 
+         Category_Protectiveness = Category_Protectiveness, 
+         Protectiveness_Score,
+         Category_Restrictiveness = Category_Restrictiveness, 
+         Restrictiveness_Score)
+gt(df_combined)
+
+```
+
+```{r}
+ggplot(df_combined, aes(x = Protectiveness_Score, y = Restrictiveness_Score)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +
+  labs(title = "Protectiveness vs. Restrictiveness",
+       x = "Protectiveness Score",
+       y = "Restrictiveness Score") +
+  theme_minimal()
+```
+
 
 ```{r, fig.width=10, fig.height=12, out.width="100%"}
 
@@ -312,7 +393,6 @@ ggplot(ban_medicaid_data, aes(x = Ban_Type, fill = Medicaid_Expansion)) +
 ## - Frequent combinations: Tall vertical bars with multiple connected dots.
 ## - Unique or rare policies: Short horizontal bars or isolated dots.
 
-library(UpSetR)
 
 # Subset relevant columns for overlaps
 overlap_data <- df  %>%
@@ -412,12 +492,5 @@ col_clustering <- hclust(dist(t(correlation_matrix)), method = "ward.D2")
 # Plot row dendrogram only
 plot(row_clustering, main = "Policy Clustering Dendrogram", 
      xlab = "", sub = "", cex = 0.8)
-
-```
-
-
-
-```{r}
-
 
 ```
