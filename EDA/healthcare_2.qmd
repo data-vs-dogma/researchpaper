@@ -468,6 +468,9 @@ print(no_care)
 
 ```
 
+###
+.5, not really a correlation.
+
 ```{r}
 
 medicaid_births <- create_policy_viz(df,
@@ -483,6 +486,9 @@ medicaid_births <- create_policy_viz(df,
 print(medicaid_births)
 
 ```
+
+###
+.49, do a different plot for this. Like what?
 
 ```{r}
 
@@ -500,6 +506,9 @@ print(depression)
 
 ```
 
+###
+.13, women are depressed everywhere.
+
 ```{r}
 
 postpartum_depression <- create_policy_viz(df,
@@ -515,6 +524,9 @@ postpartum_depression <- create_policy_viz(df,
 print(postpartum_depression)
 
 ```
+
+###
+Low correlation. .46. Women have post partum depression everywhere.
 
 ```{r}
 
@@ -532,6 +544,8 @@ print(depression_screening)
 
 ```
 
+.63, women in abortion ban states are given less screenings. 
+
 ```{r}
 
 violence <- create_policy_viz(df,
@@ -547,6 +561,9 @@ violence <- create_policy_viz(df,
 print(violence)
 
 ```
+
+###
+Women experience slightly more violence in most restrictive states. Maybe add a case study here or find another dataset.
 
 ```{r}
 
@@ -564,6 +581,9 @@ print(increase_in_abortions)
 
 ```
 
+###
+BAD PLOT, maybe do a map.
+
 ```{r}
 
 maternal_mortality <- create_policy_viz(df,
@@ -579,6 +599,9 @@ maternal_mortality <- create_policy_viz(df,
 print(maternal_mortality)
 
 ```
+
+###
+Higher maternal mortality, .844
 
 ```{r}
 
@@ -639,7 +662,6 @@ print(t_test_result)
 ###
 
 The small p-value (0.009633) suggests rejecting the null hypothesis at a 5% significance level, indicating a significant difference in OB/GYN proportions between the two groups.
-
 
 ```{r}
 
@@ -757,8 +779,8 @@ ggplot(df_filtered,
     "some restrictions/protections" = "#ffe857", 
     "protective" = "#b6ff83",           
     "very protective" = "#2ae81e",    
-    "most protective" = "#74ff6b",    
-    "US Average" = "#4dbd00"   
+    "most protective" = "#1e9400",    
+    "US Average" = "#0056df"   
   )) +
 
   theme_minimal() +
@@ -790,64 +812,9 @@ ggplot(df_filtered,
   )
 
 ```
-  
-```{r}
 
-df_filtered <- df %>%
-  filter(!is.na(`maternal_mortality_rates_2018_2022_per_100,000_live births`)) %>%
-  filter(State != "US" & State != "Ohio" & State != "Nevada") %>%
-  bind_rows(tibble(
-    State = "US Average",
-    `maternal_mortality_rates_2018_2022_per_100,000_live births` = 23.2,
-    abortion_policies = "US Average"
-  ))
-
-# Create the plot
-ggplot(df_filtered, 
-       aes(y = reorder(State, `maternal_mortality_rates_2018_2022_per_100,000_live births`), 
-           x = `maternal_mortality_rates_2018_2022_per_100,000_live births`,
-           fill = ifelse(State == "US Average", "US Average", abortion_policies))) +
-  geom_bar(stat = "identity", width = 0.7) +
-  geom_text(aes(label = sprintf("%.1f", `maternal_mortality_rates_2018_2022_per_100,000_live births`)),
-            hjust = -0.2,
-            size = 3) +
-  scale_fill_manual(values = c(
-    "most restrictive" = "#ff0000",     
-    "very restrictive" = "#ff0000",     
-    "restrictive" = "#ff0000",    
-    "some restrictions/protections" = "#ffe800", 
-    "protective" = "#4dbd00",           
-    "very protective" = "#4dbd00",    
-    "most protective" = "#4dbd00",    
-    "US Average" = "#006eff"   
-  )) +
-  theme_minimal() +
-  labs(
-    title = "Maternal Mortality Rates (2018-2022) per 100,000 Live Births by State",
-    x = "Maternal Mortality Rate per 100,000 Live Births",
-    y = "",
-    fill = "Abortion Policy"
-  ) +
-  theme(
-    plot.title = element_text(hjust = 0.5, size = 12, face = "bold"),
-    axis.title.x = element_text(size = 10),
-    axis.text.y = element_text(size = 8, color = "grey30"),
-    axis.text.x = element_text(size = 8),
-    legend.position = "right",
-    legend.title = element_text(size = 9),
-    legend.text = element_text(size = 8),
-    panel.grid.major.y = element_blank(),
-    panel.grid.minor = element_blank(),
-    plot.background = element_rect(fill = "white", color = NA),
-    panel.background = element_rect(fill = "white", color = NA)
-  ) +
-  scale_x_continuous(
-    limits = c(0, 45),
-    breaks = seq(0, 40, by = 10),
-    expand = expansion(mult = c(0, 0.1))
-  )
-
-```
+###
+Can I do some sort of ANOVA that does not require equal amounts in each group?
 
 ```{r}
 
@@ -909,13 +876,145 @@ ggplot(df_filtered,
 ```
 
 ###
+Separated only by protective and restrictive.
 
-Can I do some sort of ANOVA that does not require equal amounts in each group?
+```{r}
+
+install.packages("usmap")
+library(usmap)
+
+library()
+abortion_map_data <- df %>%
+  select(State, `percent_increase_in_clinician_provided_abortions_since_2020`) %>%
+  filter(!is.na(`percent_increase_in_clinician_provided_abortions_since_2020`)) %>%
+  mutate(
+    state = State,
+    change = `percent_increase_in_clinician_provided_abortions_since_2020`
+  ) 
+
+print("First few rows of our data:")
+head(abortion_map_data)
+
+plot_usmap(data = abortion_map_data, values = "change") +
+  scale_fill_gradient2(
+    name = "% Change",
+    low = "#ff6b6b",   
+    mid = "#ffffff",    
+    high = "#4dbd00",  
+    midpoint = 0,
+    na.value = "gray80"  
+  ) +
+  theme(
+    legend.position = "right",
+    plot.title = element_text(size = 14, hjust = 0.5, face = "bold")
+  ) +
+  labs(title = "Change in Clinician-Provided Abortions Since 2020 by State")
+
+```
 
 ###
+Cool, you can see it goes up near the abortion ban states.
 
-Missing visualization on this
+```{r}
 
-percent_increase_in_clinician_provided_abortions_since_2020
+library(corrplot)
 
+healthcare_metrics <- df %>%
+  select(
+    overall_health_ranking,
+    coverage_access_and_affordability,
+    health_care_quality_and_prevention,
+    health_outcomes,
+    women_18_44_who_went_without_care_because_of_cost.1
+  ) %>%
+  rename(
+    "Overall Health Ranking" = overall_health_ranking,
+    "Coverage & Access" = coverage_access_and_affordability,
+    "Healthcare Quality" = health_care_quality_and_prevention,
+    "Health Outcomes" = health_outcomes,
+    "Care Cost Barriers" = women_18_44_who_went_without_care_because_of_cost.1
+  )
 
+cor_matrix <- cor(healthcare_metrics, use = "complete.obs")
+
+corrplot(cor_matrix, 
+         method = "color",        
+         type = "upper",           
+         tl.col = "black",        
+         tl.srt = 45,            
+         addCoef.col = "black",    
+         number.cex = 0.7,       
+         col = colorRampPalette(c("#E41A1C", "#FFFFFF", "#4DAF4A"))(200),  
+         tl.cex = 0.7,            
+         cl.cex = 0.7,            
+         diag = FALSE,           
+         mar = c(0,0,1,0),        
+         title = "Healthcare Metrics Correlations",
+         family = "Arial",
+         bg = "white",
+         addgrid.col = "gray90")  
+
+title("Correlations Between Healthcare Metrics", 
+      line = -0.5, 
+      cex.main = 1.2, 
+      font.main = 2)
+
+```
+
+###
+Love this
+
+```{r}
+
+library(corrplot)
+
+healthcare_metrics <- df %>%
+  select(
+    overall_health_ranking,
+    coverage_access_and_affordability,
+    health_care_quality_and_prevention,
+    health_outcomes,
+    women_18_44_who_went_without_care_because_of_cost.1,
+    `percent_uninsured_women_ages 19_64`,
+    `teen_birth_rate_per_1,000_population_ages_15_19_2022.1`,
+    `maternal_mortality_rates_2018_2022_per_100,000_live births`
+  ) %>%
+  rename(
+    "Overall Health Ranking" = overall_health_ranking,
+    "Coverage & Access" = coverage_access_and_affordability,
+    "Healthcare Quality" = health_care_quality_and_prevention,
+    "Health Outcomes" = health_outcomes,
+    "Care Cost Barriers" = women_18_44_who_went_without_care_because_of_cost.1,
+    "Uninsured Women %" = `percent_uninsured_women_ages 19_64`,
+    "Teen Birth Rate" = `teen_birth_rate_per_1,000_population_ages_15_19_2022.1`,
+    "Maternal Mortality" = `maternal_mortality_rates_2018_2022_per_100,000_live births`
+  )
+
+cor_matrix <- cor(healthcare_metrics, use = "complete.obs")
+
+corrplot(cor_matrix, 
+         method = "color",        
+         type = "upper",           
+         tl.col = "black",        
+         tl.srt = 45,            
+         addCoef.col = "black",    
+         number.cex = 0.7,       
+         col = colorRampPalette(c("#E41A1C", "#FFFFFF", "#4DAF4A"))(200),  
+         tl.cex = 0.7,            
+         cl.cex = 0.7,            
+         diag = FALSE,           
+         mar = c(0,0,1,0),        
+         title = "Healthcare Metrics Correlations",
+         family = "Arial",
+         bg = "white",
+         addgrid.col = "gray90")  
+
+title("Correlations Between Healthcare Metrics", 
+      line = -0.5, 
+      cex.main = 1.2, 
+      font.main = 2)
+
+```
+
+###
+Can add more, have to decide which.
