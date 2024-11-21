@@ -461,12 +461,6 @@ ggplot(df_combined, aes(x = Protectiveness_Score, y = Restrictiveness_Score)) +
 lm_model_reversed <- lm(Protectiveness_Score ~ Restrictiveness_Score, data = df_combined)
 summary(lm_model_reversed)
 ```
-* The model shows a statistically significant negative relationship between Restrictiveness_Score and Protectiveness_Score (β=−0.3555, p=0.0263). This indicates that as states become more restrictive in abortion policies, they tend to have fewer protective laws in place.
-
-* The R2value is 0.07828, meaning approximately 7.8% of the variance in protectiveness is explained by restrictiveness. While this shows a weak predictive power, it still highlights an inverse correlation worth exploring further.
-
-* The significant negative coefficient suggests a potential trade-off between restrictiveness and protectiveness in state policies, reinforcing the need to examine how restrictive policies may impede protective measures or reflect policy prioritization in states.
-
 
 ```{r, fig.width=10, fig.height=12, out.width="100%"}
 
@@ -562,22 +556,6 @@ top_positive %>%
   tab_options(
     table.width = pct(100)
   )
-```
-
-```{r,  fig.width=12, fig.height=12, out.width="100%"}
-# Hierarchical clustering
-pheatmap(correlation_matrix,
-         clustering_distance_rows = "euclidean",
-         clustering_distance_cols = "euclidean",
-         clustering_method = "ward.D2",
-         main = "Policy Clustering Based on Correlations",
-         fontsize_row = 8,          
-         fontsize_col = 8,          
-         angle_col = 45,            
-         treeheight_row = 50,       
-         treeheight_col = 50,       
-         legend = TRUE)             
-
 ```
 
 ```{r,  fig.width=12, fig.height=12, out.width="100%"}
