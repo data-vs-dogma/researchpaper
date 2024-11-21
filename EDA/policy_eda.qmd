@@ -225,20 +225,12 @@ gt(df_restrictiveness_table)
 ```{r}
 #Restrictive Variables by Gestational Ban Type 
 
-restrictive_policy_columns2 <- c(
-  "state_constitution_excludes_abortion_rights", 
-  "waiting_period_after_counseling", 
-  "waiting_period_after_required_in_person_counseling", 
-  "forced_ultrasound", 
-  "state_medicaid_coverage_ban", 
-  "private_insurance_coverage_ban", 
-  "medication_abortion_in_person_requirement", 
-  "mailing_abortion_pills_banned", 
-  "medically_unnecessary_clinic_regulations", 
-  "parental_consent_required_for_minors_abortion", 
-  "parental_notice_required_for_a_minors_abortion", 
-  "only_physicians_can_provide_abortions"
-)
+restrictive_policy_columns <- c("state_constitution_excludes_abortion_rights", "waiting_period_after_counseling",
+                    "waiting_period_after_required_in_person_counseling", "forced_ultrasound", 
+                    "state_medicaid_coverage_ban", "private_insurance_coverage_ban", 
+                    "medication_abortion_in_person_requirement", "mailing_abortion_pills_banned", 
+                    "medically_unnecessary_clinic_regulations", "parental_consent_required_for_minors_abortion", 
+                    "parental_notice_required_for_a_minors_abortion", "only_physicians_can_provide_abortions")
 
 gestational_ban_vars <- c(
   "6_week_ban",
@@ -251,31 +243,31 @@ gestational_ban_vars <- c(
 )
 
 # Select only the required columns from df
-# plot_data_restrictions <- df %>%
-  #select(State, all_of(restrictive_policy_columns), all_of(gestational_ban_vars)) %>%
-  #pivot_longer(
-    #cols = matches("^\\d+_week_ban$|gestational"), # Matches columns using regex if exact names fail
-    #names_to = "Gestational_Ban",
-    #values_to = "Ban_Implemented"
-  #) %>%
-  #pivot_longer(
-    #cols = all_of(restrictive_policy_columns),
-    #names_to = "Restrictive_Variable",
-    #values_to = "Implemented"
-  #) %>%
-  #filter(Implemented == 1 & Ban_Implemented == 1)
+plot_data_restrictions <- df %>%
+  select(State,all_of(restrictive_policy_columns), all_of(gestational_ban_vars)) %>%
+  pivot_longer(
+    cols = all_of(gestational_ban_vars),
+    names_to = "Gestational_Ban",
+    values_to = "Ban_Implemented"
+  ) %>%
+  pivot_longer(
+    cols = all_of(restrictive_policy_columns),
+    names_to = "Restrictive_Variable",
+    values_to = "Implemented"
+  ) %>%
+  filter(Implemented == 1 & Ban_Implemented == 1)  # Include rows where both are implemented
 
 # Create the stacked bar plot
-#ggplot(plot_data_restrictions, aes(x = factor(Gestational_Ban), fill = Restrictive_Variable)) +
-  #geom_bar() +  # Default is stacked
-  #labs(
-    #title = "Restrictive Variables by Gestational Ban Type",
-    #x = "Gestational Ban Type",
-    #y = "Number of States",
-    #fill = "Restrictive Variable"
-  #) +
-  #theme_minimal() +
-  #theme(axis.text.x = element_text(angle = 45, hjust = 1))
+ggplot(plot_data_restrictions, aes(x = factor(Gestational_Ban), fill = Restrictive_Variable)) +
+  geom_bar() +  # Default is stacked
+  labs(
+    title = "Restrictive Variables by Gestational Ban Type",
+    x = "Gestational Ban Type",
+    y = "Number of States",
+    fill = "Restrictive Variable"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
 
@@ -368,7 +360,7 @@ df %>%
 ```{r}
 # Protection Variables by Gestational Ban Type 
 plot_data <- df %>%
-  select(state, all_of(protection_vars), all_of(gestational_ban_vars)) %>%
+  select(State, all_of(protection_vars), all_of(gestational_ban_vars)) %>%
   pivot_longer(
     cols = all_of(protection_vars),
     names_to = "Protection_Variable",
