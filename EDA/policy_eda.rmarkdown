@@ -43,7 +43,11 @@ df <- df  %>% filter(State != "US")
 exceptions_data <- exceptions_data[, colSums(!is.na(exceptions_data)) > 0]
 ```
 
+
+
 ## Policy Distribution
+
+
 
 ```{r}
 #Distribution of Abortion Policy by Gestational Ban
@@ -79,7 +83,6 @@ ggplot(ban_data_yes, aes(x = Policy, fill = Policy)) +
     plot.title = element_text(hjust = 0.5)
   )
 ```
-
 
 ```{r}
 # Map of Gestational Abortion Ban Types by State 
@@ -125,6 +128,7 @@ plot_usmap(data = df_map, values = "ban_type", regions = "states") +
   )
 
 ```
+
 ```{r, fig.width=10, fig.height=8, out.width="100%"}
 # Number of States Implementing Each Abortion Related Policy
 
@@ -175,7 +179,11 @@ ggplot(policy_counts, aes(x = reorder(Policy, -Count), y = Count, fill = Policy)
 
 ```
 
+
+
 ## Restrictive Abortion Policy Analysis 
+
+
 
 ```{r}
 # Sums restrictive policy columns and gives a restrictiveness score based on how many policies are implemented. 
@@ -278,7 +286,6 @@ gestational_ban_vars <- c(
   #theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-
 ```{r}
 #Exceptions by Bans Across States
 
@@ -301,7 +308,11 @@ exceptions_data %>%
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
+
+
 ## Abortion Policy Protections Analysis 
+
+
 
 ```{r}
 # State Map of Protections and Access Laws
@@ -331,6 +342,7 @@ plot_usmap(data = df_protectiveness, values = "Protectiveness_Score", regions = 
         legend.title = element_text(size = 12), 
         legend.text = element_text(size = 10))
 ```
+
 ```{r}
 df_protectiveness_table <- df_protectiveness %>%
   arrange(desc(Protectiveness_Score)) %>%  # Sort by protectiveness score (descending)
@@ -365,6 +377,7 @@ df %>%
   )
 
 ```
+
 ```{r}
 # Protection Variables by Gestational Ban Type 
 plot_data <- df %>%
@@ -393,7 +406,6 @@ ggplot(plot_data, aes(x = factor(Gestational_Ban), fill = Protection_Variable)) 
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
-
 
 ```{r}
 ban_medicaid_data <- df  %>%
@@ -435,7 +447,11 @@ ggplot(ban_medicaid_data, aes(x = Ban_Type, fill = Medicaid_Expansion)) +
 
 ```
 
+
+
 ## Advanced Analysis 
+
+
 
 ```{r,out.width="100%"}
 # Exploring the relationship between Protectiveness and Restrictiveness by State 
@@ -463,17 +479,20 @@ ggplot(df_combined, aes(x = Protectiveness_Score, y = Restrictiveness_Score)) +
   theme_minimal()
 ```
 
-
 ```{r}
 # linear regression model where the Protectiveness_Score is being predicted by the Restrictiveness_Score
 lm_model_reversed <- lm(Protectiveness_Score ~ Restrictiveness_Score, data = df_combined)
 summary(lm_model_reversed)
 ```
+
+
 * The model shows a statistically significant negative relationship between Restrictiveness_Score and Protectiveness_Score (β=−0.3555, p=0.0263). This indicates that as states become more restrictive in abortion policies, they tend to have fewer protective laws in place.
 
 * The R2value is 0.07828, meaning approximately 7.8% of the variance in protectiveness is explained by restrictiveness. While this shows a weak predictive power, it still highlights an inverse correlation worth exploring further.
 
 * The significant negative coefficient suggests a potential trade-off between restrictiveness and protectiveness in state policies, reinforcing the need to examine how restrictive policies may impede protective measures or reflect policy prioritization in states.
+
+
 
 
 ```{r, fig.width=10, fig.height=12, out.width="100%"}
@@ -539,7 +558,6 @@ ggcorrplot(correlation_matrix,
 
 ```
 
-
 ```{r,out.width="100%"}
 correlation_df <- as.data.frame(as.table(correlation_matrix)) %>%
   filter(Var1 != Var2)  # Remove self-correlations
@@ -597,3 +615,4 @@ plot(row_clustering, main = "Policy Clustering Dendrogram",
      xlab = "", sub = "", cex = 0.8)
 
 ```
+
