@@ -15,25 +15,29 @@ library(dplyr)
 library(knitr)
 library(UpSetR)
 library(gt)
+library(ggcorrplot)
+library(pheatmap)
+
 ```
 
 ```{r, message = FALSE}
-df <- read_csv("../data/clean_data/merged_dataset.csv") # use if running in r studio
+df <- read_csv("../data/clean_data/merged_data.csv") # use if running in r studio
 exceptions_data <- read_csv("../data/clean_data/exceptions_data.csv")
 
 #df <- read_csv("data/clean_data/merged_data.csv") # use if running in VSC
 #exceptions_data <- read_csv("data/clean_data/exceptions_data.csv")
 # cat(colnames(df), sep = "\n")
 
-#df <- df  %>%
- # filter(State != "US") %>% 
-  #rename(
-   # `6_week_ban` = week_ban_6,
-    #`12_week_ban` = week_ban_12,
-    #`15_week_ban` = week_ban_15,
-    #`18_to_23_week_ban` = week_ban_18_to_23,
-    #`24_to_26_week_ban` = week_ban_24_to_26
-  #)
+df <- df %>%
+  filter(State != "US") %>% 
+  rename(
+    `6_week_ban` = week_ban_6,
+    `12_week_ban` = week_ban_12,
+    `15_week_ban` = week_ban_15,
+    `18_to_23_week_ban` = week_ban_18_to_23,
+    `24_to_26_week_ban` = week_ban_24_to_26
+  )
+  
 df <- df  %>% filter(State != "US") 
 exceptions_data <- exceptions_data[, colSums(!is.na(exceptions_data)) > 0]
 ```
@@ -214,9 +218,65 @@ df_restrictiveness_table <- df_restrictiveness_table %>%
 gt(df_restrictiveness_table)
 ```
 
+```{r}
+#Restrictive Variables by Gestational Ban Type 
+
+restrictive_policy_columns2 <- c(
+  "state_constitution_excludes_abortion_rights", 
+  "waiting_period_after_counseling", 
+  "waiting_period_after_required_in_person_counseling", 
+  "forced_ultrasound", 
+  "state_medicaid_coverage_ban", 
+  "private_insurance_coverage_ban", 
+  "medication_abortion_in_person_requirement", 
+  "mailing_abortion_pills_banned", 
+  "medically_unnecessary_clinic_regulations", 
+  "parental_consent_required_for_minors_abortion", 
+  "parental_notice_required_for_a_minors_abortion", 
+  "only_physicians_can_provide_abortions"
+)
+
+gestational_ban_vars <- c(
+  "6_week_ban",
+  "12_week_ban",
+  "18_to_23_week_ban",
+  "24_to_26_week_ban", 
+  "total_abortion_ban", 
+  "no_gestational_ban"
+)
+
+# Select only the required columns from df
+plot_data_restrictions <- df %>%
+  select(state, all_of(restrictive_policy_columns2), all_of(gestational_ban_vars)) %>%
+  pivot_longer(
+    cols = all_of(restrictive_policy_columns),
+    names_to = "Restrictive_Variable",
+    values_to = "Implemented"
+  ) %>%
+  pivot_longer(
+    cols = all_of(gestational_ban_vars),
+    names_to = "Gestational_Ban",
+    values_to = "Ban_Implemented"
+  ) %>%
+  filter(Implemented == 1 & Ban_Implemented == 1)  # Include rows where both are implemented
+
+# Create the stacked bar plot
+ggplot(plot_data_restrictions, aes(x = factor(Gestational_Ban), fill = Restrictive_Variable)) +
+  geom_bar() +  # Default is stacked
+  labs(
+    title = "Restrictive Variables by Gestational Ban Type",
+    x = "Gestational Ban Type",
+    y = "Number of States",
+    fill = "Restrictive Variable"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
 
 ```{r}
 #Exceptions by Bans Across States
+
 exceptions_data %>%
   pivot_longer(
     cols = c(life, health, rape_incest),
@@ -236,7 +296,6 @@ exceptions_data %>%
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-
 ## Abortion Policy Protections Analysis 
 
 ```{r}
@@ -250,7 +309,7 @@ protection_vars <- c(
   "state_medicaid_funds_cover_abortion",
   "private_health_plans_required_to_cover_abortion",
   "healthcare_professionals_besides_physicians_provide_abortions",
-  "state_fund_for_abortion_care"
+  "state_fund_for_abortion_care","state_requires_coverage_of_prescription_contraception"
 )
 
 df_protectiveness <- df %>%
@@ -298,6 +357,34 @@ df %>%
   )
 
 ```
+```{r}
+# Protection Variables by Gestational Ban Type 
+plot_data <- df %>%
+  select(state, all_of(protection_vars), all_of(gestational_ban_vars)) %>%
+  pivot_longer(
+    cols = all_of(protection_vars),
+    names_to = "Protection_Variable",
+    values_to = "Implemented"
+  ) %>%
+  pivot_longer(
+    cols = all_of(gestational_ban_vars),
+    names_to = "Gestational_Ban",
+    values_to = "Ban_Implemented"
+  ) %>%
+  filter(Implemented == 1 & Ban_Implemented == 1)  # Include rows where both are implemented
+
+ggplot(plot_data, aes(x = factor(Gestational_Ban), fill = Protection_Variable)) +
+  geom_bar() +  
+  labs(
+    title = "Protection Variables by Gestational Ban Type",
+    x = "Gestational Ban Type",
+    y = "Number of States",
+    fill = "Protection Variable"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
 
 
 ```{r}
@@ -319,6 +406,7 @@ ban_medicaid_data <- df  %>%
       TRUE ~ NA_character_
     )
   )
+
 # Plot Medicaid Expansion by Ban Type
 ggplot(ban_medicaid_data, aes(x = Ban_Type, fill = Medicaid_Expansion)) +
   geom_bar(position = "dodge", alpha = 0.8) +
@@ -339,11 +427,6 @@ ggplot(ban_medicaid_data, aes(x = Ban_Type, fill = Medicaid_Expansion)) +
 
 ```
 
-
-```{r}
-
-```
-
 ## Advanced Analysis 
 
 ```{r,out.width="100%"}
@@ -352,7 +435,6 @@ ggplot(ban_medicaid_data, aes(x = Ban_Type, fill = Medicaid_Expansion)) +
 df_combined <- df_protectiveness_table %>%
   inner_join(df_restrictiveness_table, by = "state", suffix = c("_Protectiveness", "_Restrictiveness"))
 
-# Select and reorder columns as specified
 df_combined <- df_combined %>%
   select(state, 
          Category_Protectiveness = Category_Protectiveness, 
@@ -372,6 +454,18 @@ ggplot(df_combined, aes(x = Protectiveness_Score, y = Restrictiveness_Score)) +
        y = "Restrictiveness Score") +
   theme_minimal()
 ```
+
+
+```{r}
+# linear regression model where the Protectiveness_Score is being predicted by the Restrictiveness_Score
+lm_model_reversed <- lm(Protectiveness_Score ~ Restrictiveness_Score, data = df_combined)
+summary(lm_model_reversed)
+```
+* The model shows a statistically significant negative relationship between Restrictiveness_Score and Protectiveness_Score (β=−0.3555, p=0.0263). This indicates that as states become more restrictive in abortion policies, they tend to have fewer protective laws in place.
+
+* The R2value is 0.07828, meaning approximately 7.8% of the variance in protectiveness is explained by restrictiveness. While this shows a weak predictive power, it still highlights an inverse correlation worth exploring further.
+
+* The significant negative coefficient suggests a potential trade-off between restrictiveness and protectiveness in state policies, reinforcing the need to examine how restrictive policies may impede protective measures or reflect policy prioritization in states.
 
 
 ```{r, fig.width=10, fig.height=12, out.width="100%"}
@@ -439,37 +533,38 @@ ggcorrplot(correlation_matrix,
 
 
 ```{r,out.width="100%"}
-# Top Positive and Negative Correlations
+correlation_df <- as.data.frame(as.table(correlation_matrix)) %>%
+  filter(Var1 != Var2)  # Remove self-correlations
 
-correlation_df <- as.data.frame(as.table(correlation_matrix))
-
-# Remove self-correlations (diagonal elements where Var1 == Var2)
-correlation_df <- correlation_df %>% 
-  filter(Var1 != Var2)
-
-# Find the top 5 most positive correlations
+# Top 10 positive correlations
 top_positive <- correlation_df %>%
   arrange(desc(Freq)) %>%
-  head(5)
+  head(10) %>%
+  mutate(Label = "Positive Correlation")
 
-print("Top 5 Positive Correlations:")
-print(top_positive %>% 
-        mutate(Label = "Positive Correlation"))
-
-# Find the top 5 most negative correlations
-top_negative <- correlation_df %>%
-  arrange(Freq) %>%
-  head(5)
-
-print("Top 5 Negative Correlations:")
-print(top_negative %>% 
-        mutate(Label = "Negative Correlation"))
-
+top_positive %>%
+  select(Label, Var1, Var2, Freq) %>%
+  rename(
+    "Correlation Type" = Label,
+    "Variable 1" = Var1,
+    "Variable 2" = Var2,
+    "Correlation Coefficient" = Freq
+  ) %>%
+  gt() %>%
+  tab_header(
+    title = "Top 10 Positive Correlations",
+    subtitle = "Correlation coefficients between policy variables"
+  ) %>%
+  fmt_number(
+    columns = vars(`Correlation Coefficient`),
+    decimals = 3
+  ) %>%
+  tab_options(
+    table.width = pct(100)
+  )
 ```
 
 ```{r,  fig.width=12, fig.height=12, out.width="100%"}
-library(pheatmap)
-
 # Hierarchical clustering
 pheatmap(correlation_matrix,
          clustering_distance_rows = "euclidean",
