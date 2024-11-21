@@ -146,6 +146,21 @@ ggplot(df, aes(x = infant_mortality_2022, y = parental_leave_mandatory)) +
 
 ```
 
+```{r}
+# Perform a one-sided t-test
+t_test_result <- t.test(
+  infant_mortality_2022 ~ parental_leave_mandatory, 
+  data = df, 
+  alternative = "greater",  # One-sided test: group 1 > group 0
+  var.equal = TRUE          # Assuming equal variances; change to FALSE if unsure
+)
+
+# Print the t-test result
+print(t_test_result)
+
+```
+> The one-sided t-test's p-value of 0.0001369 suggests that we have evidence to believe that the true infant mortality rate in states with parental leave mandate policy is lower than states that do not have any policy mandating parental leave. 
+
 
 Parental leave policy x Infant mortality rates
 ```{r}
