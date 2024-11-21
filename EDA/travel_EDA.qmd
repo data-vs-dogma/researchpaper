@@ -1,0 +1,255 @@
+---
+title: "Travel Data EDA"
+author: “Josh Lin”
+format: 
+  html:
+    embed-resources: true
+---
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(maps)
+library(networkD3)
+library(ggalluvial)
+library(htmltools)
+```
+
+```{r}
+policy_travel <- read.csv("../data/clean_data/policy_travel_jlin.csv")
+policy_travel$X <- NULL
+
+unique(policy_travel$abortion_policies)
+```
+
+```{r}
+# Define abortion policy levels in order
+policy_levels <- c(
+    "most protective", "very protective", "protective",
+    "some restrictions/protections", "restrictive",
+    "very restrictive", "most restrictive"
+)
+
+# Standardize abortion policies as a factor with pre-defined levels
+policy_travel <- policy_travel %>%
+    mutate(
+        abortion_policies = factor(abortion_policies, levels = policy_levels)
+    )
+
+# Validate if all policy levels are present
+if (any(is.na(policy_travel$abortion_policies))) {
+    warning("Some 'abortion_policies' values do not match the expected levels.")
+}
+
+# Count the number of states in each policy category
+policy_distribution <- policy_travel %>%
+    count(abortion_policies, name = "State_Count") %>%
+    arrange(desc(State_Count)) %>% # Order by descending state count
+    mutate(abortion_policies = factor(abortion_policies, levels = abortion_policies)) # Reorder factor levels
+
+# Plot the bar chart using lightblue to red gradient
+ggplot(policy_distribution, aes(x = abortion_policies, y = State_Count, fill = abortion_policies)) +
+    geom_bar(stat = "identity", color = "black", width = 0.7) +
+    scale_fill_manual(
+        values = c(
+            "most protective" = "lightblue",
+            "very protective" = "violet",
+            "protective" = "magenta",
+            "some restrictions/protections" = "blue",
+            "restrictive" = "violet",
+            "very restrictive" = "deepskyblue",
+            "most restrictive" = "red"
+        )
+    ) +
+    labs(
+        title = "Abortion Policies Across U.S. States (2023)",
+        subtitle = "States categorized by level of policy restrictiveness",
+        x = "Abortion Policy Level",
+        y = "Number of States",
+        fill = "Policy Level"
+    ) +
+    theme_minimal() +
+    theme(
+        plot.title = element_text(size = 14, face = "bold", hjust = 0.5), # Smaller title
+        plot.subtitle = element_text(size = 11, hjust = 0.5), # Smaller subtitle
+        axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "none"
+    ) +
+    coord_flip() # Flip the coordinates for better readability
+```
+
+```{r}
+# Standardize the state names (convert to lowercase for matching)
+policy_travel <- policy_travel %>%
+    mutate(State = tolower(State))
+
+policy_travel <- policy_travel %>%
+    mutate(State = tolower(State))
+
+# Create a numerical mapping for all the policy levels
+policy_levels <- c(
+    "most protective",
+    "very protective",
+    "protective",
+    "some restrictions/protections",
+    "restrictive",
+    "very restrictive",
+    "most restrictive"
+)
+
+# Map policy levels to a numeric scale
+policy_travel <- policy_travel %>%
+    mutate(policy_score = factor(abortion_policies, levels = policy_levels, labels = 1:length(policy_levels))) %>%
+    mutate(policy_score = as.numeric(as.character(policy_score)))
+
+# Load map data for the United States
+states_map <- map_data("state")
+
+# Merge the dataset with the map data
+map_data <- states_map %>%
+    left_join(policy_travel, by = c("region" = "State"))
+
+ggplot(map_data, aes(long, lat, group = group, fill = policy_score)) +
+    geom_polygon(color = "black", size = 0.3) +
+    coord_fixed(1.3) +
+    theme_minimal() +
+    scale_fill_gradientn(
+        colors = c("lightblue", "skyblue", "violet", "magenta", "red"),
+        breaks = c(1, 4, 7), # Fewer labels: First, Middle, and Last
+        labels = c("Most (+)", "Some (+/-)", "Most (-)"), # Simplified labels
+        na.value = "gray80",
+        guide = guide_colorbar(
+            barwidth = 15,
+            barheight = 1,
+            title.position = "top",
+            title.hjust = 0.5 # Center the title
+        )
+    ) +
+    labs(
+        title = "Abortion Policies by State (USA) 2023",
+        subtitle = "States categorized by level of restrictiveness",
+        fill = "Policy Restrictiveness"
+    ) +
+    theme(
+        plot.title = element_text(size = 18, face = "bold", hjust = 0.5),
+        plot.subtitle = element_text(size = 12, hjust = 0.5),
+        legend.title = element_text(size = 12, hjust = 0.5),
+        legend.text = element_text(size = 10, angle = 45, vjust = 1, hjust = 1), # Rotate labels to reduce clutter
+        legend.position = "bottom",
+        axis.title = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid = element_blank()
+    )
+```
+
+```{r}
+# Standardize the state names for compatibility with map data
+policy_travel <- policy_travel %>%
+    mutate(State = tolower(State))
+
+# Calculate total inbound travel for each state
+policy_travel <- policy_travel %>%
+    rowwise() %>%
+    mutate(total_inbound = sum(across(ends_with("_residence_travelled_to_for_abortion")), na.rm = TRUE)) %>%
+    ungroup()
+
+# Load U.S. states map data
+states_map <- map_data("state")
+
+# Merge map data with the travel data
+map_data <- states_map %>%
+    left_join(policy_travel, by = c("region" = "State"))
+
+# Plot the choropleth map
+ggplot(map_data, aes(long, lat, group = group, fill = total_inbound)) +
+    geom_polygon(color = "black", size = 0.2) +
+    coord_fixed(1.3) +
+    scale_fill_gradientn(
+        colors = c("lightyellow", "orange", "red"),
+        na.value = "gray80",
+        name = "Inbound Travel"
+    ) +
+    labs(
+        title = "Inbound Abortion Travel by State (2023)",
+        subtitle = "Number of individuals traveling to each state for abortion services"
+    ) +
+    theme_minimal() +
+    theme(
+        plot.title = element_text(size = 14, face = "bold", hjust = 0.5), # Smaller size and centered
+        plot.subtitle = element_text(size = 12, hjust = 0.5),
+        legend.position = "right",
+        axis.title = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid = element_blank()
+    )
+
+```
+
+```{r}
+# Step 1: Extract travel data columns
+# Select relevant columns: State and destinations for abortion travel
+travel_data <- policy_travel %>%
+    select(State, ends_with("_residence_travelled_to_for_abortion")) %>%
+    rename_with(
+        ~ sub("_residence_travelled_to_for_abortion", "", .),
+        ends_with("_residence_travelled_to_for_abortion")
+    )
+
+# Step 2: Reshape data for Sankey plot
+# Convert wide format to long format and flip Source and Target
+flow_data <- travel_data %>%
+    pivot_longer(-State, names_to = "Source", values_to = "Flow") %>% # Treat "State" as Target initially
+    filter(Flow > 0) %>% # Remove zero flows
+    rename(Target = State) # Flip Source and Target
+
+# Step 3: Exclude in-state travel
+# Remove rows where the Source and Target are the same
+flow_data <- flow_data %>%
+    filter(Source != Target)
+
+# Step 4: Prepare nodes list
+# Ensure all unique states (sources and targets) are represented as nodes
+unique_states <- unique(c(flow_data$Source, flow_data$Target))
+nodes <- data.frame(name = unique_states)
+
+# Step 5: Map nodes to indices
+# Add numeric indices for Source and Target nodes
+flow_data <- flow_data %>%
+    mutate(
+        SourceID = match(Source, nodes$name) - 1, # Convert to zero-based index
+        TargetID = match(Target, nodes$name) - 1
+    )
+
+# Step 6: Generate the flipped Sankey plot
+# Create an interactive Sankey diagram using sankeyNetwork
+sankey_plot <- sankeyNetwork(
+    Links = flow_data,
+    Nodes = nodes,
+    Source = "SourceID",
+    Target = "TargetID",
+    Value = "Flow",
+    NodeID = "name",
+    units = "People", # Indicate units of measure
+    fontSize = 12, # Adjust font size
+    nodeWidth = 10, # Set node width
+    nodePadding = 10, # Add padding between nodes
+    height = 800, # Adjust plot height
+    width = 800 # Adjust plot width
+)
+
+# Display the Sankey plot
+# sankey_plot
+
+# Title for the plot
+title <- tags$h2("Visualization of Abortion Travel Flows Across States (2023)",
+    style = "text-align: center; font-family: Arial; margin-bottom: 20px; font-size:17px;"
+)
+
+# Combine the title with the Sankey plot
+html_output <- tagList(title, sankey_plot)
+
+# Display the output
+html_output
+```
