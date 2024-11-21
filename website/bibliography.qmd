@@ -1,0 +1,7 @@
+---
+title: "Bibliography"
+bibliography: references.bib  # Ensure the file path is correct
+nocite: |
+  @*  
+csl: apa.csl 
+---

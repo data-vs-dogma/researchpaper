@@ -27,7 +27,7 @@ website:
             text: Interpretation 1
       - href: the_data.qmd
         text: Overview of Data Sources
-      - href: bibliography/bibliography.qmd
+      - href: bibliography.qmd
         text: Bibliography
 
 
