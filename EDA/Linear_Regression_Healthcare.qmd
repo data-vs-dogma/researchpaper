@@ -1,0 +1,488 @@
+---
+title: "Healthcare Linear Regression"
+author: “Kristin Lloyd”
+format: 
+  html:
+    embed-resources: true
+    code-fold: true
+---
+
+```{r}
+
+library(readr)
+df <- read_csv("data/clean_data/merged_data.csv")
+
+head(df)
+
+```
+
+```{r}
+
+options(repos = c(CRAN = "https://cran.r-project.org"))
+install.packages("dplyr")
+library(dplyr)
+
+```
+
+```{r}
+
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+
+```
+
+# Linear Regression
+
+```{r}
+
+policy_order <- c("most protective", "very protective", "protective", 
+                 "some restrictions/protections", "restrictive", 
+                 "very restrictive", "most restrictive")
+
+```
+
+```{r}
+
+create_policy_viz <- function(data, metric_col, title, y_label, plot_type = "bar") {
+  processed_data <- data %>%
+    filter(!is.na(abortion_policies) & 
+           abortion_policies != "" & 
+           abortion_policies != "NA") %>%
+    mutate(abortion_policies = tolower(trimws(abortion_policies))) %>%
+    group_by(abortion_policies) %>%
+    summarise(avg_value = mean(!!sym(metric_col), na.rm = TRUE)) %>%
+    filter(abortion_policies %in% policy_order) %>%
+    mutate(
+      abortion_policies = factor(abortion_policies, levels = policy_order),
+      policy_numeric = as.numeric(factor(abortion_policies, levels = policy_order))
+    )
+  
+  p <- ggplot(processed_data, aes(x = abortion_policies, y = avg_value))
+  
+  if(plot_type == "scatter") {
+    model <- lm(avg_value ~ policy_numeric, data = processed_data)
+    r_squared <- round(summary(model)$r.squared, 3)
+    
+    p <- p +
+      geom_point(size = 4, color = "steelblue") +
+      geom_smooth(aes(x = policy_numeric), method = "lm", se = TRUE, color = "red") +
+      annotate("text", 
+              x = length(policy_order) - 0.5,
+              y = max(processed_data$avg_value),
+              label = paste0("R² = ", r_squared),
+              size = 4, hjust = 1)
+  } else {
+    p <- p + geom_bar(stat = "identity", fill = "steelblue")
+  }
+  
+  p + labs(
+    title = title,
+    x = "Abortion Policy",
+    y = y_label
+  ) +
+    theme_minimal() +
+    theme(
+      axis.text.x = element_text(angle = 45, hjust = 1),
+      plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+      axis.title = element_text(size = 12)
+    )
+}
+
+```
+
+## Health Ranking 
+
+```{r}
+
+health_ranking <- create_policy_viz(df,
+    "overall_health_ranking",
+    "Overall Health Ranking",
+    "Ranking", 
+    "scatter")
+
+```
+
+```{r}
+
+print(health_ranking)
+
+```
+
+### Interpretation
+
+R-squared is .917, showing strong linear correlation. Although this is the average healthcare rankings of the states, very interesting. Should explore this more with other plots and maybe some sort of test.
+
+## Coverage, Access, Affordability
+
+```{r}
+
+coverage_access_affordability <- create_policy_viz(df,
+    "coverage_access_and_affordability",
+    "Coverage, Access, and Affordability",
+    "Ranking", 
+    "scatter")
+
+```
+
+```{r}
+
+print(coverage_access_affordability)
+
+```
+
+### Interpretation
+
+.826, also a strong correlation. Should explore this one more.
+
+## Healthcare Quality
+
+```{r}
+
+healthcare_quality_prevention <- create_policy_viz(df,
+    "health_care_quality_and_prevention",
+    "Healthcare Quality and Prevention",
+    "Ranking", 
+    "scatter")
+
+```
+
+```{r}
+
+print(healthcare_quality_prevention)
+
+```
+
+### Interpretation
+
+.618, less strong but would also like to explore further. 
+
+## Health Outcomes
+
+```{r}
+
+health_outcomes <- create_policy_viz(df,
+    "health_outcomes",
+    "Health Outcomes",
+    "Ranking", 
+    "scatter")
+
+```
+
+```{r}
+
+print(health_outcomes)
+
+```
+
+### Interpretation
+
+Strong linear correlation again!
+
+## Healthcare Cost
+
+```{r}
+
+healthcare_cost <- create_policy_viz(df,
+   "women_18_44_who_went_without_care_because_of_cost.1",
+   "Women Without Care Due to Cost",
+   "Percentage", 
+   "scatter")
+
+```
+
+```{r}
+
+print(healthcare_cost)
+
+```
+
+### Interpretation
+
+very strong correlation
+
+## Uninsured Women
+
+```{r}
+
+uninsured_women <- create_policy_viz(df,
+   "percent_uninsured_women_ages 19_64",
+   "Uninsured Women Ages 19-64",
+   "Percentage", 
+   "scatter")
+
+```
+
+```{r}
+
+print(uninsured_women)
+
+```
+
+### Interpretation
+
+Again, very strong correlation. 
+
+## Uninsured during pregnancy
+
+```{r}
+
+uninsured_pregnancy <- create_policy_viz(df,
+   "percent_uninsured_women_during_pregnancy_2021",
+   "Uninsured During Pregnancy",
+   "Percentage", 
+   "scatter")
+
+```
+
+```{r}
+
+print(uninsured_pregnancy)
+
+```
+
+### Interpretation
+
+.4, not a great fit. What else can I do with this?
+
+## Teen Birth
+
+```{r}
+
+teen_birth <- create_policy_viz(df,
+   "teen_birth_rate_per_1,000_population_ages_15_19_2022.1",
+   "Teen Birth Rate",
+   "Rate per 1,000", 
+   "scatter")
+
+```
+
+```{r}
+
+print(teen_birth)
+
+```
+
+### Interpretation
+
+Very strong, teens give birth in restrictive states more.This could effect their lives and education.
+
+## All Birth
+
+```{r}
+
+all_birth <- create_policy_viz(df,
+   "birth_rate_per_1,000_women_ages_15_44",
+   "Birth Rate",
+   "Rate per 1,000", 
+   "scatter")
+
+```
+
+```{r}
+
+print(all_birth)
+
+```
+
+### Interpretation
+
+.73, strong-ish correlation. I wonder if anything is significant about this.
+
+## Workforce
+```{r}
+
+workforce <- create_policy_viz(df,
+   "maternity_care_workforce_per_100,000_women_ages_15_44",
+   "Maternity Care Workforce",
+   "Per 100,000 Women", 
+   "scatter")
+
+```
+
+```{r}
+
+print(workforce)
+
+```
+
+### Interpretation
+
+Negative correlation. This means that mothers work less in restrictive states. Why?
+
+## Women who went without care due to cost
+
+```{r}
+
+no_care <- create_policy_viz(df,
+   "percent_women_ages_18_44_without_a_usual_source_of_care",
+   "Women Without Usual Source of Care",
+   "Percentage", 
+   "scatter")
+
+```
+
+```{r}
+
+print(no_care)
+
+```
+
+### Interpretation
+
+.5, not really a correlation.
+
+## Medicaid Births
+
+```{r}
+
+medicaid_births <- create_policy_viz(df,
+   "percent_of_births_financed_by_medicaid",
+   "Births Financed by Medicaid",
+   "Percentage", 
+   "scatter")
+
+```
+
+```{r}
+
+print(medicaid_births)
+
+```
+
+### Interpretation
+
+.49, do a different plot for this. Like what?
+
+## Depression
+
+```{r}
+
+depression <- create_policy_viz(df,
+   "women_with_depression_before_or_during_pregnancy_2021",
+   "Depression Before/During Pregnancy",
+   "Percentage", 
+   "scatter")
+
+```
+
+```{r}
+
+print(depression)
+
+```
+
+### Interpretation
+
+.13, women are depressed everywhere.
+
+## Postpartum depression
+
+```{r}
+
+postpartum_depression <- create_policy_viz(df,
+   "percent_women_with_postpartum_depression_2021",
+   "Postpartum Depression",
+   "Percentage", 
+   "scatter")
+
+```
+
+```{r}
+
+print(postpartum_depression)
+
+```
+
+### Interpretation
+
+Low correlation. .46. Women have post partum depression everywhere.
+
+## Depression Screenings
+
+```{r}
+
+depression_screening <- create_policy_viz(df,
+   "percent_women_who_received_a_postpartum_depression_screening_2021",
+   "Postpartum Depression Screening",
+   "Percentage", 
+   "scatter")
+
+```
+
+```{r}
+
+print(depression_screening)
+
+```
+
+### Interpretation
+
+.63, women in abortion ban states are given less screenings. 
+
+### Violence
+
+```{r}
+
+violence <- create_policy_viz(df,
+   "percent_women_experiencing_intimate_partner_violence_2021",
+   "Intimate Partner Violence",
+   "Percentage", 
+   "scatter")
+
+```
+
+```{r}
+
+print(violence)
+
+```
+
+### Interpretation
+
+Women experience slightly more violence in most restrictive states. Maybe add a case study here or find another dataset.
+
+## Increase in abortions
+```{r}
+
+increase_in_abortions <- create_policy_viz(df,
+   "percent_increase_in_clinician_provided_abortions_since_2020",
+   "Increase in Clinician-Provided Abortions",
+   "Percentage Change Since 2020", 
+   "scatter")
+
+```
+
+```{r}
+
+print(increase_in_abortions)
+
+```
+
+### Interpretation
+
+BAD PLOT, keep the map.
+
+## Maternal Mortality
+
+```{r}
+
+maternal_mortality <- create_policy_viz(df,
+   "maternal_mortality_rates_2018_2022_per_100,000_live births",
+   "Maternal Mortality Rate, 2018-2022",
+   "Rate",
+   "scatter")
+
+```
+
+```{r}
+
+print(maternal_mortality)
+
+```
+
+### Interpretation
+
+Higher maternal mortality, .844
+
+## add access to birth control
