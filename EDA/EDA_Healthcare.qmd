@@ -576,3 +576,70 @@ title("Correlations Between Healthcare Metrics",
 
 ###
 Can add more, have to decide which.
+
+```{r}
+
+# Convert abortion policies to a numeric scale (fix potential missing levels issue)
+data$abortion_policies_numeric <- as.numeric(factor(data$abortion_policies, 
+                                         levels = c("most restrictive", "very restrictive", 
+                                                    "restrictive", "some restrictions/protections", 
+                                                    "protective", "very protective", "most protective")))
+
+# Subset the relevant variables (ensure consistent column naming)
+relevant_data <- data[, c("abortion_policies_numeric", 
+                          "twenty_five_and_older_had_bachelors_by_higher_2021", 
+                          "teen_birth_rate_per_1,000_population_ages_15_19_2022",
+                          "maternity_care_workforce_per_100,000_women_ages_15_44")]
+
+# Rename columns (ensure the number of new names matches the columns)
+colnames(relevant_data) <- c("abortion_policies", "education", "teen_birth_rate", "maternity_care_workforce")
+
+# Remove rows with missing values
+relevant_data <- na.omit(relevant_data)
+
+# Calculate correlation matrix
+correlation_matrix <- cor(relevant_data, method = "spearman")
+
+# Print correlation matrix
+print(correlation_matrix)
+
+
+```
+
+```{r}
+
+install.packages("corrplot")
+library(corrplot)
+
+corrplot(correlation_matrix, method = "circle", type = "lower", tl.col = "black", tl.srt = 45)
+
+```
+
+### Interpretation
+
+Teen Birth Rate and Education (-0.8109):
+
+Strong negative correlation: As teen birth rates increase, education levels decrease significantly. This is a strong inverse relationship.
+
+Teen Birth Rate and Abortion Policies (-0.6947):
+
+Moderate negative correlation: States with more protective abortion policies tend to have lower teen birth rates.
+
+Education and Abortion Policies (+0.7318):
+
+Strong positive correlation: States with more protective abortion policies also tend to have higher levels of education.
+
+Teen Birth Rate and Maternity Care Workforce (-0.5486):
+
+Moderate negative correlation: Higher maternity care workforce density correlates with lower teen birth rates.
+
+Abortion Policies and Maternity Care Workforce (0.7326):
+
+Strong positive correlation: States with more protective abortion policies tend to have a denser maternity care workforce.
+Education and Maternity Care Workforce (0.6766):
+
+Moderate positive correlation: Higher levels of education correlate with better maternity care workforce density.
+
+Can we say, "Teen births disrupt educational attainment and career development, leading to a cycle where mothers are less likely to enter or remain in the workforce".
+
+More teen births equal less education and less women in the workforce. Strict abortion policies have more teen births. This leads to a cycle.

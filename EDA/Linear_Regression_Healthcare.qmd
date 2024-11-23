@@ -111,7 +111,7 @@ print(health_ranking)
 
 ### Interpretation
 
-R-squared is .917, showing strong linear correlation. Although this is the average healthcare rankings of the states, very interesting. Should explore this more with other plots and maybe some sort of test.
+R-squared is .917, showing strong linear correlation.
 
 ## Coverage, Access, Affordability
 
@@ -133,7 +133,7 @@ print(coverage_access_affordability)
 
 ### Interpretation
 
-.826, also a strong correlation. Should explore this one more.
+R-squared is .826, showing strong linear correlation.
 
 ## Healthcare Quality
 
@@ -155,7 +155,7 @@ print(healthcare_quality_prevention)
 
 ### Interpretation
 
-.618, less strong but would also like to explore further. 
+R-squared is .618, showing somewhat of a correlation. 
 
 ## Health Outcomes
 
@@ -177,7 +177,7 @@ print(health_outcomes)
 
 ### Interpretation
 
-Strong linear correlation again!
+R-squared is .878, showing a strong linear correlation.
 
 ## Healthcare Cost
 
@@ -199,7 +199,7 @@ print(healthcare_cost)
 
 ### Interpretation
 
-very strong correlation
+R-squared is .913, showing a strong linear correlation.
 
 ## Uninsured Women
 
@@ -221,7 +221,7 @@ print(uninsured_women)
 
 ### Interpretation
 
-Again, very strong correlation. 
+R-squared is .893, showing a strong linear correlation.
 
 ## Uninsured during pregnancy
 
@@ -243,7 +243,7 @@ print(uninsured_pregnancy)
 
 ### Interpretation
 
-.4, not a great fit. What else can I do with this?
+R-squared is .436, showing a poor fit. 
 
 ## Teen Birth
 
@@ -265,7 +265,7 @@ print(teen_birth)
 
 ### Interpretation
 
-Very strong, teens give birth in restrictive states more.This could effect their lives and education.
+R-squared is .8333, showing strong linear correlation. If teens are giving birth at higher rates in abortion ban states, they may not reach their full potential education wise. Further, these teenagers are probably not financially stable when giving birth.  
 
 ## All Birth
 
@@ -287,9 +287,10 @@ print(all_birth)
 
 ### Interpretation
 
-.73, strong-ish correlation. I wonder if anything is significant about this.
+R-squared is .73, states with stricter abortion bans seem to have higher birth rates.
 
 ## Workforce
+
 ```{r}
 
 workforce <- create_policy_viz(df,
@@ -308,7 +309,7 @@ print(workforce)
 
 ### Interpretation
 
-Negative correlation. This means that mothers work less in restrictive states. Why?
+R-squred is .872 and R is negative.
 
 ## Women who went without care due to cost
 
@@ -330,7 +331,7 @@ print(no_care)
 
 ### Interpretation
 
-.5, not really a correlation.
+R-squared is .5
 
 ## Medicaid Births
 
@@ -352,7 +353,7 @@ print(medicaid_births)
 
 ### Interpretation
 
-.49, do a different plot for this. Like what?
+R-squared is 0.049, no correlation.
 
 ## Depression
 
@@ -374,7 +375,7 @@ print(depression)
 
 ### Interpretation
 
-.13, women are depressed everywhere.
+R-squared is 0.13, depression is very common.
 
 ## Postpartum depression
 
@@ -396,7 +397,7 @@ print(postpartum_depression)
 
 ### Interpretation
 
-Low correlation. .46. Women have post partum depression everywhere.
+R-squared is .46
 
 ## Depression Screenings
 
@@ -418,7 +419,7 @@ print(depression_screening)
 
 ### Interpretation
 
-.63, women in abortion ban states are given less screenings. 
+R-squared is .63 and negative, shows that women are given less screenings in abortion ban states. It is exceptionally low for most restrictive states. 
 
 ### Violence
 
@@ -440,28 +441,7 @@ print(violence)
 
 ### Interpretation
 
-Women experience slightly more violence in most restrictive states. Maybe add a case study here or find another dataset.
-
-## Increase in abortions
-```{r}
-
-increase_in_abortions <- create_policy_viz(df,
-   "percent_increase_in_clinician_provided_abortions_since_2020",
-   "Increase in Clinician-Provided Abortions",
-   "Percentage Change Since 2020", 
-   "scatter")
-
-```
-
-```{r}
-
-print(increase_in_abortions)
-
-```
-
-### Interpretation
-
-BAD PLOT, keep the map.
+R-squared is .163, no correlation except way higher for states where abortion is fully banned. 
 
 ## Maternal Mortality
 
@@ -483,6 +463,55 @@ print(maternal_mortality)
 
 ### Interpretation
 
-Higher maternal mortality, .844
+R-squared is .844, very high correlation
 
-## add access to birth control
+```{r}
+
+bachelors_or_higher <- create_policy_viz(df,
+   "twenty_five_and_older_had_bachelors_by_higher_2021",
+   "% 25 and older with a Bachelors or Higher, 2021",
+   "Rate",
+   "scatter")
+
+```
+
+```{r}
+
+print(bachelors_or_higher)
+
+```
+
+### Interpretation
+
+R-squared is .779, strong negative correlation. Especially low for most restrictive,
+
+```{r}
+
+concraception <- create_policy_viz(df,
+   "state_requires_coverage_of_prescription_contraception",
+   "State Requires Coverage of Prescription Coverage",
+   "Rate",
+   "scatter")
+
+```
+
+```{r}
+
+print(concraception)
+
+```
+
+### Interpretation
+
+R-squared is .882, very strong negative correlation
+
+```{r}
+
+proportion_obgyns_to_women <- df$number_of_obstetricians_and_gynecologists_employed_2023 / 
+                                   df$total_sumber_of_women_aged_15_44_2017
+
+```
+
+```{r}
+
+print(proportion_obgyns_to_women)
