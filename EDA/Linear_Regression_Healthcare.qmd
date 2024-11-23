@@ -111,7 +111,13 @@ print(health_ranking)
 
 ### Interpretation
 
-R-squared is .917, showing strong linear correlation.
+R-squared is .917, showing strong linear correlation. 
+
+### Ideas
+
+1. Use Courtney's exact map code that plots which state is most predictive, most restrictive, etc. Then place the health ranking number on top of each state. Or put a star on the state if it is over ranking 25 (since 25 is mid), or can try higher numbers.
+
+2. Correlation map with other variables.
 
 ## Coverage, Access, Affordability
 
@@ -133,7 +139,13 @@ print(coverage_access_affordability)
 
 ### Interpretation
 
-R-squared is .826, showing strong linear correlation.
+R-squared is .826, showing strong linear correlation. 
+
+### Ideas
+
+1. Use Courtney's exact map code that plots which state is most predictive, most restrictive, etc. Then place the health ranking number on top of each state. Or put a star on the state if it is over ranking 25 (since 25 is mid), or can try higher numbers.
+
+2. Correlation map with other variables.
 
 ## Healthcare Quality
 
@@ -155,7 +167,13 @@ print(healthcare_quality_prevention)
 
 ### Interpretation
 
-R-squared is .618, showing somewhat of a correlation. 
+R-squared is .618, showing somewhat of a correlation.
+
+### Ideas
+
+1. Use Courtney's exact map code that plots which state is most predictive, most restrictive, etc. Then place the health ranking number on top of each state. Or put a star on the state if it is over ranking 25 (since 25 is mid), or can try higher numbers.
+
+2. Correlation map with other variables.
 
 ## Health Outcomes
 
@@ -179,6 +197,12 @@ print(health_outcomes)
 
 R-squared is .878, showing a strong linear correlation.
 
+### Ideas
+
+1. Use Courtney's exact map code that plots which state is most predictive, most restrictive, etc. Then place the health ranking number on top of each state. Or put a star on the state if it is over ranking 25 (since 25 is mid), or can try higher numbers.
+
+2. Correlation map with other variables, especially above ones.
+
 ## Healthcare Cost
 
 ```{r}
@@ -200,6 +224,10 @@ print(healthcare_cost)
 ### Interpretation
 
 R-squared is .913, showing a strong linear correlation.
+
+### Ideas
+
+1. Use Courtney's exact map code that plots which state is most predictive, most restrictive, etc. Then place star on state if women went without care due to cost percentage is above ___. We can fill in the blank with the average percentage of all the states.
 
 ## Uninsured Women
 
@@ -223,6 +251,10 @@ print(uninsured_women)
 
 R-squared is .893, showing a strong linear correlation.
 
+### Ideas
+
+Honestly running out of ideas
+
 ## Uninsured during pregnancy
 
 ```{r}
@@ -245,6 +277,10 @@ print(uninsured_pregnancy)
 
 R-squared is .436, showing a poor fit. 
 
+### Ideas
+
+What else can we do? Actually shows that most restrictive states have a low number of women uninsured. We might want to get rid of this plot all together.
+
 ## Teen Birth
 
 ```{r}
@@ -265,7 +301,19 @@ print(teen_birth)
 
 ### Interpretation
 
-R-squared is .8333, showing strong linear correlation. If teens are giving birth at higher rates in abortion ban states, they may not reach their full potential education wise. Further, these teenagers are probably not financially stable when giving birth.  
+R-squared is .8333, showing strong linear correlation. If teens are giving birth at higher rates in abortion ban states, they may not reach their full potential education wise. Further, these teenagers are probably not financially stable when giving birth. Teen births are extremely high in most restrictive states. 
+
+### Ideas
+
+What plot can we use to show how high rates are in most restrictive states? 
+
+1. Box plot
+
+2. Correlation with education and maternal workforce
+
+3. Correlation with concraception coverage required by state
+
+4. Correlation with other columns?
 
 ## All Birth
 
@@ -287,7 +335,11 @@ print(all_birth)
 
 ### Interpretation
 
-R-squared is .73, states with stricter abortion bans seem to have higher birth rates.
+R-squared is .73, states with stricter abortion bans seem to have higher birth rates. 
+
+### Ideas
+
+Do we really care? I guess it shows more women are giving birth into these horrible conditions. Might be a good way to start our presentation!
 
 ## Workforce
 
@@ -309,7 +361,13 @@ print(workforce)
 
 ### Interpretation
 
-R-squred is .872 and R is negative.
+R-squred is .872 and R is negative. 
+
+### Ideas
+
+What plots can we use to show that mothers are in the workforce less in restrictive states?
+
+1. Correlation plots
 
 ## Women who went without care due to cost
 
@@ -331,7 +389,11 @@ print(no_care)
 
 ### Interpretation
 
-R-squared is .5
+R-squared is .5, not really sure there is much we can do with this.
+
+### Ideas
+
+I don't think we need this column.
 
 ## Medicaid Births
 
@@ -353,7 +415,11 @@ print(medicaid_births)
 
 ### Interpretation
 
-R-squared is 0.049, no correlation.
+R-squared is 0.049, no correlation. 
+
+### Ideas
+
+Does medicaid births not having a correlation mean anything for our project? I don't think we need this column. 
 
 ## Depression
 
@@ -377,6 +443,10 @@ print(depression)
 
 R-squared is 0.13, depression is very common.
 
+### Ideas
+
+We can use this to say women are depressed or just get rid of it. 
+
 ## Postpartum depression
 
 ```{r}
@@ -397,7 +467,11 @@ print(postpartum_depression)
 
 ### Interpretation
 
-R-squared is .46
+R-squared is .46, no correlation but significantly higher during most restrictive states. How can we show this?
+
+### Ideas
+
+1. Maybe we can compare most restrictive to all other categories
 
 ## Depression Screenings
 
@@ -421,6 +495,10 @@ print(depression_screening)
 
 R-squared is .63 and negative, shows that women are given less screenings in abortion ban states. It is exceptionally low for most restrictive states. 
 
+### Ideas
+
+1. We could show that depression screenings are not correlated with level of depression! Instead, they are correlated with abortion policy. I really like this.
+
 ### Violence
 
 ```{r}
@@ -441,7 +519,11 @@ print(violence)
 
 ### Interpretation
 
-R-squared is .163, no correlation except way higher for states where abortion is fully banned. 
+R-squared is .163, no correlation. 
+
+### Ideas
+
+1. Don't use this column, just use a case study saying number one cause of death for pregnant women is murder and case study showing that violence has gone up since abortion restrictions. 
 
 ## Maternal Mortality
 
@@ -463,7 +545,11 @@ print(maternal_mortality)
 
 ### Interpretation
 
-R-squared is .844, very high correlation
+R-squared is .844, very high correlation. Also way higher in most restrictive states.
+
+### Ideas
+
+1. Correlation plots with abortion policy, other columns I have not thought of yet.
 
 ```{r}
 
@@ -483,7 +569,11 @@ print(bachelors_or_higher)
 
 ### Interpretation
 
-R-squared is .779, strong negative correlation. Especially low for most restrictive,
+R-squared is .779, strong negative correlation. Especially low for most restrictive states.
+
+### Ideas
+
+1. Correlation plots with teen birth, maternal workforce, healthcare, abortion policy, etc. 
 
 ```{r}
 
@@ -504,6 +594,10 @@ print(concraception)
 ### Interpretation
 
 R-squared is .882, very strong negative correlation
+
+### Ideas
+
+1. This is more of Courtney's area, I think we should make an abortion map and put a star on the states that provide this. 
 
 ## Proportion of OBGYN
 
@@ -533,3 +627,9 @@ print(obgyn)
 ### Interpretation
 
 R-squared is .531, which is weak correlation. While this is not a great correlation, we can see from the chartt that the difference between having protections vs. restrictions is very big. What plot would be better for this?
+
+### Ideas
+
+1. Heatmap
+
+2. Aggregate restrictive policies into one group and protective policies into another to focus on high-level differences.
