@@ -505,13 +505,31 @@ print(concraception)
 
 R-squared is .882, very strong negative correlation
 
+## Proportion of OBGYN
+
 ```{r}
 
-proportion_obgyns_to_women <- df$number_of_obstetricians_and_gynecologists_employed_2023 / 
+df$proportion_obgyns_to_women <- df$number_of_obstetricians_and_gynecologists_employed_2023 / 
                                    df$total_sumber_of_women_aged_15_44_2017
 
 ```
 
 ```{r}
 
-print(proportion_obgyns_to_women)
+obgyn <- create_policy_viz(df,
+   "proportion_obgyns_to_women",
+   "State Requires Coverage of Prescription Coverage",
+   "Rate",
+   "scatter")
+
+```
+
+```{r}
+
+print(obgyn)
+
+```
+
+### Interpretation
+
+R-squared is .531, which is weak correlation. While this is not a great correlation, we can see from the chartt that the difference between having protections vs. restrictions is very big. What plot would be better for this?
