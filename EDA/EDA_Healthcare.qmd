@@ -643,3 +643,45 @@ Moderate positive correlation: Higher levels of education correlate with better 
 Can we say, "Teen births disrupt educational attainment and career development, leading to a cycle where mothers are less likely to enter or remain in the workforce".
 
 More teen births equal less education and less women in the workforce. Strict abortion policies have more teen births. This leads to a cycle.
+
+```{r}
+
+# Install and load necessary packages
+install.packages("ggrepel")
+library(ggrepel)
+library(ggplot2)
+
+# Create the scatter plot with custom cluster colors
+ggplot(health_metrics, aes(x = health_outcomes, y = overall_health_ranking, color = cluster)) +
+  geom_point(size = 3) +
+  geom_text_repel(aes(label = abortion_policies), size = 3) +
+  scale_color_manual(values = c("1" = "#008e17", "2" = "#cf0000", "3" = "#fad100")) +
+  labs(title = "Clusters of States by Health Metrics and Abortion Policies", 
+       x = "Health Outcomes", 
+       y = "Overall Health Ranking") +
+  theme_minimal()
+
+```
+
+### Interpretation
+
+Kind of cool because looks at two variables and you can clearly see higher rankings are restrictive states.
+
+
+```{r}
+# Boxplot by abortion policies
+ggplot(df, aes(x = abortion_policies, y = women_18_44_who_went_without_care_because_of_cost.1, fill = abortion_policies)) +
+  geom_boxplot() +
+  scale_fill_manual(values = policy_colors) +
+  labs(title = "Women Without Care Due to Cost Across Abortion Policies",
+       x = "Abortion Policies",
+       y = "Percentage of Women Without Care") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+### 
+
+Medians of restrictive groups are higher! Bigger variability with most restriction but even the low is kind of high compared to protective and most protective.
+
