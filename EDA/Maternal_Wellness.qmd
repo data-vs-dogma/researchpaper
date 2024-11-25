@@ -1,0 +1,172 @@
+---
+title: "Maternal Wellness - Statistical Modeling"
+author: "Viviana Luccioli"
+format: 
+  html:
+    embed-resources: true
+    code-fold: true
+editor: visual
+---
+
+```{r}
+library(tidyverse)
+library(readr)
+df <- read_csv("../data/clean_data/merged_data.csv", show_col_types = FALSE)
+df <- df[!is.na(df$abortion_policies), ]
+```
+
+```{r}
+# organize data
+
+# order the levels of abortion policy
+df$abortion_policies <- factor(df$abortion_policies, 
+                               levels = c("most restrictive", 
+                                          "very restrictive", 
+                                          "restrictive", 
+                                          "some restrictions/protections", 
+                                          "protective", 
+                                          "very protective", 
+                                          "most protective"))
+
+
+
+
+
+```
+
+## Economic Wellness 
+
+```{r}
+df$abortion_policies
+```
+
+### Parental Leave & Abortion Policy
+
+```{r}
+# reorder the levels of abortion policies
+df$abortion_policies <- factor(df$abortion_policies, 
+                              levels = c("most protective", "very protective", 
+                                         "protective", "some restrictions/protections", 
+                                         "restrictive", "very restrictive", "most restrictive"))
+
+
+# stacked bar plot
+ggplot(df, aes(x = as.factor(parental_leave_mandatory), fill = abortion_policies)) +
+  geom_bar(position = "fill") +
+  labs(x = "Parental leave policy", y = "Proportion", fill = "Level of state abortion policy") +
+  scale_x_discrete(labels = c("0" = "Not Mandated", "1" = "Mandated")) +
+  scale_fill_manual(values = c("palegreen", "palegreen3", "palegreen4",  "olivedrab4", "sienna", "sienna3", "red")) + # Adjust colors as needed
+  theme_classic()
+```
+
+This plot shows us that while the vast majority of states that have not enacted mandatory parental leave have more restrictive abortion policies, the vast majority of states that do mandate parental leave have protective abortion policies. So, the states that want to prohibit women from accessing contraceptive care also enable the worst conditions for a woman when she has a baby: an unfavorable and unprotected employment situation.
+
+```{r}
+# fisher's exact test
+contingency_table <- table(df$parental_leave_mandatory, df$abortion_policies)
+
+fisher_test_result <- fisher.test(contingency_table)
+print(fisher_test_result)
+
+```
+
+The p-value produced from Fisher's Exact Test indicates that we have significant evidence to suggest that abortion policy and mandatory parental leave policy are not independent of each other. This suggests that levels of `abortion_policies` are strongly related to whether parental leave is mandatory.
+
+```{r}
+# create variable combining states that have declared parental leave policy as of now, even if not enacted
+df$parental_leave_mandatory <- pmax(df$parental_leave_mandatory_enacted, df$parental_leave_mandatory_not_yet_enacted)
+
+# logistic regression model
+glm(parental_leave_mandatory_enacted ~ factor(abortion_policies), data = df, family = "binomial")
+
+df$predicted_prob <- predict(glm(parental_leave_mandatory ~ factor(abortion_policies), 
+                                  data = df, family = "binomial"), 
+                             type = "response")
+
+# visualize
+ggplot(df, aes(x = abortion_policies, y = predicted_prob)) +
+  geom_point(position = position_jitter(width = 0.2), alpha = 0.6) +
+  stat_summary(fun = mean, geom = "point", color = "blue", size = 3) +
+  labs(x = "Abortion Policies", 
+       y = "Predicted Probability of Mandatory Parental Leave",
+       title = "Predicted Probabilities by Abortion Policy") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+The logistic regression model indicates that the slope between the abortion policy level and having parental leave legislation (y=1) gets more positive as the policy level gets more protective regarding abortion. This indicates a positive relationship, meaning that states that have abortion policies that are protective for women are more likely to also have mandatory parental leave policy than states with restrictive abortion policy.
+
+## Education Wellness
+
+### Percentage of Women per State with a BA degree or higher & Abortion Policy
+
+```{r}
+# Kruskal-Wallis test
+kruskal.test(percentage_women_BA_or_higher ~ abortion_policies, data = df)
+
+# If Kruskal-Wallis is significant, run pairwise Wilcoxon tests
+pairwise.wilcox.test(df$percentage_women_BA_or_higher, 
+                     df$abortion_policies,
+                     p.adjust.method = "bonferroni")
+
+
+ggplot(df, aes(x = abortion_policies, y = percentage_women_BA_or_higher)) +
+  geom_boxplot() +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 6, angle = 45, hjust = 1),
+        axis.title.y = element_text(size = 6)) + 
+  labs(x = "Abortion Policies", 
+       y = "% Women with a Bachelors degree or higher",
+       title = "Percentage of Women with a Bachelors degree \nor higher by Abortion Policy")
+```
+
+The p-value of 0.003362 indicates that we have significant evidence to reject the null hypothesis and suggest that there is a true different in the mean percentage of women with a college degree (BA) or higher in different states depending on their abortion policy. The boxplot visualization clearly indicates that states with more protective abortion policy have higher percentages of women with high education.
+
+## Mental Wellness 
+
+```{r}
+df$women_with_depression_before_or_during_pregnancy_2021
+```
+
+Women with Postpartum Depression & Abortion Policy
+
+```{r}
+# Kruskal-Wallis test
+kruskal.test(percent_women_with_postpartum_depression_2021 ~ abortion_policies, data = df)
+
+pairwise.wilcox.test(df$percent_women_with_postpartum_depression_2021, 
+                     df$abortion_policies,
+                     p.adjust.method = "bonferroni")
+
+# accompanying visualization
+ggplot(df, aes(x = abortion_policies, y = percent_women_with_postpartum_depression_2021)) +
+  geom_boxplot() +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 6, angle = 45, hjust = 1),
+        axis.title.y = element_text(size = 6)) + 
+  labs(x = "Abortion Policies", 
+       y = "% Women with Postpartum Depression",
+       title = "Percentage of Women with Postpartum Depression \nby Abortion Policy")
+```
+
+The Kruskal-Wallis test does not yield a statistically significant p-value therefore we do not have concrete evidence to suggest that there is a difference in the percentage of women with postpartum depression across the policy groups, but the accompanying visualization does offer provide insight that the highest occurrences of postpartum depression percentages are in states with most restrictive abortion policies.
+
+```{r}
+# Kruskal-Wallis test
+kruskal.test(women_with_depression_before_or_during_pregnancy_2021 ~ abortion_policies, data = df)
+
+pairwise.wilcox.test(df$women_with_depression_before_or_during_pregnancy_2021, 
+                     df$abortion_policies,
+                     p.adjust.method = "bonferroni")
+
+# accompanying visualization
+ggplot(df, aes(x = abortion_policies, y = women_with_depression_before_or_during_pregnancy_2021)) +
+  geom_boxplot() +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 6, angle = 45, hjust = 1),
+        axis.title.y = element_text(size = 6)) + 
+  labs(x = "Abortion Policies", 
+       y = "% Women with Postpartum Depression",
+       title = "Percentage of Women with Postpartum Depression \nby Abortion Policy")
+```

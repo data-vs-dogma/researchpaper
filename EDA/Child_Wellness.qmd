@@ -1,0 +1,77 @@
+---
+title: "Child Wellness EDA"
+author: "Viviana Luccioli"
+format: html
+editor: visual
+---
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(readr)
+```
+
+```{r}
+df <- read_csv("../data/clean_data/merged_data.csv", show_col_types = FALSE)
+df <- df[!is.na(df$abortion_policies), ]
+```
+
+```{r}
+table(df$abortion_policies)
+```
+
+Number of Children in Foster Care per 100,000 Children, by Abortion Policy
+
+```{r}
+shapiro.test(df$foster_children_per_capita)
+```
+
+```{r}
+# Kruskal-Wallis test
+kruskal.test(foster_children_per_capita ~ abortion_policies, data = df)
+
+# If Kruskal-Wallis is significant, run pairwise Wilcoxon tests
+pairwise.wilcox.test(df$foster_children_per_capita, 
+                     df$abortion_policies,
+                     p.adjust.method = "bonferroni")
+
+# For visualization
+# First reorder the factor levels
+df$abortion_policies <- factor(df$abortion_policies, 
+                             levels = c("most restrictive", 
+                                      "very restrictive", 
+                                      "restrictive",
+                                      "some restrictions/protections",
+                                      "protective",
+                                      "very protective",
+                                      "most protective"))
+
+# Then create the plot
+ggplot(df, aes(x = abortion_policies, y = foster_children_per_capita)) +
+  geom_boxplot() +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(x = "Abortion Policies", 
+       y = "Foster Children per Capita",
+       title = "Foster Care Rates by Abortion Policy")
+```
+
+Overall School System Ranking by Abortion Policy
+
+```{r}
+# Kruskal-Wallis test
+kruskal.test(overall_school_rank ~ abortion_policies, data = df)
+
+# If Kruskal-Wallis is significant, run pairwise Wilcoxon tests
+pairwise.wilcox.test(df$overall_school_rank, 
+                     df$abortion_policies,
+                     p.adjust.method = "bonferroni")
+
+# For visualization
+ggplot(df, aes(x = abortion_policies, y = overall_school_rank)) +
+  geom_boxplot() +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(x = "Abortion Policies", 
+       y = "Overall School Ranking",
+       title = "Public School System Rankings by Abortion Policy")
+```
