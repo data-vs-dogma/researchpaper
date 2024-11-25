@@ -8,14 +8,14 @@ format:
 editor: visual
 ---
 
-```{r}
+```{r, warning=FALSE, message=FALSE}
 library(tidyverse)
 library(readr)
 df <- read_csv("../data/clean_data/merged_data.csv", show_col_types = FALSE)
 df <- df[!is.na(df$abortion_policies), ]
 ```
 
-## Economic Wellness 
+## Economic Wellness
 
 ### Parental Leave & Abortion Policy
 
@@ -51,6 +51,17 @@ print(fisher_test_result)
 
 The p-value produced from Fisher's Exact Test indicates that we have significant evidence to suggest that abortion policy and mandatory parental leave policy are not independent of each other. This suggests that levels of `abortion_policies` are strongly related to whether parental leave is mandatory.
 
+Now we will perform logistic regression to investigate the direction of this relationship:
+
+```{r}
+# check assumptions 
+
+# sample size 
+table(df$parental_leave_mandatory, df$abortion_policies)
+
+# the sample sizes are too small, so we must use exact logistic regression to account for this size and separation
+```
+
 ```{r}
 # order the levels of abortion policy
 df$abortion_policies <- factor(df$abortion_policies, 
@@ -62,27 +73,103 @@ df$abortion_policies <- factor(df$abortion_policies,
                                           "very protective", 
                                           "most protective"))
 
+library(logistf)
 
-# logistic regression model
-glm(parental_leave_mandatory_enacted ~ factor(abortion_policies), data = df, family = "binomial")
+# Fit the exact logistic regression model
+fit <- logistf(parental_leave_mandatory ~ factor(abortion_policies), data = df)
 
-df$predicted_prob <- predict(glm(parental_leave_mandatory ~ factor(abortion_policies), 
-                                  data = df, family = "binomial"), 
-                             type = "response")
+# View the results
+summary(fit)
+
+# Generate predicted probabilities
+df$predicted_prob <- predict(fit, type = "response")
 
 # visualize
 ggplot(df, aes(x = abortion_policies, y = predicted_prob)) +
   geom_point(position = position_jitter(width = 0.2), alpha = 0.6) +
   stat_summary(fun = mean, geom = "point", color = "blue", size = 3) +
   labs(x = "Abortion Policies", 
-       y = "Predicted Probability of Mandatory Parental Leave",
-       title = "Predicted Probabilities by Abortion Policy") +
+       y = "Predicted Probability",
+       title = "Mandatory Parental Leave Policy \nPredicted Probabilities by Abortion Policy") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
 
-The logistic regression model indicates that the slope between the abortion policy level and having parental leave legislation (y=1) gets more positive as the policy level gets more protective regarding abortion. This indicates that states that have abortion policies that are protective for women are more likely to also have mandatory parental leave policy than states with restrictive abortion policy.
+The exact logistic regression model yields a p-value of 0.0010263, revealing that there is sufficient evidence to suggest that there is a sloped relationship between whether or not a state has mandatory abortion policy and the degree of their abortion policy restrictiveness/protectiveness. The slope coefficients and the visualization indicate that the slope between the abortion policy level and having parental leave legislation (y=1) gets more positive as the policy level gets more protective regarding abortion. This indicates that states that have abortion policies that are protective for women are more likely to also have mandatory parental leave policy than states with restrictive abortion policy. This is important, because it means that the states that choose to make abortion less accessible and therefore force women to have babies, also foster conditions that make it incredibly difficult for women to have babies. This highlights a lack of care for mothers' wellbeing and financial stability in states with restrictive abortion rights.
+
+### Parental Leave Job Protection & Abortion Policy
+
+```{r}
+# reorder the levels of abortion policies
+df$abortion_policies <- factor(df$abortion_policies, 
+                              levels = c("most protective", "very protective", 
+                                         "protective", "some restrictions/protections", 
+                                         "restrictive", "very restrictive", "most restrictive"))
+
+# stacked bar plot
+ggplot(df, aes(x = as.factor(parental_leave_job_protection), fill = abortion_policies)) +
+  geom_bar(position = "fill") +
+  labs(x = "Parental leave job protection policy", y = "Proportion", fill = "Level of state abortion policy") +
+  scale_x_discrete(labels = c("0" = "No Job Protection", "1" = "Job Protection")) +
+  scale_fill_manual(values = c("palegreen", "palegreen3", "palegreen4",  "olivedrab4", "sienna", "sienna3", "red")) + # Adjust colors as needed
+  theme_classic() +
+  theme(axis.text.x = element_text(size = 6))
+```
+
+```{r}
+# fisher's exact test
+contingency_table <- table(df$parental_leave_job_protection, df$abortion_policies)
+
+fisher_test_result <- fisher.test(contingency_table)
+print(fisher_test_result)
+```
+
+Fisher's Exact Test yields a p-value of 0.006869, which indicates that we have sufficient evidence to suggest that there is an association between a state's abortion policies and whether or not they have policy for job protection when a parent takes parental leave.
+
+```{r}
+# check assumptions: 
+# tabulate categories to see if sample sizes are sufficient
+table(df$parental_leave_job_protection, df$abortion_policies)
+
+# since the sample sizes are insufficient, we must use exact logistic regression 
+
+```
+
+```{r}
+# order the levels of abortion policy
+df$abortion_policies <- factor(df$abortion_policies, 
+                               levels = c("most restrictive", 
+                                          "very restrictive", 
+                                          "restrictive", 
+                                          "some restrictions/protections", 
+                                          "protective", 
+                                          "very protective", 
+                                          "most protective"))
+
+library(logistf)
+
+# Fit the exact logistic regression model
+fit <- logistf(parental_leave_job_protection ~ factor(abortion_policies), data = df)
+
+# View the results
+summary(fit)
+
+# Generate predicted probabilities
+df$predicted_prob <- predict(fit, type = "response")
+
+# visualize
+ggplot(df, aes(x = abortion_policies, y = predicted_prob)) +
+  geom_point(position = position_jitter(width = 0.2), alpha = 0.6) +
+  stat_summary(fun = mean, geom = "point", color = "blue", size = 3) +
+  labs(x = "Abortion Policies", 
+       y = "Predicted Probability",
+       title = "Parental Leave Job Protection \nPredicted Probabilities by Abortion Policy") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+Due to the sample sizes that were too small, we performed exact logistic regression to account for small sample sizes and separation. From the coefficients and the visualization, we can see that states with more protective abortion measures are more likely to have policy guaranteeing job protection for parents when they take paternal leave to care for their child(ren). This reveals that states that do not have abortion policy concurrently establish conditions that make having a child more difficult. This is problematic, because if the state creates conditions so that women are forced to have babies instead of being able to access abortion or contraceptive rights and then they have a baby, they face the jeopardy of losing their job and income with no protection.
 
 ## Education Wellness
 
@@ -110,7 +197,7 @@ ggplot(df, aes(x = abortion_policies, y = percentage_women_BA_or_higher)) +
 
 The p-value of 0.003362 indicates that we have significant evidence to reject the null hypothesis and suggest that there is a true different in the mean percentage of women with a college degree (BA) or higher in different states depending on their abortion policy. The boxplot visualization clearly indicates that states with more protective abortion policy have higher percentages of women with high education.
 
-## Mental Wellness 
+## Mental Wellness
 
 ### Women with Postpartum Depression & Abortion Policy
 
@@ -135,7 +222,7 @@ ggplot(df, aes(x = abortion_policies, y = percent_women_with_postpartum_depressi
 
 The Kruskal-Wallis test does not yield a statistically significant p-value therefore we do not have concrete evidence to suggest that there is a difference in the percentage of women with postpartum depression across the policy groups, but the accompanying visualization does offer provide insight that the highest occurrences of postpartum depression percentages are in states with most restrictive abortion policies.
 
-### Women with Depression Before or During Pregnancy 
+### Women with Depression Before or During Pregnancy
 
 ```{r}
 # Kruskal-Wallis test
