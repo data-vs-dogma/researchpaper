@@ -169,7 +169,9 @@ ggplot(df, aes(x = abortion_policies, y = predicted_prob)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-Due to the sample sizes that were too small, we performed exact logistic regression to account for small sample sizes and separation. From the coefficients and the visualization, we can see that states with more protective abortion measures are more likely to have policy guaranteeing job protection for parents when they take paternal leave to care for their child(ren). This reveals that states that do not have abortion policy concurrently establish conditions that make having a child more difficult. This is problematic, because if the state creates conditions so that women are forced to have babies instead of being able to access abortion or contraceptive rights and then they have a baby, they face the jeopardy of losing their job and income with no protection.
+Due to the sample sizes that were too small, we performed exact logistic regression to account for small sample sizes and separation. The exact logistic regression yielded a p-value of 0.03880713, indicating that there is significant evidence to suggest a linear relationship between job protection policy and the degree of restrictiveness to protectiveness of a state's abortion policy.
+
+From the coefficients and the visualization, we can see that states with more protective abortion measures are more likely to have policy guaranteeing job protection for parents when they take paternal leave to care for their child(ren). This reveals that states that do not have abortion policy concurrently establish conditions that make having a child more difficult. This is problematic, because if the state creates conditions so that women are forced to have babies instead of being able to access abortion or contraceptive rights and then they have a baby, they face the jeopardy of losing their job and income with no protection.
 
 ## Education Wellness
 
