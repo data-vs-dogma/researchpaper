@@ -15,6 +15,8 @@ import pandas as pd
 economic_data = pd.read_excel("../data/raw_data/EconomicData.xlsx", keep_default_na=False, na_values=[])
 health_data = pd.read_excel("../data/raw_data/HealthData.xlsx", keep_default_na=False, na_values=[])
 policy_data = pd.read_excel("../data/raw_data/PolicyData.xlsx", keep_default_na=False, na_values=[])
+education_data = pd.read_excel("../data/raw_data/EducationData.xlsx", keep_default_na=False, na_values=[])
+fostercare_data = pd.read_csv("../data/raw_data/FosterCareData.csv", keep_default_na=False, na_values=[])
 
 # Standardize 'State' names
 def clean_state_name(state):
@@ -23,9 +25,11 @@ def clean_state_name(state):
     return state.strip()
 
 # Apply cleaning to all datasets
-economic_data["State"] = economic_data["State"].apply(clean_state_name)
-health_data["State"] = health_data["State"].apply(clean_state_name)
-policy_data["State"] = policy_data["State"].apply(clean_state_name)
+# Apply to all dataframes at once using a loop
+dataframes = [economic_data, health_data, policy_data, education_data, fostercare_data]
+
+for df in dataframes:
+    df['State'] = df['State'].map(clean_state_name)
 
 # Convert all rows in abortion_policies column to lowercase
 if "abortion_policies" in policy_data.columns:
@@ -35,9 +39,18 @@ if "abortion_policies" in policy_data.columns:
 merged_data = economic_data.merge(health_data, on="State", how="outer")\
                            .merge(policy_data, on="State", how="outer")
 
+# Subset education and foster care data to keep only relevant columns
+education_data = education_data.drop(['total_school_score', 'school_quality_rank', 'school_safety_rank'], axis=1)
+fostercare_data = fostercare_data.drop(['total_children_population', 'children_in_foster_care', 'licensed_foster_homes'], axis=1)
+
+# Merge with previously merged dataframe
+merged_data = merged_data.merge(education_data, on='State', how='left')\
+                        .merge(fostercare_data, on='State', how='left')
+```
+
+```{python}
 # Save the cleaned and merged data
 merged_data.to_csv("../data/clean_data/merged_data.csv", index=False)
 
 print("Data merged and saved successfully!")
-
 ```
