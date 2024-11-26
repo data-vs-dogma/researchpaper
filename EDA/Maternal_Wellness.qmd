@@ -175,11 +175,7 @@ From the coefficients and the visualization, we can see that states with more pr
 
 ### Percentage of Employed Women per State by Abortion Policy
 
-```{r}
-df$percent_women_working
-```
-
-```{r}
+```{r, warning=FALSE, message=FALSE}
 # Kruskal-Wallis test
 kruskal.test(percent_women_working ~ abortion_policies, data = df)
 
@@ -239,7 +235,7 @@ The permutation test of the ANOVA test further confirms that this data has a sig
 
 ### Percentage of Women per State with a BA degree or higher by Abortion Policy
 
-```{r}
+```{r, warning=FALSE, message=FALSE}
 # Kruskal-Wallis test
 kruskal.test(percentage_women_BA_or_higher ~ abortion_policies, data = df)
 
@@ -299,7 +295,7 @@ A permutation test was performed on this data in addition to the Kruskal-Wallis 
 
 ### Women with Postpartum Depression by Abortion Policy
 
-```{r}
+```{r, warning=FALSE, message=FALSE}
 # Kruskal-Wallis test
 kruskal.test(percent_women_with_postpartum_depression_2021 ~ abortion_policies, data = df)
 
@@ -322,7 +318,7 @@ The Kruskal-Wallis test does not yield a statistically significant p-value there
 
 ### Women with Depression Before or During Pregnancy by Abortion Policy
 
-```{r}
+```{r, warning=FALSE, message=FALSE}
 # Kruskal-Wallis test
 kruskal.test(women_with_depression_before_or_during_pregnancy_2021 ~ abortion_policies, data = df)
 
@@ -345,7 +341,7 @@ The Kruskal Wallis test does not provide any evidence to suggest that there is a
 
 ### Percentage of Women Who Received a Postpartum Depression Screening in 2021, by Abortion Policy
 
-```{r}
+```{r, warning=FALSE, message=FALSE}
 # Kruskal-Wallis test
 kruskal.test(percent_women_who_received_a_postpartum_depression_screening_2021 ~ abortion_policies, data = df)
 
@@ -401,7 +397,7 @@ The Kruskal-Wallis test indicates that we have significant evidence at a p-value
 
 ### Percentage of Women Experiencing Intimate Partner Violence by Abortion Policy
 
-```{r}
+```{r, warning=FALSE, message=FALSE}
 # Kruskal-Wallis test
 kruskal.test(percent_women_experiencing_intimate_partner_violence_2021 ~ abortion_policies, data = df)
 

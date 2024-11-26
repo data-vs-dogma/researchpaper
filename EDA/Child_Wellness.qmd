@@ -1,7 +1,10 @@
 ---
 title: "Child Wellness EDA"
 author: "Viviana Luccioli"
-format: html
+format: 
+  html:
+    embed-resources: true
+    code-fold: true
 editor: visual
 ---
 
