@@ -19,11 +19,7 @@ df <- df[!is.na(df$abortion_policies), ]
 table(df$abortion_policies)
 ```
 
-Number of Children in Foster Care per 100,000 Children, by Abortion Policy
-
-```{r}
-shapiro.test(df$foster_children_per_capita)
-```
+## Number of Children in Foster Care per 100,000 Children, by Abortion Policy
 
 ```{r}
 # Kruskal-Wallis test
@@ -55,7 +51,7 @@ ggplot(df, aes(x = abortion_policies, y = foster_children_per_capita)) +
        title = "Foster Care Rates by Abortion Policy")
 ```
 
-Overall School System Ranking by Abortion Policy
+## Overall School System Ranking by Abortion Policy
 
 ```{r}
 # Kruskal-Wallis test
