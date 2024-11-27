@@ -1,0 +1,352 @@
+---
+title: "Maternal Health EDA"
+author: "Kristin Lloyd"
+format: 
+  html:
+    embed-resources: true
+    code-fold: true
+editor: visual
+---
+
+```{r, warning=FALSE, message=FALSE}
+
+library(tidyverse)
+library(readr)
+```
+
+```{r}
+
+df <- read_csv("data/clean_data/merged_data.csv", show_col_types = FALSE)
+df <- df[!is.na(df$abortion_policies), ]
+```
+
+```{r}
+
+table(df$abortion_policies)
+```
+
+```{r}
+
+# Kruskal-Wallis test
+kruskal.test(foster_children_per_capita ~ abortion_policies, data = df)
+
+# If Kruskal-Wallis is significant, run pairwise Wilcoxon tests
+pairwise.wilcox.test(df$foster_children_per_capita, 
+                     df$abortion_policies,
+                     p.adjust.method = "bonferroni")
+
+# For visualization
+# First reorder the factor levels
+df$abortion_policies <- factor(df$abortion_policies, 
+                             levels = c("most restrictive", 
+                                      "very restrictive", 
+                                      "restrictive",
+                                      "some restrictions/protections",
+                                      "protective",
+                                      "very protective",
+                                      "most protective"))
+
+# Then create the plot
+ggplot(df, aes(x = abortion_policies, y = foster_children_per_capita)) +
+  geom_boxplot() +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(x = "Abortion Policies", 
+       y = "Foster Children per Capita",
+       title = "Foster Care Rates by Abortion Policy")
+```
+
+```{r}
+
+set.seed(5100)
+
+df_test <- df[df$State != "US", ]
+
+permutation_test <- function(data, group_col, value_col, n_permutations = 100000) { observed_stat <- summary(aov(data[[value_col]] ~ data[[group_col]]))[[1]][["F value"]][1]
+
+perm_stats <- replicate(n_permutations, { shuffled_values <- sample(data[[value_col]]) perm_stat <- summary(aov(shuffled_values ~ data[[group_col]]))[[1]][["F value"]][1] perm_stat })
+
+p_value <- mean(perm_stats >= observed_stat) list(observed_stat = observed_stat, p_value = p_value, perm_stats = perm_stats) }
+
+result <- permutation_test( data = df_test, group_col = "abortion_policies", value_col = "overall_health_ranking" )
+
+cat("Observed Statistic (F):", result$observed_stat, "\n")
+cat("Permutation Test P-Value:", result$p_value, "\n 
+
+```
+
+Null hypothesis: The health rankings do not differ across abortion policy groups (i.e., all groups come from the same distribution).
+
+Alternate hypothesis: There is a significant difference in overall_health_ranking between the abortion policy groups.
+
+The p-value is 0.00001, which provides provides overwhelming evidence to reject the null hypothesis.
+
+```{r}
+
+ggplot(data.frame(perm_stats = result$perm_stats), aes(x = perm_stats)) +
+  geom_histogram(binwidth = 0.1, fill = "blue", color = "black") +
+  geom_vline(xintercept = result$observed_stat, color = "red", linetype = "dashed") +
+  labs(
+    title = "Permutation Test Distribution",
+    x = "F-statistics from Permutations",
+    y = "Frequency"
+  ) +
+  theme_minimal()
+
+```
+
+The observed F-statistic (red dashed line) is far to the right of this distribution, indicating its extreme nature compared to the null hypothesis. ​
+
+```{r}
+
+pairwise_permutation_test <- function(data, group_col, value_col, n_permutations = 10000) {
+  groups <- unique(data[[group_col]])
+  comparisons <- combn(groups, 2, simplify = FALSE)
+  results <- lapply(comparisons, function(pair) {
+    group1 <- data[[value_col]][data[[group_col]] == pair[1]]
+    group2 <- data[[value_col]][data[[group_col]] == pair[2]]
+    
+    observed_diff <- abs(median(group1) - median(group2))
+    
+    pooled <- c(group1, group2)
+    perm_diffs <- replicate(n_permutations, {
+      shuffled <- sample(pooled)
+      abs(median(shuffled[1:length(group1)]) - median(shuffled[(length(group1) + 1):length(pooled)]))
+    })
+    
+    p_value <- mean(perm_diffs >= observed_diff)
+    
+    list(pair = pair, observed_diff = observed_diff, p_value = p_value)
+  })
+  
+  data.frame(
+    Group1 = sapply(results, function(x) x$pair[1]),
+    Group2 = sapply(results, function(x) x$pair[2]),
+    Observed_Diff = sapply(results, function(x) x$observed_diff),
+    P_Value = sapply(results, function(x) x$p_value)
+  )
+}
+
+pairwise_results <- pairwise_permutation_test(
+  data = df_test,
+  group_col = "abortion_policies",
+  value_col = "overall_health_ranking"
+)
+
+print(pairwise_results)
+                           
+```
+
+most restrictive & protective observed difference = 26.5 p-val = 0.0001
+
+```{r}
+
+{r}
+
+# Kruskal-Wallis test
+kruskal.test(foster_children_per_capita ~ abortion_policies, data = df)
+
+# If Kruskal-Wallis is significant, run pairwise Wilcoxon tests
+pairwise.wilcox.test(df$foster_children_per_capita, 
+                     df$abortion_policies,
+                     p.adjust.method = "bonferroni")
+
+# For visualization
+# First reorder the factor levels
+df$abortion_policies <- factor(df$abortion_policies, 
+                             levels = c("most restrictive", 
+                                      "very restrictive", 
+                                      "restrictive",
+                                      "some restrictions/protections",
+                                      "protective",
+                                      "very protective",
+                                      "most protective"))
+
+# Then create the plot
+ggplot(df, aes(x = abortion_policies, y = foster_children_per_capita)) +
+  geom_boxplot() +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(x = "Abortion Policies", 
+       y = "Foster Children per Capita",
+       title = "Foster Care Rates by Abortion Policy")
+
+```
+
+```{r}
+
+set.seed(5100)
+
+df_test <- df[df$State != "US", ]
+
+permutation_test <- function(data, group_col, value_col, n_permutations = 100000) { observed_stat <- summary(aov(data[[value_col]] ~ data[[group_col]]))[[1]][["F value"]][1]
+
+perm_stats <- replicate(n_permutations, { shuffled_values <- sample(data[[value_col]]) perm_stat <- summary(aov(shuffled_values ~ data[[group_col]]))[[1]][["F value"]][1] perm_stat })
+
+p_value <- mean(perm_stats >= observed_stat) list(observed_stat = observed_stat, p_value = p_value, perm_stats = perm_stats) }
+
+result <- permutation_test( data = df_test, group_col = "abortion_policies", value_col = "overall_health_ranking" )
+
+cat("Observed Statistic (F):", result$observed_stat, "\n")
+cat("Permutation Test P-Value:", result$p_value, "\n 
+
+```
+
+```{r}
+
+ggplot(data.frame(perm_stats = result$perm_stats), aes(x = perm_stats)) +
+  geom_histogram(binwidth = 0.1, fill = "blue", color = "black") +
+  geom_vline(xintercept = result$observed_stat, color = "red", linetype = "dashed") +
+  labs(
+    title = "Permutation Test Distribution",
+    x = "F-statistics from Permutations",
+    y = "Frequency"
+  ) +
+  theme_minimal()
+
+```
+
+```{r}
+
+pairwise_permutation_test <- function(data, group_col, value_col, n_permutations = 10000) {
+  groups <- unique(data[[group_col]])
+  comparisons <- combn(groups, 2, simplify = FALSE)
+  results <- lapply(comparisons, function(pair) {
+    group1 <- data[[value_col]][data[[group_col]] == pair[1]]
+    group2 <- data[[value_col]][data[[group_col]] == pair[2]]
+    
+    observed_diff <- abs(median(group1) - median(group2))
+    
+    pooled <- c(group1, group2)
+    perm_diffs <- replicate(n_permutations, {
+      shuffled <- sample(pooled)
+      abs(median(shuffled[1:length(group1)]) - median(shuffled[(length(group1) + 1):length(pooled)]))
+    })
+    
+    p_value <- mean(perm_diffs >= observed_diff)
+    
+    list(pair = pair, observed_diff = observed_diff, p_value = p_value)
+  })
+  
+  data.frame(
+    Group1 = sapply(results, function(x) x$pair[1]),
+    Group2 = sapply(results, function(x) x$pair[2]),
+    Observed_Diff = sapply(results, function(x) x$observed_diff),
+    P_Value = sapply(results, function(x) x$p_value)
+  )
+}
+
+pairwise_results <- pairwise_permutation_test(
+  data = df_test,
+  group_col = "abortion_policies",
+  value_col = "overall_health_ranking"
+)
+
+print(pairwise_results)
+
+```
+
+```{r}
+
+# Kruskal-Wallis test
+kruskal.test(foster_children_per_capita ~ abortion_policies, data = df)
+
+# If Kruskal-Wallis is significant, run pairwise Wilcoxon tests
+pairwise.wilcox.test(df$foster_children_per_capita, 
+                     df$abortion_policies,
+                     p.adjust.method = "bonferroni")
+
+# For visualization
+# First reorder the factor levels
+df$abortion_policies <- factor(df$abortion_policies, 
+                             levels = c("most restrictive", 
+                                      "very restrictive", 
+                                      "restrictive",
+                                      "some restrictions/protections",
+                                      "protective",
+                                      "very protective",
+                                      "most protective"))
+
+# Then create the plot
+ggplot(df, aes(x = abortion_policies, y = foster_children_per_capita)) +
+  geom_boxplot() +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(x = "Abortion Policies", 
+       y = "Foster Children per Capita",
+       title = "Foster Care Rates by Abortion Policy")
+
+```
+
+```{r}
+
+set.seed(5100)
+
+df_test <- df[df$State != "US", ]
+
+permutation_test <- function(data, group_col, value_col, n_permutations = 100000) { observed_stat <- summary(aov(data[[value_col]] ~ data[[group_col]]))[[1]][["F value"]][1]
+
+perm_stats <- replicate(n_permutations, { shuffled_values <- sample(data[[value_col]]) perm_stat <- summary(aov(shuffled_values ~ data[[group_col]]))[[1]][["F value"]][1] perm_stat })
+
+p_value <- mean(perm_stats >= observed_stat) list(observed_stat = observed_stat, p_value = p_value, perm_stats = perm_stats) }
+
+result <- permutation_test( data = df_test, group_col = "abortion_policies", value_col = "overall_health_ranking" )
+
+cat("Observed Statistic (F):", result$observed_stat, "\n")
+cat("Permutation Test P-Value:", result$p_value, "\n 
+
+```
+
+```{r}
+
+ggplot(data.frame(perm_stats = result$perm_stats), aes(x = perm_stats)) +
+  geom_histogram(binwidth = 0.1, fill = "blue", color = "black") +
+  geom_vline(xintercept = result$observed_stat, color = "red", linetype = "dashed") +
+  labs(
+    title = "Permutation Test Distribution",
+    x = "F-statistics from Permutations",
+    y = "Frequency"
+  ) +
+  theme_minimal()
+
+```
+
+```{r}
+
+pairwise_permutation_test <- function(data, group_col, value_col, n_permutations = 10000) {
+  groups <- unique(data[[group_col]])
+  comparisons <- combn(groups, 2, simplify = FALSE)
+  results <- lapply(comparisons, function(pair) {
+    group1 <- data[[value_col]][data[[group_col]] == pair[1]]
+    group2 <- data[[value_col]][data[[group_col]] == pair[2]]
+    
+    observed_diff <- abs(median(group1) - median(group2))
+    
+    pooled <- c(group1, group2)
+    perm_diffs <- replicate(n_permutations, {
+      shuffled <- sample(pooled)
+      abs(median(shuffled[1:length(group1)]) - median(shuffled[(length(group1) + 1):length(pooled)]))
+    })
+    
+    p_value <- mean(perm_diffs >= observed_diff)
+    
+    list(pair = pair, observed_diff = observed_diff, p_value = p_value)
+  })
+  
+  data.frame(
+    Group1 = sapply(results, function(x) x$pair[1]),
+    Group2 = sapply(results, function(x) x$pair[2]),
+    Observed_Diff = sapply(results, function(x) x$observed_diff),
+    P_Value = sapply(results, function(x) x$p_value)
+  )
+}
+
+pairwise_results <- pairwise_permutation_test(
+  data = df_test,
+  group_col = "abortion_policies",
+  value_col = "overall_health_ranking"
+)
+
+print(pairwise_results)
+                           
+```
