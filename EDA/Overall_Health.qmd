@@ -1,0 +1,79 @@
+---
+title: "Overall Health - Statistical Modeling"
+author: "Courtney Green" 
+format: 
+  html:
+    embed-resources: true
+    code-fold: true
+editor: visual
+---
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(readr)
+df <- read_csv("../data/clean_data/merged_data.csv", show_col_types = FALSE)
+
+# Filter out rows with missing values in critical columns
+df <- df %>% 
+  filter(!is.na(overall_health_ranking) & 
+         !is.na(coverage_access_and_affordability) &
+         !is.na(health_care_quality_and_prevention) &
+         !is.na(health_outcomes) &
+         !is.na(medicaid_expansion_status) &
+         !is.na(state_requires_coverage_of_prescription_contraception))
+#head(df)
+```
+
+## Overall Health
+
+### Overall Health Ranking by Abortion Policy
+
+```{r}
+
+# Reorder the levels of abortion policies
+df$abortion_policies <- factor(df$abortion_policies, 
+                              levels = c("most protective", "very protective", 
+                                         "protective", "some restrictions/protections", 
+                                         "restrictive", "very restrictive", "most restrictive"))
+
+# Bin overall_health_ranking into categories
+df$overall_health_category <- cut(df$overall_health_ranking,
+                                  breaks = c(-Inf, 10, 20, 30, 40, 50, Inf),
+                                  labels = c("most healthy", "very healthy", 
+                                             "healthy", "average", 
+                                             "below average", "unhealthy"))
+
+# Stacked bar plot by abortion policy
+ggplot(df, aes(x = abortion_policies, fill = overall_health_category)) +
+  geom_bar(position = "fill") +
+  labs(x = "Abortion Policy", 
+       y = "Proportion", 
+       fill = "Overall Health Category") +
+  scale_fill_manual(values = c("palegreen", "palegreen3", "palegreen4",  
+                                "olivedrab4", "sienna", "sienna3", "red")) + 
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+
+```
+
+This plot reveals a notable trend between overall health rankings and abortion policies. States with "most protective" abortion policies tend to have the highest proportions of "most healthy" and "very healthy" health outcomes. In contrast, as policies become more restrictive, there is an apparent increase in the proportion of states categorized as "unhealthy" or "below average." This suggests that states with restrictive abortion policies are not only limiting access to reproductive healthcare but may also be falling behind in fostering broader public health outcomes. These restrictive states disproportionately represent environments where overall health conditions are poorer, potentially reflecting a lack of investment in comprehensive healthcare systems or preventative care infrastructure.
+
+Alternatively, states with protective abortion policies appear to align with stronger public health systems, where access to care and preventative measures may contribute to better overall health rankings. This pattern underscores a broader connection between policy decisions prioritizing individual health rights and the overall well-being of a population.
+
+### Overall Health Ranking by Medicaid Expansion Status
+
+```{r}
+# Create a variable combining states based on Medicaid expansion status
+df$medicaid_expansion <- factor(df$medicaid_expansion_status, levels = c("0", "1"))
+
+# Stacked bar plot
+ggplot(df, aes(x = medicaid_expansion, fill = overall_health_category)) +
+  geom_bar(position = "fill") +
+  labs(x = "Medicaid Expansion Status", 
+       y = "Proportion", 
+       fill = "Overall Health Ranking") +
+  scale_x_discrete(labels = c("0" = "Not Expanded", "1" = "Expanded")) +
+  scale_fill_manual(values = c("palegreen", "palegreen3", "palegreen4",  
+                                "olivedrab4", "sienna", "sienna3", "red")) + # 
+  theme_classic()
+```
