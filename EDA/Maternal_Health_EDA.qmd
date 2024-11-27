@@ -18,6 +18,8 @@ library(readr)
 
 df <- read_csv("data/clean_data/merged_data.csv", show_col_types = FALSE)
 df <- df[!is.na(df$abortion_policies), ]
+df_test <- df[df$State != "US", ]
+
 ```
 
 ```{r}
@@ -281,6 +283,8 @@ print(pairwise_results)
 ```
 
 3, 8, 17 are sig
+
+## Uninsured during pregnancy
 
 ```{r}
 
