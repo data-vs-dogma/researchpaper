@@ -21,7 +21,9 @@ df <- df %>%
          !is.na(health_care_quality_and_prevention) &
          !is.na(health_outcomes) &
          !is.na(medicaid_expansion_status) &
-         !is.na(state_requires_coverage_of_prescription_contraception))
+         !is.na(state_requires_coverage_of_prescription_contraception) 
+         )
+
 #head(df)
 ```
 
@@ -61,11 +63,14 @@ This plot reveals that states with "most protective" abortion policies tend to h
 
 Alternatively, **states with protective abortion policies appear to align with stronger public health systems, where access to care and preventative measures may contribute to better overall health rankings.** This pattern underscores a broader connection between policy decisions prioritizing individual health rights and the overall well-being of a population.
 
-```{r}
+```{r,message = FALSE, warning=FALSE}
 # Kruskal-Wallis Test: captures difference in overall_healths numeric rankings
 kruskal_test <- kruskal.test(overall_health_ranking ~ abortion_policies, data = df)
 print(kruskal_test)
 
+# If Kruskal-Wallis is significant, run pairwise Wilcoxon tests 
+pairwise.wilcox.test(df$overall_health_ranking,
+                     df$abortion_policies, p.adjust.method = "bonferroni")
 ```
 
 The **Kruskal-Wallis Test (χ² = 23.649, df = 6, p = 0.0006058)** reveals statistically significant differences in the numeric overall health rankings across the seven levels of abortion policy restrictiveness. This suggests that abortion policy restrictiveness correlates with variations in health outcomes. The low p-value (\< 0.05) indicates that these differences are unlikely to have occurred by chance. This result supports the observation from the stacked bar plot: more restrictive abortion policies tend to align with poorer health outcomes, while more protective policies are associated with better health outcomes.
@@ -75,6 +80,9 @@ Now we will perform linear regression to investigate the direction of this relat
 ```{r}
 # Assumptions: 
 library(lmtest)
+processed_data <- df %>%
+  group_by(abortion_policies) %>%
+  summarise(avg_ranking = mean(overall_health_ranking, na.rm = TRUE))
 
 # 1. Linearity 
 ggplot(processed_data, aes(x = factor(abortion_policies), y = avg_ranking)) +
@@ -82,11 +90,12 @@ ggplot(processed_data, aes(x = factor(abortion_policies), y = avg_ranking)) +
   geom_smooth(method = "lm", se = TRUE, color = "red") +
   labs(title = "Linearity Check")
 
-#2. Independence 
+# 2. Independence 
 lm_model <- lm(avg_ranking ~ as.numeric(abortion_policies), data = processed_data)
 dwtest(lm_model)
 
-#3. Homoscedasticity
+
+# 3. Homoscedasticity
 plot(lm_model, which = 1)  # plots the residuals vs fitted  
 bptest(lm_model) # heteroscedasticity test-- p-val < 0.05 indicates clear violation of homoscedasticity 
 
@@ -111,7 +120,6 @@ processed_data <- df %>%
 # Fit linear model to calculate R-squared
 lm_model <- lm(avg_ranking ~ as.numeric(abortion_policies), data = processed_data)
 r_squared <- round(summary(lm_model)$r.squared, 3)
-summary(lm_model)
 
 # Plot with R-squared annotation
 ggplot(processed_data, aes(x = abortion_policies, y = avg_ranking)) +
@@ -223,11 +231,13 @@ States with "most protective" abortion policies tend to have better rankings (lo
 
 This disparity also highlights inconsistencies in the priorities of restrictive states. States with protective abortion policies might integrate reproductive healthcare into broader healthcare initiatives, fostering better access and affordability. **In contrast, restrictive states, which often frame their policies as being "pro-life," may focus on generalized or inconsistent healthcare frameworks, leading to poorer outcomes.** The lack of affordable and accessible healthcare in these states undermines their claims to protect life, as they fail to support the broader well-being of the populations they govern. These findings underscore both the interconnectedness between reproductive healthcare policy and overall healthcare accessibility and affordability, and the disconnect in restrictive states between policy rhetoric and actionable support for healthier communities.
 
-```{r}
+```{r, warning=FALSE, message=FALSE}
 kruskal_test <- kruskal.test(coverage_access_and_affordability ~ abortion_policies, data = df)
 print(kruskal_test)
 
-
+# If Kruskal-Wallis is significant, run pairwise Wilcoxon tests 
+pairwise.wilcox.test(df$coverage_access_and_affordability,
+                     df$abortion_policies, p.adjust.method = "bonferroni")
 ```
 
 The **Kruskal-Wallis test** yielded a **chi-squared value of 22.583 with 6 degrees of freedom and a p of 0.0009489.** This statistically significant result indicates that there are differences in coverage access and affordability rankings among the seven abortion policy levels. States with more restrictive abortion policies appear to have higher (worse) rankings for coverage access and affordability compared to states with more protective policies, reinforcing the association between policy restrictiveness and reduced access to affordable care.
@@ -378,9 +388,13 @@ ggplot(df, aes(x = abortion_policies, y = health_care_quality_and_prevention, fi
 
 States with "most protective" abortion policies are clustered at the lower end of the ranking scale, indicating better healthcare quality and prevention outcomes. Conversely, states with "most restrictive" abortion policies show higher rankings, reflecting poorer performance in healthcare quality and prevention metrics. **The trend suggests that states with protective abortion policies may prioritize robust healthcare systems, integrating reproductive health within broader preventative and quality-focused frameworks. In contrast, states with restrictive abortion policies consistently rank worse, potentially indicating less emphasis on preventative care or healthcare quality.** This highlights how restrictive reproductive healthcare policies may correlate with broader systemic healthcare shortcomings, potentially exacerbating health inequities in those states.
 
-```{r}
+```{r,message=FALSE, warning=FALSE}
 kruskal_test <- kruskal.test(health_care_quality_and_prevention ~ abortion_policies, data = df)
 print(kruskal_test)
+
+# If Kruskal-Wallis is significant, run pairwise Wilcoxon tests 
+pairwise.wilcox.test(df$health_care_quality_and_prevention,
+                     df$abortion_policies, p.adjust.method = "bonferroni")
 ```
 
 The **Kruskal-Wallis test** yielded a chi-squared statistic of 22.583 (df = 6, p = 0.02865), indicating statistically significant differences in healthcare quality and prevention rankings across the seven levels of abortion policy restrictiveness. This result aligns with the observations from the boxplot, suggesting that states with more protective abortion policies tend to perform better in healthcare quality and prevention rankings, while more restrictive policies are associated with poorer outcomes.
@@ -458,9 +472,13 @@ This boxplot illustrates the relationship between abortion policies and health o
 
 These **trends suggest that states with more restrictive abortion policies may lack broader investments in public health infrastructure and services, contributing to poorer overall health outcomes.** In contrast, states with protective abortion policies might prioritize comprehensive healthcare systems that address a wider array of health determinants. This disparity underscores the broader implications of policy decisions on public health and well-being, highlighting potential inequities in access to essential healthcare resources.
 
-```{r}
+```{r,message = FALSE, warning = FALSE}
 kruskal_test <- kruskal.test(health_outcomes ~ abortion_policies, data = df)
 print(kruskal_test)
+
+# If Kruskal-Wallis is significant, run pairwise Wilcoxon tests 
+pairwise.wilcox.test(df$health_outcomes,
+                     df$abortion_policies, p.adjust.method = "bonferroni")
 ```
 
 The **Kruskal-Wallis** test for health outcomes across abortion policy levels reveals a chi-squared value of **21.669** with **6 degrees of freedom** and a **p-value of 0.00139**. This statistically significant result indicates that health outcomes vary meaningfully across at least one level of abortion policy. This reinforces the trends observed in the boxplot: states with "most protective" abortion policies tend to achieve better health outcomes, while those with "most restrictive" policies are associated with worse rankings.
@@ -519,6 +537,8 @@ This result supports the conclusion that health outcomes vary significantly acro
 
 ```{r}
 # Create the OBGYN ratio column
+df %>% filter(!is.na(number_of_obstetricians_and_gynecologists_employed_2023) &
+         !is.na(total_number_of_women_aged_15_44_2017))
 df <- df %>%
   mutate(obgyn_ratio = number_of_obstetricians_and_gynecologists_employed_2023 /
                        total_number_of_women_aged_15_44_2017)
