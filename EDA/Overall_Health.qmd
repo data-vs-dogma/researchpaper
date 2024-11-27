@@ -485,6 +485,83 @@ A **permutation test** was performed on health outcomes by abortion policy to va
 
 This result supports the conclusion that health outcomes vary significantly across abortion policy levels. The visualization of the permutation distribution shows that the observed F-statistic lies far to the right of the simulated null distribution, providing strong evidence that these differences are unlikely to have arisen by chance. **These findings underscore the measurable impact of abortion policy restrictiveness on broader health outcomes, indicating systemic disparities in public health quality across states.**
 
+### OBGYN Ratios by Abortion Policy
+
+```{r}
+# Create the OBGYN ratio column
+df <- df %>%
+  mutate(obgyn_ratio = number_of_obstetricians_and_gynecologists_employed_2023 /
+                       total_number_of_women_aged_15_44_2017)
+
+# Summarize the ratio by abortion policy
+ratio_summary <- df %>%
+  group_by(abortion_policies) %>%
+  summarise(mean_ratio = mean(obgyn_ratio, na.rm = TRUE),
+            median_ratio = median(obgyn_ratio, na.rm = TRUE),
+            sd_ratio = sd(obgyn_ratio, na.rm = TRUE))
+# Print summary table
+print(ratio_summary)
+
+```
+
+**Note:** It's critical to consider the mismatch in timeframes for the data (OB-GYN numbers from 2023 and population data from 2017), which could introduce inaccuracies. This table serves as a starting point for understanding disparities in healthcare access by abortion policy and underscores the need for more recent and comprehensive data to draw robust conclusions.
+
+```{r}
+ggplot(df, aes(x = abortion_policies, y = obgyn_ratio, fill = abortion_policies)) +
+  geom_boxplot() +
+  scale_fill_manual(values = c("palegreen", "palegreen3", "palegreen4", 
+                                "olivedrab4", "sienna", "sienna3", "red")) +
+  labs(
+    x = "Abortion Policies",
+    y = "Ratio of OB-GYNs to Women (15-44)",
+    title = "OB-GYN Ratios by Abortion Policy"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(hjust = 0.5, size = 14)
+  )
+```
+
+This boxplot illustrates the ratio of OB-GYNs to women aged 15-44 across states with varying abortion policy classifications. States with more protective abortion policies tend to have higher ratios of OB-GYNs to women, as indicated by the greater median and interquartile ranges for these groups. Conversely, states with more restrictive abortion policies exhibit lower OB-GYN-to-women ratios, reflected in their comparatively lower medians and more compressed distributions.
+
+These findings suggest that states prioritizing access to abortion services may also allocate resources to ensure greater availability of OB-GYNs, enhancing access to comprehensive reproductive healthcare. On the other hand, states with restrictive abortion policies may not only limit reproductive healthcare access through policy but may also have fewer OB-GYNs available, compounding the barriers for women in accessing necessary medical care.
+
+```{r}
+set.seed(1234) # For reproducibility
+N <- 10000 # Number of permutations
+perm_F <- numeric(N)
+
+for (i in 1:N) {
+  permuted_data <- df
+  permuted_data$obgyn_ratio <- sample(permuted_data$obgyn_ratio)
+  
+  perm_anova <- aov(obgyn_ratio ~ abortion_policies, data = permuted_data)
+  perm_F[i] <- summary(perm_anova)[[1]][["F value"]][1]
+}
+
+# Step 3: Calculate the p-value
+p_value <- mean(perm_F >= observed_F)
+
+# Step 4: Print results
+cat("Observed F-statistic:", observed_F, "\n")
+cat("Permutation Test p-value:", p_value, "\n")
+
+```
+
+```{r}
+hist(perm_F, breaks = 30, 
+     main = "Permutation Distribution of F-statistic", 
+     xlab = "F-statistic",
+     col = "palegreen3", 
+     border = "white")
+# Highlight the observed F-statistic
+abline(v = observed_F, col = "red", lwd = 2, lty = 2)
+
+```
+
+The **permutation test** for the ratio of OB-GYNs to women aged 15–44 yields an observed F-statistic of 5.608316 with a highly significant p-value of 0.0003. This result indicates that there is strong evidence to suggest that the distribution of OB-GYN ratios significantly varies across abortion policy categories. The significant result underscores that states with differing abortion policies also exhibit distinct disparities in OB-GYN accessibility, pointing to potential inequities in access to reproductive healthcare resources.
+
 # Conclusions
 
 The findings across these analyses underscore the significant relationships between abortion policies and various dimensions of overall public health. States with more restrictive abortion policies tend to exhibit poorer rankings across critical health indicators, including overall health, healthcare quality and prevention, and health outcomes. This pattern is consistently supported by the results of Kruskal-Wallis tests, permutation tests, and visualization methods, suggesting systemic disparities in healthcare infrastructure and access.
