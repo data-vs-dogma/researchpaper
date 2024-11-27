@@ -70,7 +70,37 @@ print(kruskal_test)
 
 The **Kruskal-Wallis Test (χ² = 23.649, df = 6, p = 0.0006058)** reveals statistically significant differences in the numeric overall health rankings across the seven levels of abortion policy restrictiveness. This suggests that abortion policy restrictiveness correlates with variations in health outcomes. The low p-value (\< 0.05) indicates that these differences are unlikely to have occurred by chance. This result supports the observation from the stacked bar plot: more restrictive abortion policies tend to align with poorer health outcomes, while more protective policies are associated with better health outcomes.
 
-Now we will perform linear regression to investigate the direction of this relationship:
+Now we will perform linear regression to investigate the direction of this relationship. Before doing so, we must check assumptions:
+
+```{r}
+# Assumptions: 
+library(lmtest)
+
+# 1. Linearity 
+ggplot(processed_data, aes(x = factor(abortion_policies), y = avg_ranking)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = TRUE, color = "red") +
+  labs(title = "Linearity Check")
+
+#2. Independence 
+lm_model <- lm(avg_ranking ~ as.numeric(abortion_policies), data = processed_data)
+dwtest(lm_model)
+
+#3. Homoscedasticity
+plot(lm_model, which = 1)  # plots the residuals vs fitted  
+bptest(lm_model) # heteroscedasticity test-- p-val < 0.05 indicates clear violation of homoscedasticity 
+
+#2. Normality of residuals 
+plot(lm_model, which = 2)  # qq plot
+hist(resid(lm_model), main = "Histogram of Residuals", xlab = "Residuals")
+
+```
+
+None of the assumptions for linear regression appear to be significantly violated, based on these tests. Since the heteroscedasticity test yields. p-value of 0.245, there is no significant evidence to suggest this data violates the homoscedasticity assumption. The qq-plot and histogram indicate that the data is, for the most part, approximately Normal, but the small sample size is likely the main factor impacting the strange shape of the histogram. Nevertheless, we assume that none of these slight deviations are extreme enough to violate the assumption, so we can continue with our linear regression:
+
+Null hypothesis: the mean overall health ranking is the same in each level of abortion policy.
+
+Alternative hypothesis: at least one abortion policy group has a significantly different effect on the mean overall health ranking.
 
 ```{r}
 # Linear Regression
@@ -81,6 +111,7 @@ processed_data <- df %>%
 # Fit linear model to calculate R-squared
 lm_model <- lm(avg_ranking ~ as.numeric(abortion_policies), data = processed_data)
 r_squared <- round(summary(lm_model)$r.squared, 3)
+summary(lm_model)
 
 # Plot with R-squared annotation
 ggplot(processed_data, aes(x = abortion_policies, y = avg_ranking)) +
@@ -101,7 +132,7 @@ ggplot(processed_data, aes(x = abortion_policies, y = avg_ranking)) +
 
 ```
 
-This **linear regression plot** shows a strong, positive relationship between abortion policy restrictiveness and overall health ranking. As abortion policies become more restrictive (moving from "most protective" to "most restrictive"), the overall health ranking worsens (increases numerically). The R² value of 0.917 indicates that 91.7% of the variation in overall health ranking is explained by the level of restrictiveness in abortion policies. This suggests a clear and significant trend where stricter abortion policies are associated with poorer overall health outcomes.
+With a p-value of 0.0006981, this linear regression model provides significant evidence to reject the null hypothesis in favor of the alternative and suggest that at least one level of abortion policy has a significant inclufence on the overall health ranking. This **linear regression plot** shows a strong, positive relationship between abortion policy restrictiveness and overall health ranking. As abortion policies become more restrictive (moving from "most protective" to "most restrictive"), the overall health ranking worsens (increases numerically). The R² value of 0.917 indicates that 91.7% of the variation in overall health ranking is explained by the level of restrictiveness in abortion policies. This suggests a clear and significant trend where stricter abortion policies are associated with poorer overall health outcomes.
 
 ### Medicaid Expansion Status by Abortion Policy
 
@@ -118,7 +149,7 @@ ggplot(df, aes(x = medicaid_expansion, fill = abortion_policies)) +
   scale_fill_manual(values = c("palegreen", "palegreen3", "palegreen4",  
                                 "olivedrab4", "sienna", "sienna3", "red")) + 
   theme_classic() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) # Rotate x-axis labels
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
 ```
 
 This plot highlights how states that have not expanded Medicaid are disproportionately associated with more restrictive abortion policies. In contrast, states that have expanded Medicaid show a higher proportion of protective and less restrictive abortion policies. **This pattern suggests a potential relationship between policy choices around healthcare access (Medicaid expansion) and reproductive rights (abortion policies), where more progressive health policies align with broader healthcare access.**
@@ -134,7 +165,7 @@ print(fisher_test_result)
 
 The **Fisher's Exact Test** yielded a p-value of **0.03091**, indicating a statistically significant association between Medicaid expansion status and abortion policies. This suggests that the distribution of Medicaid expansion (expanded vs. not expanded) varies significantly across different abortion policy categories. States' decisions on Medicaid expansion may align with their stance on abortion policies.
 
-Now we will perform logistic regression to investigate the direction of this relationship:
+Now we will perform logistic regression to investigate the direction of this relationship, since our dependent variable is a binary categorical variable:
 
 ```{r}
 # Check assumptions for logistic regression 
@@ -151,7 +182,6 @@ library(logistf)
 # Fit the exact logistic regression model
 fit <- logistf(medicaid_expansion_status ~ factor(abortion_policies), data = df)
 
-# View the results
 summary(fit)
 
 ```
@@ -211,7 +241,7 @@ observed_anova <- aov(coverage_access_and_affordability ~ abortion_policies, dat
 observed_F <- summary(observed_anova)[[1]][["F value"]][1]
 
 # Permutation loop
-set.seed(1234) # For reproducibility
+set.seed(1234) 
 perm_F <- numeric(N)
 
 for (i in 1:N) {
@@ -322,7 +352,7 @@ ggplot(df, aes(x = abortion_policies, y = predicted_prob)) +
 
 The **exact logistic regression analysis** provides evidence of a significant relationship between abortion policy restrictiveness and the likelihood of requiring prescription contraceptive coverage, as shown by the likelihood ratio test (p=0.0419). **The predicted probabilities visualized here demonstrate a clear gradient: states with more restrictive abortion policies consistently exhibit lower probabilities of requiring prescription contraceptive coverage compared to those with more protective policies.**
 
-This trend highlights a potential disconnect in restrictive states, which often emphasize policies purportedly in favor of life but fail to mandate coverage for contraceptives that could prevent unintended pregnancies or support broader healthcare needs. On the other hand, states with protective abortion policies are more likely to require coverage, aligning with healthcare frameworks that prioritize both reproductive autonomy and overall well-being. These findings underscore how policy decisions around abortion can reflect broader approaches—or lack thereof—toward supporting individuals' health and autonomy.
+This trend highlights a potential disconnect in restrictive states, which often emphasize policies purportedly in favor of life but fail to mandate coverage for contraceptives that could prevent unintended pregnancies or support broader healthcare needs. On the other hand, states with protective abortion policies are more likely to require coverage, aligning with healthcare frameworks that prioritize both reproductive autonomy and overall well-being. These findings underscore how policy decisions around abortion can reflect broader approaches---or lack thereof---toward supporting individuals' health and autonomy.
 
 ### Healthcare Quality and Prevention by Abortion Policy
 
@@ -560,7 +590,7 @@ abline(v = observed_F, col = "red", lwd = 2, lty = 2)
 
 ```
 
-The **permutation test** for the ratio of OB-GYNs to women aged 15–44 yields an observed F-statistic of 5.608316 with a highly significant p-value of 0.0003. This result indicates that there is strong evidence to suggest that the distribution of OB-GYN ratios significantly varies across abortion policy categories. The significant result underscores that states with differing abortion policies also exhibit distinct disparities in OB-GYN accessibility, pointing to potential inequities in access to reproductive healthcare resources.
+The **permutation test** for the ratio of OB-GYNs to women aged 15--44 yields an observed F-statistic of 5.608316 with a highly significant p-value of 0.0003. This result indicates that there is strong evidence to suggest that the distribution of OB-GYN ratios significantly varies across abortion policy categories. The significant result underscores that states with differing abortion policies also exhibit distinct disparities in OB-GYN accessibility, pointing to potential inequities in access to reproductive healthcare resources.
 
 # Conclusions
 

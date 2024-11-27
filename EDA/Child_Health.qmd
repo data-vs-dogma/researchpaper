@@ -1,0 +1,102 @@
+---
+title: "Child Health"
+format: 
+  html:
+    embed-resources: true
+    code-fold: true
+editor: visual
+---
+
+## Infant Mortality by Abortion Policy
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+df <- read_csv("../data/clean_data/merged_data.csv", show_col_types = FALSE)
+df <- df[!is.na(df$abortion_policies), ]
+df_test <- df[df$State != "US", ]
+df$abortion_policies <- factor(df$abortion_policies, 
+                              levels = c("most protective", "very protective", 
+                                         "protective", "some restrictions/protections", 
+                                         "restrictive", "very restrictive", "most restrictive"))
+```
+
+Null hypothesis: the mean infant mortality rate is the same across all abortion policy levels
+
+Alternative hypothesis: the mean infant mortality rate is different in at least one of the abortion policy levels
+
+```{r}
+df$infant_mortality_2022
+```
+
+```{r}
+# Kruskal-Wallis test
+kruskal.test(infant_mortality_2022 ~ abortion_policies, data = df)
+
+# If Kruskal-Wallis is significant, run pairwise Wilcoxon tests
+pairwise.wilcox.test(df$infant_mortality_2022, 
+                     df$abortion_policies,
+                     p.adjust.method = "bonferroni")
+
+# accompanying boxplot visualization
+ggplot(df, aes(x = abortion_policies, y = infant_mortality_2022, fill=abortion_policies)) +
+  geom_boxplot() +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1),
+        axis.title.y = element_text(size = 10)) + 
+  scale_fill_manual(values = c("palegreen", "palegreen3", "palegreen4",  
+                                "olivedrab4", "sienna", "sienna3", "red")) +
+  labs(x = "Abortion Policies", 
+       y = "Infant Morality rate per 100,000",
+       title = "Infant Mortality Rate by Abortion Policy")
+
+
+```
+
+The Kruskal-Wallis test yields a statistically significant p-value of 0.01027, which provides strong evidence to suggest that we can reject the null hypothesis in favor of the alternative and speculate that the true mean infant mortality rate is different in at least one of the policy groups--- in other words, we have evidence to suggest that there is a relationship between abortion policy and infant mortality in U.S. states.
+
+To further confirm these results, we will perform an ANOVA permutation test:
+
+```{r}
+# Permutation Test
+N <- 10000 
+
+# Observed ANOVA F-statistic
+observed_anova <- aov(infant_mortality_2022 ~ abortion_policies, data = df)
+observed_F <- summary(observed_anova)[[1]][["F value"]][1]
+
+# Permutation loop
+set.seed(1234) 
+perm_F <- numeric(N)
+
+for (i in 1:N) {
+  # Permute the response variable
+  permuted_data <- df
+  permuted_data$infant_mortality_2022 <- sample(permuted_data$infant_mortality_2022)
+  
+  # Perform ANOVA on permuted data
+  perm_anova <- aov(infant_mortality_2022 ~ abortion_policies, data = permuted_data)
+  perm_F[i] <- summary(perm_anova)[[1]][["F value"]][1]
+}
+
+# Calculate p-value
+p_value <- mean(perm_F >= observed_F)
+
+cat("Observed F-statistic:", observed_F, "\n")
+cat("Permutation Test p-value:", p_value, "\n")
+
+# Plot the permutation F-statistics
+hist(perm_F, 
+     breaks = 30, 
+     main = "Permutation Distribution of F-statistic", 
+     xlab = "F-statistic", 
+     col = "palegreen4",  
+     border = "white")    
+
+# F-statistic line 
+abline(v = observed_F, 
+       col = "red",       
+       lwd = 2, 
+       lty = 2)
+```
+
+The ANOVA permutation test yields a p-value of 0.0029, which further supports our rejection of the null hypothesis in favor of the alternative under the Kruskal-Wallis test. Therefore, we have additional evidence to suggest that there is a difference in infant mortality rates in states with different abortion policies.
