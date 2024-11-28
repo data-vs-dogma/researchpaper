@@ -190,11 +190,37 @@ ggplot(map_data, aes(long, lat, group = group, fill = total_inbound)) +
 ```{r}
 # Step 1: Extract travel data columns
 # Select relevant columns: State and destinations for abortion travel
+# Create a lookup table for state abbreviations and full names
+state_abbreviations <- tibble(
+    abbr = c(
+        "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS",
+        "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY",
+        "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
+    ),
+    full = c(
+        "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida",
+        "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine",
+        "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska",
+        "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota",
+        "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota",
+        "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
+    )
+)
+
+# Extract and rename travel data columns, replacing <State ID> with full names
 travel_data <- policy_travel %>%
     select(State, ends_with("_residence_travelled_to_for_abortion")) %>%
     rename_with(
-        ~ sub("_residence_travelled_to_for_abortion", "", .),
+        ~ sub("_residence_travelled_to_for_abortion", "", .), # Remove the suffix
         ends_with("_residence_travelled_to_for_abortion")
+    ) %>%
+    rename_with(
+        ~ ifelse(
+            !is.na(state_abbreviations$full[match(., state_abbreviations$abbr)]), # Check if a match is found
+            state_abbreviations$full[match(., state_abbreviations$abbr)], # Replace with full name
+            . # Otherwise, retain the original abbreviation
+        ),
+        everything()
     )
 
 # Step 2: Reshape data for Sankey plot
@@ -235,8 +261,8 @@ sankey_plot <- sankeyNetwork(
     fontSize = 12, # Adjust font size
     nodeWidth = 10, # Set node width
     nodePadding = 10, # Add padding between nodes
-    height = 800, # Adjust plot height
-    width = 800 # Adjust plot width
+    height = 1200, # Adjust plot height
+    width = 1200 # Adjust plot width
 )
 
 # Display the Sankey plot
@@ -247,8 +273,21 @@ title <- tags$h2("Visualization of Abortion Travel Flows Across States (2023)",
     style = "text-align: center; font-family: Arial; margin-bottom: 20px; font-size:17px;"
 )
 
-# Combine the title with the Sankey plot
-html_output <- tagList(title, sankey_plot)
+left_header <- tags$h3(
+    "Home State",
+    style = "position: absolute; top: -15px; left: 50px; font-family: Arial; font-size:15px; text-align: center;"
+)
+
+right_header <- tags$h3(
+    "Destination State",
+    style = "position: absolute; top: -15px; right: 50px; font-family: Arial; font-size:15px; text-align: center;"
+)
+
+# Combine the title, headers, and Sankey plot
+html_output <- tagList(
+    title,
+    div(style = "position: relative;", left_header, right_header, sankey_plot)
+)
 
 # Display the output
 html_output
