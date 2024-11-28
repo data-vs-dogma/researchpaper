@@ -9,9 +9,11 @@ editor: visual
 ---
 
 ```{r, warning=FALSE, message=FALSE}
+options(repos = c(CRAN = "https://cran.r-project.org"))
+install.packages(tidyverse)
 library(tidyverse)
 library(readr)
-df <- read_csv("../data/clean_data/merged_data.csv", show_col_types = FALSE)
+df <- read_csv("data/clean_data/merged_data.csv", show_col_types = FALSE)
 df <- df[!is.na(df$abortion_policies), ]
 ```
 
@@ -246,6 +248,24 @@ abline(v = observed_F, col = "red", lwd = 2, lty = 2)
 ```
 
 The permutation test of the ANOVA test further confirms that this data has a significant p-value which indicates evidence to suggest that the mean percentage of employed women in at least one abortion policy group is different from the rest, but as noted above with the visualization, it does not necessarily mean that there is a "linear" relationship between more protective abortion policies and higher female employment.
+
+```{r}
+
+df$abortion_policies <- factor(df$abortion_policies, 
+                              levels = c("most protective", "very protective", 
+                                         "protective", "some restrictions/protections", 
+                                         "restrictive", "very restrictive", "most restrictive"))
+
+ggplot(df, aes(x = abortion_policies, y = percentage_women_BA_or_higher, fill = abortion_policies)) +
+  stat_summary(fun = mean, geom = "bar", position = "dodge") +
+  theme_minimal() +
+  scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) +
+  theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1),
+        plot.title = element_text(size = 10, hjust = 0.5)) +
+  labs(x = "Abortion Policies",
+       y = "Mean % Women with a BA or Higher",
+       title = "Mean Percentage of Women with a BA or Higher by Abortion Policy")
+```
 
 ## Education Wellness
 
