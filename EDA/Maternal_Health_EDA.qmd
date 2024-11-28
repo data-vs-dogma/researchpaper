@@ -1,0 +1,510 @@
+---
+title: "Maternal Health EDA"
+author: "Kristin Lloyd"
+format: 
+  html:
+    embed-resources: true
+    code-fold: true
+editor: visual
+---
+
+```{r}
+
+library(tidyverse)
+df <- read_csv("../data/clean_data/merged_data.csv", show_col_types = FALSE)
+df <- df[!is.na(df$abortion_policies), ]
+df_test <- df[df$State != "US", ]
+```
+
+## Maternal Mortality, by Abortion Policy
+
+```{r}
+
+df$abortion_policies <- factor(df$abortion_policies, 
+                              levels = c("most protective", "very protective", 
+                                         "protective", "some restrictions/protections", 
+                                         "restrictive", "very restrictive", "most restrictive"))
+# Kruskal-Wallis test
+kruskal.test(`maternal_mortality_rates_2018_2022_per_100,000_live births` ~ abortion_policies, data = df)
+
+# If Kruskal-Wallis is significant, run pairwise Wilcoxon tests
+pairwise.wilcox.test(df$`maternal_mortality_rates_2018_2022_per_100,000_live births`, 
+                     df$abortion_policies,
+                     p.adjust.method = "bonferroni")
+
+# accompanying boxplot visualization
+ggplot(df, aes(x = abortion_policies, y = `maternal_mortality_rates_2018_2022_per_100,000_live births`, fill=abortion_policies)) +
+  geom_boxplot() +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1),
+        axis.title.y = element_text(size = 10)) + 
+  scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) +
+  labs(x = "Abortion Policies", 
+       y = "Maternal Morality rate per 100,000",
+       title = "Maternal Mortality Rate by Abortion Policy") +
+  theme(plot.title = element_text(size = 20, hjust = 0.5))
+
+```
+
+```{r}
+
+df <- df[!is.na(df$`maternal_mortality_rates_2018_2022_per_100,000_live births`), ]
+
+# Kruskal-Wallis test
+kruskal.test(`maternal_mortality_rates_2018_2022_per_100,000_live births` ~ abortion_policies, data = df)
+
+# If Kruskal-Wallis is significant, run pairwise Wilcoxon tests
+pairwise.wilcox.test(df$`maternal_mortality_rates_2018_2022_per_100,000_live births`, 
+                     df$abortion_policies,
+                     p.adjust.method = "bonferroni")
+
+# For visualization
+# Reorder the factor levels
+df$abortion_policies <- factor(df$abortion_policies, 
+                              levels = c("most protective", "very protective", 
+                                         "protective", "some restrictions/protections", 
+                                         "restrictive", "very restrictive", "most restrictive"))
+
+# Create the plot
+# accompanying boxplot visualization
+ggplot(df, aes(x = abortion_policies, y = `maternal_mortality_rates_2018_2022_per_100,000_live births`, fill=abortion_policies)) +
+  geom_boxplot() +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1),
+        axis.title.y = element_text(size = 10)) + 
+  scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) +
+  labs(x = "Abortion Policies", 
+       y = "Maternal Morality rate per 100,000",
+       title = "Maternal Mortality Rate by Abortion Policy") +
+  theme(plot.title = element_text(size = 20, hjust = 0.5))
+```
+
+The Kruskal-Wallis test indicates a statistically significant difference in maternal mortality rates between at least two of the abortion policy groups, with p equaling 0.0097. This suggests that maternal mortality rates are not evenly distributed across the levels of abortion policies. A significant difference is observed between "most restrictive" and "protective" abortion policies (p = 0.0027).
+
+```{r}
+
+set.seed(5100)
+
+df_test <- df[df$State != "US", ]
+
+set.seed(5100)
+
+permutation_test <- function(data, group_col, value_col, n_permutations = 100000) {
+  observed_stat <- summary(aov(data[[value_col]] ~ data[[group_col]]))[[1]][["F value"]][1]
+
+  perm_stats <- replicate(n_permutations, {
+    shuffled_values <- sample(data[[value_col]])
+    perm_stat <- summary(aov(shuffled_values ~ data[[group_col]]))[[1]][["F value"]][1]
+    perm_stat
+  })
+
+  p_value <- mean(perm_stats >= observed_stat)
+  list(observed_stat = observed_stat, p_value = p_value, perm_stats = perm_stats)
+}
+
+result <- permutation_test(
+  data = df_test,
+  group_col = "abortion_policies",
+  value_col = "maternal_mortality_rates_2018_2022_per_100,000_live births"
+)
+
+cat("Observed Statistic (F):", result$observed_stat, "\n")
+cat("Permutation Test P-Value:", result$p_value, "\n")
+```
+
+Null hypothesis: The maternal mortality rates do not differ across abortion policy groups (i.e., all groups come from the same distribution).
+
+Alternate hypothesis: There is a significant difference in maternal mortality rates between the abortion policy groups.
+
+The p-value is 0.00213, which provides provides evidence to reject the null hypothesis.
+
+```{r}
+
+ggplot(data.frame(perm_stats = result$perm_stats), aes(x = perm_stats)) +
+  geom_histogram(binwidth = 0.1, fill = "blue", color = "black") +
+  geom_vline(xintercept = result$observed_stat, color = "red", linetype = "dashed") +
+  labs(
+    title = "Permutation Test Distribution",
+    x = "F-statistics from Permutations",
+    y = "Frequency"
+  ) +
+  theme_minimal()
+```
+
+The observed F-statistic (red dashed line) is far to the right of this distribution, indicating its extreme nature compared to the null hypothesis.
+
+```{r}
+
+pairwise_permutation_test <- function(data, group_col, value_col, n_permutations = 10000) {
+  groups <- unique(data[[group_col]])
+  comparisons <- combn(groups, 2, simplify = FALSE)
+  results <- lapply(comparisons, function(pair) {
+    group1 <- data[[value_col]][data[[group_col]] == pair[1]]
+    group2 <- data[[value_col]][data[[group_col]] == pair[2]]
+    
+    observed_diff <- abs(median(group1) - median(group2))
+    
+    pooled <- c(group1, group2)
+    perm_diffs <- replicate(n_permutations, {
+      shuffled <- sample(pooled)
+      abs(median(shuffled[1:length(group1)]) - median(shuffled[(length(group1) + 1):length(pooled)]))
+    })
+    
+    p_value <- mean(perm_diffs >= observed_diff)
+    
+    list(pair = pair, observed_diff = observed_diff, p_value = p_value)
+  })
+  
+  data.frame(
+    Group1 = sapply(results, function(x) x$pair[1]),
+    Group2 = sapply(results, function(x) x$pair[2]),
+    Observed_Diff = sapply(results, function(x) x$observed_diff),
+    P_Value = sapply(results, function(x) x$p_value)
+  )
+}
+
+pairwise_results <- pairwise_permutation_test(
+  data = df_test,
+  group_col = "abortion_policies",
+  value_col = "maternal_mortality_rates_2018_2022_per_100,000_live births"
+)
+
+print(pairwise_results)
+```
+
+most restrictive & very protective observed difference = 21 p-val = 0.0105
+
+very restrictive & protective observed difference = 21 p-val = 0.0473
+
+```{r}
+
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+
+```
+
+```{r}
+
+policy_order <- c("most protective", "very protective", "protective", 
+                 "some restrictions/protections", "restrictive", 
+                 "very restrictive", "most restrictive")
+```
+
+```{r}
+
+create_policy_viz <- function(data, metric_col, title, y_label, plot_type = "bar") {
+  processed_data <- data %>%
+    filter(!is.na(abortion_policies) & 
+           abortion_policies != "" & 
+           abortion_policies != "NA") %>%
+    mutate(abortion_policies = tolower(trimws(abortion_policies))) %>%
+    group_by(abortion_policies) %>%
+    summarise(avg_value = mean(!!sym(metric_col), na.rm = TRUE)) %>%
+    filter(abortion_policies %in% policy_order) %>%
+    mutate(
+      abortion_policies = factor(abortion_policies, levels = policy_order),
+      policy_numeric = as.numeric(factor(abortion_policies, levels = policy_order))
+    )
+  
+  p <- ggplot(processed_data, aes(x = abortion_policies, y = avg_value))
+  
+  if(plot_type == "scatter") {
+    model <- lm(avg_value ~ policy_numeric, data = processed_data)
+    r_squared <- round(summary(model)$r.squared, 3)
+    
+    p <- p +
+      geom_point(size = 4, color = "steelblue") +
+      geom_smooth(aes(x = policy_numeric), method = "lm", se = TRUE, color = "red") +
+      annotate("text", 
+              x = length(policy_order) - 0.5,
+              y = max(processed_data$avg_value),
+              label = paste0("R² = ", r_squared),
+              size = 4, hjust = 1)
+  } else {
+    p <- p + geom_bar(stat = "identity", fill = "steelblue")
+  }
+  
+  p + labs(
+    title = title,
+    x = "Abortion Policy",
+    y = y_label
+  ) +
+    theme_minimal() +
+    theme(
+      axis.text.x = element_text(angle = 45, hjust = 1),
+      plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
+      axis.title = element_text(size = 12)
+    )
+}
+
+```
+
+```{r}
+
+maternal_mortality <- create_policy_viz(df,
+   "maternal_mortality_rates_2018_2022_per_100,000_live births",
+   "Maternal Mortality Rate, 2018-2022",
+   "Rate",
+   "scatter")
+
+```
+
+## Women Who Went Without Care Due to Cost, by Abortion Policy
+
+```{r}
+
+# Kruskal-Wallis test
+kruskal.test(women_18_44_who_went_without_care_because_of_cost ~ abortion_policies, data = df)
+
+# If Kruskal-Wallis is significant, run pairwise Wilcoxon tests
+pairwise.wilcox.test(df$women_18_44_who_went_without_care_because_of_cost, 
+                     df$abortion_policies,
+                     p.adjust.method = "bonferroni")
+
+
+# Create the plot
+# accompanying boxplot visualization
+ggplot(df, aes(x = abortion_policies, y = women_18_44_who_went_without_care_because_of_cost, fill=abortion_policies)) +
+  geom_boxplot() +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1),
+        axis.title.y = element_text(size = 10)) + 
+  scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) +
+  labs(x = "Abortion Policies", 
+       y = "% Women Without Care per 100,000",
+       title = "Percentage of Women who went Without Care due to Cost by Abortion Policy") +
+  theme(plot.title = element_text(size = 10, hjust = 0.5))
+
+```
+
+The Kruskal-Wallis test indicates a statistically significant difference in the proportion of women (ages 18-44) who went without care because of cost across at least two abortion policy groups (p=0.04237). Although the Kruskal-Wallis test suggests overall differences between groups, the pairwise comparisons reveal no statistically significant differences between specific groups
+
+```{r}
+
+set.seed(5100)
+
+permutation_test <- function(data, group_col, value_col, n_permutations = 100000) {
+  observed_stat <- summary(aov(data[[value_col]] ~ data[[group_col]]))[[1]][["F value"]][1]
+
+  perm_stats <- replicate(n_permutations, {
+    shuffled_values <- sample(data[[value_col]])
+    perm_stat <- summary(aov(shuffled_values ~ data[[group_col]]))[[1]][["F value"]][1]
+    perm_stat
+  })
+
+  p_value <- mean(perm_stats >= observed_stat)
+  list(observed_stat = observed_stat, p_value = p_value, perm_stats = perm_stats)
+}
+
+result <- permutation_test(
+  data = df_test,
+  group_col = "abortion_policies",
+  value_col = "women_18_44_who_went_without_care_because_of_cost"
+)
+
+cat("Observed Statistic (F):", result$observed_stat, "\n")
+cat("Permutation Test P-Value:", result$p_value, "\n")
+
+```
+
+Null hypothesis: Women who went without care due to cost do not differ across abortion policy groups
+
+Alternate hypothesis: There is a significant difference in ranking between the abortion policy groups.
+
+The p-value is 0.0341, which provides provides overwhelming evidence to reject the null hypothesis.
+
+```{r}
+
+ggplot(data.frame(perm_stats = result$perm_stats), aes(x = perm_stats)) +
+  geom_histogram(binwidth = 0.1, fill = "blue", color = "black") +
+  geom_vline(xintercept = result$observed_stat, color = "red", linetype = "dashed") +
+  labs(
+    title = "Permutation Test Distribution",
+    x = "F-statistics from Permutations",
+    y = "Frequency"
+  ) +
+  theme_minimal()
+
+```
+
+The observed F-statistic (red dashed line) is far to the right of this distribution, indicating its extreme nature compared to the null hypothesis.
+
+```{r}
+
+pairwise_permutation_test <- function(data, group_col, value_col, n_permutations = 10000) {
+  groups <- unique(data[[group_col]])
+  comparisons <- combn(groups, 2, simplify = FALSE)
+  results <- lapply(comparisons, function(pair) {
+    group1 <- data[[value_col]][data[[group_col]] == pair[1]]
+    group2 <- data[[value_col]][data[[group_col]] == pair[2]]
+    
+    observed_diff <- abs(median(group1) - median(group2))
+    
+    pooled <- c(group1, group2)
+    perm_diffs <- replicate(n_permutations, {
+      shuffled <- sample(pooled)
+      abs(median(shuffled[1:length(group1)]) - median(shuffled[(length(group1) + 1):length(pooled)]))
+    })
+    
+    p_value <- mean(perm_diffs >= observed_diff)
+    
+    list(pair = pair, observed_diff = observed_diff, p_value = p_value)
+  })
+  
+  data.frame(
+    Group1 = sapply(results, function(x) x$pair[1]),
+    Group2 = sapply(results, function(x) x$pair[2]),
+    Observed_Diff = sapply(results, function(x) x$observed_diff),
+    P_Value = sapply(results, function(x) x$p_value)
+  )
+}
+
+pairwise_results <- pairwise_permutation_test(
+  data = df_test,
+  group_col = "abortion_policies",
+  value_col = "women_18_44_who_went_without_care_because_of_cost.1"
+)
+
+print(pairwise_results)
+                           
+```
+
+very restrictive & very protective observed difference = 5.5 p-val = 0.0134
+
+very restrictive & protective observed difference = 3.5 p-val = 0.0477
+
+## Percent of Women Uninsured During Pregnancy
+
+```{r}
+
+# Kruskal-Wallis test
+kruskal.test(`percent_uninsured_women_during_pregnancy_2021` ~ abortion_policies, data = df)
+
+# If Kruskal-Wallis is significant, run pairwise Wilcoxon tests
+pairwise.wilcox.test(df$`percent_uninsured_women_during_pregnancy_2021`, 
+                     df$abortion_policies,
+                     p.adjust.method = "bonferroni")
+
+
+# Create the plot
+# accompanying boxplot visualization
+ggplot(df, aes(x = abortion_policies, y = percent_uninsured_women_during_pregnancy_2021, fill=abortion_policies)) +
+  geom_boxplot() +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1),
+        axis.title.y = element_text(size = 10)) + 
+  scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) +
+  labs(x = "Abortion Policies", 
+       y = "% Women Uninsured",
+       title = "Percentage of Women Uninsured During Pregnancy \nby Abortion Policy") +
+  theme(plot.title = element_text(size = 10, hjust = 0.5))
+```
+
+The p-val is 0.1169, showing no significant relationship among different groups.
+
+```{r}
+
+set.seed(5100)
+
+permutation_test <- function(data, group_col, value_col, n_permutations = 100000) {
+  observed_stat <- summary(aov(data[[value_col]] ~ data[[group_col]]))[[1]][["F value"]][1]
+
+  perm_stats <- replicate(n_permutations, {
+    shuffled_values <- sample(data[[value_col]])
+    perm_stat <- summary(aov(shuffled_values ~ data[[group_col]]))[[1]][["F value"]][1]
+    perm_stat
+  })
+
+  p_value <- mean(perm_stats >= observed_stat)
+  list(observed_stat = observed_stat, p_value = p_value, perm_stats = perm_stats)
+}
+
+result <- permutation_test(
+  data = df_test,
+  group_col = "abortion_policies",
+  value_col = "percent_uninsured_women_during_pregnancy_2021"
+)
+
+cat("Observed Statistic (F):", result$observed_stat, "\n")
+cat("Permutation Test P-Value:", result$p_value, "\n")
+
+```
+
+Null hypothesis: Women who are uninsured during pregnancy do not differ across abortion policy groups
+
+Alternate hypothesis: There is a significant difference in ranking between the abortion policy groups.
+
+The p-value is 0.0786
+
+```{r}
+
+ggplot(data.frame(perm_stats = result$perm_stats), aes(x = perm_stats)) +
+  geom_histogram(binwidth = 0.1, fill = "blue", color = "black") +
+  geom_vline(xintercept = result$observed_stat, color = "red", linetype = "dashed") +
+  labs(
+    title = "Permutation Test Distribution",
+    x = "F-statistics from Permutations",
+    y = "Frequency"
+  ) +
+  theme_minimal()
+
+```
+
+## Percent Uninsured Women Ages 18-64
+
+```{r}
+
+# Kruskal-Wallis test
+kruskal.test(`percent_uninsured_women_ages 19_64` ~ abortion_policies, data = df)
+
+# If Kruskal-Wallis is significant, run pairwise Wilcoxon tests
+pairwise.wilcox.test(df$`percent_uninsured_women_ages 19_64`, 
+                     df$abortion_policies,
+                     p.adjust.method = "bonferroni")
+
+
+# Create the plot
+ggplot(df, aes(x = abortion_policies, y = `percent_uninsured_women_ages 19_64`)) +
+  geom_boxplot() +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(x = "Abortion Policies", 
+       y = "Percent Uninsured Women Ages 19-64",
+       title = "Percent Uninsured Women Ages 19-64 by Abortion Policy")
+```
+
+P-val is 0.1044
+
+```{r}
+
+set.seed(5100)
+
+permutation_test <- function(data, group_col, value_col, n_permutations = 100000) {
+  observed_stat <- summary(aov(data[[value_col]] ~ data[[group_col]]))[[1]][["F value"]][1]
+
+  perm_stats <- replicate(n_permutations, {
+    shuffled_values <- sample(data[[value_col]])
+    perm_stat <- summary(aov(shuffled_values ~ data[[group_col]]))[[1]][["F value"]][1]
+    perm_stat
+  })
+
+  p_value <- mean(perm_stats >= observed_stat)
+  list(observed_stat = observed_stat, p_value = p_value, perm_stats = perm_stats)
+}
+
+result <- permutation_test(
+  data = df_test,
+  group_col = "abortion_policies",
+  value_col = "percent_uninsured_women_ages 19_64"
+)
+
+cat("Observed Statistic (F):", result$observed_stat, "\n")
+cat("Permutation Test P-Value:", result$p_value, "\n")
+```
+
+Null hypothesis: Women who are uninsured do not differ across abortion policy groups
+
+Alternate hypothesis: There is a significant difference in ranking between the abortion policy groups.
+
+P-val is .12828

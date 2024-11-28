@@ -9,6 +9,7 @@ editor: visual
 ---
 
 ```{r, warning=FALSE, message=FALSE}
+
 library(tidyverse)
 library(readr)
 ```
@@ -45,13 +46,24 @@ df$abortion_policies <- factor(df$abortion_policies,
                                       "most protective"))
 
 # Then create the plot
-ggplot(df, aes(x = abortion_policies, y = foster_children_per_capita)) +
+# For visualization
+# First reorder the factor levels
+df$abortion_policies <- factor(df$abortion_policies, 
+                              levels = c("most protective", "very protective", 
+                                         "protective", "some restrictions/protections", 
+                                         "restrictive", "very restrictive", "most restrictive"))
+
+# Then create the plot
+ggplot(df, aes(x = abortion_policies, y = foster_children_per_capita, fill=abortion_policies)) +
   geom_boxplot() +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1),
+        axis.title.y = element_text(size = 10)) + 
+  scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) +
   labs(x = "Abortion Policies", 
        y = "Foster Children per Capita",
-       title = "Foster Care Rates by Abortion Policy")
+       title = "Foster Care Rates by Abortion Policy") +
+  theme(plot.title = element_text(size = 20, hjust = 0.5))
 ```
 
 ## Overall School System Ranking by Abortion Policy
@@ -66,11 +78,14 @@ pairwise.wilcox.test(df$overall_school_rank,
                      p.adjust.method = "bonferroni")
 
 # For visualization
-ggplot(df, aes(x = abortion_policies, y = overall_school_rank)) +
+ggplot(df, aes(x = abortion_policies, y = overall_school_rank, fill=abortion_policies)) +
   geom_boxplot() +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1),
+        axis.title.y = element_text(size = 10)) + 
+  scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) +
   labs(x = "Abortion Policies", 
        y = "Overall School Ranking",
-       title = "Public School System Rankings by Abortion Policy")
+       title = "Public School System Rankings by Abortion Policy") +
+  theme(plot.title = element_text(size = 20, hjust = 0.5))
 ```
