@@ -40,6 +40,7 @@ pairwise.wilcox.test(df$infant_mortality_2022,
                      p.adjust.method = "bonferroni")
 
 # accompanying boxplot visualization
+# accompanying boxplot visualization
 ggplot(df, aes(x = abortion_policies, y = infant_mortality_2022, fill=abortion_policies)) +
   geom_boxplot() +
   theme_minimal() +
@@ -50,8 +51,6 @@ ggplot(df, aes(x = abortion_policies, y = infant_mortality_2022, fill=abortion_p
        y = "Infant Morality rate per 100,000",
        title = "Infant Mortality Rate by Abortion Policy") +
   theme(plot.title = element_text(size = 20, hjust = 0.5))
-
-
 ```
 
 The Kruskal-Wallis test yields a statistically significant p-value of 0.01027, which provides strong evidence to suggest that we can reject the null hypothesis in favor of the alternative and speculate that the true mean infant mortality rate is different in at least one of the policy groups--- in other words, we have evidence to suggest that there is a relationship between abortion policy and infant mortality in U.S. states.

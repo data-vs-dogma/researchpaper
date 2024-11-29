@@ -44,8 +44,6 @@ ggplot(df, aes(x = abortion_policies, y = `maternal_mortality_rates_2018_2022_pe
        y = "Maternal Morality rate per 100,000",
        title = "Maternal Mortality Rate by Abortion Policy") +
   theme(plot.title = element_text(size = 20, hjust = 0.5))
-
-
 ```
 
 The Kruskal-Wallis test yields a p-value of 0.009736, providing significant evidence to suggest that the null hypothesis can be rejected and we can say that in at least one policy group, the maternal mortality rate is different from the rest. This accompanying visualization provides us additional insight into the characteristics of this difference(s). As we can see, the maternal mortality rates in the most restrictive abortion policy states have the largest and highest range and the greatest mean mortality rate. The mean mortality rate in the most protective states appears to be the lowest (or tied with the rate in the protective policy states). The visualization shows that for the most part, as the restrictiveness of abortion policy increases, so does the mean maternal mortality rate.
