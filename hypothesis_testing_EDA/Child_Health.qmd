@@ -1,4 +1,6 @@
 ---
+
+``---
 title: "Child Health"
 format: 
   html:
@@ -101,3 +103,61 @@ abline(v = observed_F,
 ```
 
 The ANOVA permutation test yields a p-value of 0.0029, which further supports our rejection of the null hypothesis in favor of the alternative under the Kruskal-Wallis test. Therefore, we have additional evidence to suggest that there is a difference in infant mortality rates in states with different abortion policies.
+
+```{r}
+
+df_filtered <- df %>%
+  filter(!is.na(`infant_mortality_2022`)) %>%
+  filter(State != "US" & State != "Nevada" & State != "Rhode Island" & State != "New Hampshire" & State != "Ohio" & State != "Delaware") %>%
+  mutate(
+    simplified_policies = case_when(
+      abortion_policies %in% c("most restrictive", "very restrictive", "restrictive") ~ "Restrictive",
+      abortion_policies %in% c("most protective", "very protective", "protective") ~ "Protective",
+      TRUE ~ abortion_policies
+    )
+  ) %>%
+  bind_rows(tibble(
+    State = "US Average",
+    `infant_mortality_2022` = 23.2,
+    simplified_policies = "US Average"
+  ))
+
+ggplot(df_filtered, 
+       aes(y = reorder(State, `infant_mortality_2022`), 
+           x = `infant_mortality_2022`,
+           fill = simplified_policies)) +
+  geom_bar(stat = "identity", width = 0.7) +
+  geom_text(aes(label = sprintf("%.1f", `infant_mortality_2022`)),
+            hjust = -0.2,
+            size = 3) +
+  scale_fill_manual(values = c(
+    "Restrictive" = "#ff0000",    
+    "Protective" = "#4dbd00",    
+    "US Average" = "#006eff"   
+  )) +
+  theme_minimal() +
+  labs(
+    title = "Infant Mortality Rates per 100,000 Live Births by State",
+    x = "Infant Mortality Rate per 1,000 Live Births",
+    y = "",
+    fill = "Abortion Policy"
+  ) +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 12, face = "bold"),
+    axis.title.x = element_text(size = 10),
+    axis.text.y = element_text(size = 8, color = "grey30"),
+    axis.text.x = element_text(size = 8),
+    legend.position = "right",
+    legend.title = element_text(size = 9),
+    legend.text = element_text(size = 8),
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor = element_blank(),
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.background = element_rect(fill = "white", color = NA)
+  ) +
+  scale_x_continuous(
+    limits = c(0, 45),
+    breaks = seq(0, 40, by = 10),
+    expand = expansion(mult = c(0, 0.1))
+  )
+```

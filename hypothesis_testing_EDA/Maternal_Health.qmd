@@ -283,7 +283,7 @@ ggplot(df, aes(x = abortion_policies, y = `teen_birth_rate_per_1,000_population_
   scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) +
   labs(x = "Abortion Policies", 
        y = "Teen Birth Rate per 100,000",
-       title = "Maternal Mortality Rate by Abortion Policy") +
+       title = "Teen Birth Rate by Abortion Policy") +
   theme(plot.title = element_text(size = 20, hjust = 0.5))
 ```
 
@@ -381,6 +381,62 @@ health_correlation_analysis <- function(data) {
 }
 
 results <- health_correlation_analysis(df)
+print("Correlation Matrix:")
+print(round(results$correlations, 3))
+print(paste("\nAnalysis based on", results$sample_size, "complete observations out of", results$original_size, "total states"))
+```
+
+```{r}
+
+library(corrplot)
+
+health_education_correlation <- function(data) {
+  # Select relevant columns
+  selected_cols <- data[, c(
+    "teen_birth_rate_per_1,000_population_ages_15_19_2022",
+    "percentage_women_BA_or_higher",
+    "percent_women_working"
+  )]
+  
+  # Rename columns for better readability
+  names(selected_cols) <- c(
+    "Teen_Birth_Rate",
+    "Women_with_BA",
+    "Women_Working"
+  )
+  
+  # Remove rows with missing values
+  complete_data <- na.omit(selected_cols)
+  
+  # Calculate correlation matrix
+  cor_matrix <- cor(complete_data)
+  
+  # Set margins
+  par(mar = c(2, 2, 1, 2))
+  
+  # Create correlation plot
+  corrplot(cor_matrix, 
+          method = "color",
+          type = "upper",
+          order = "hclust",
+          addCoef.col = "black",
+          number.cex = 0.7,
+          tl.col = "black",
+          tl.srt = 45,
+          diag = FALSE,
+          col = colorRampPalette(c("#E5F5E0", "#74C476", "#005A32"))(200),
+          title = "Teen Birth Rate, Education, and Socioeconomic Correlations",
+          mar = c(0,0,1,0))
+  
+  return(list(
+    correlations = cor_matrix,
+    sample_size = nrow(complete_data),
+    original_size = nrow(selected_cols)
+  ))
+}
+
+# Run the analysis
+results <- health_education_correlation(df)
 print("Correlation Matrix:")
 print(round(results$correlations, 3))
 print(paste("\nAnalysis based on", results$sample_size, "complete observations out of", results$original_size, "total states"))
