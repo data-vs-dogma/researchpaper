@@ -344,8 +344,8 @@ library(corrplot)
 health_correlation_analysis <- function(data) {
   selected_cols <- data[, c(
     "teen_birth_rate_per_1,000_population_ages_15_19_2022",
-    "infant_mortality_2022",
-    "maternal_mortality_rates_2018_2022_per_100,000_live births",
+    "infant_mortality_2021",
+    "maternal_mortality_rates_2020_2022_per_100,000_live births",
     "health_outcomes",
     "overall_health_ranking"
   )]
@@ -440,4 +440,74 @@ results <- health_education_correlation(df)
 print("Correlation Matrix:")
 print(round(results$correlations, 3))
 print(paste("\nAnalysis based on", results$sample_size, "complete observations out of", results$original_size, "total states"))
+```
+
+```{r}
+
+df_filtered <- df %>%
+  filter(!is.na(`maternal_mortality_rates_2020_2022_per_100,000_live births`)) %>%
+  bind_rows(tibble(
+    State = c("US Average", "Tennessee"),
+    `maternal_mortality_rates_2020_2022_per_100,000_live births` = c(23.2, 51.1),
+    abortion_policies = c("US Average", "most restrictive") 
+  ))
+
+policy_levels <- c(
+  "most protective",
+  "very protective", 
+  "protective",
+  "some restrictions/protections",
+  "restrictive",
+  "very restrictive",
+  "most restrictive",
+  "US Average"
+)
+
+df_filtered$abortion_policies <- factor(df_filtered$abortion_policies, 
+                                      levels = policy_levels)
+
+ggplot(df_filtered, 
+       aes(y = reorder(State, `maternal_mortality_rates_2020_2022_per_100,000_live births`),
+           x = `maternal_mortality_rates_2020_2022_per_100,000_live births`,
+           fill = abortion_policies)) +
+  geom_bar(stat = "identity", width = 0.7) +
+  scale_fill_manual(
+    values = c(
+      "most protective" = "#1c7416",
+      "very protective" = "#68bb59",
+      "protective" = "#acdf87",
+      "some restrictions/protections" = "#fab733",
+      "restrictive" = "#ff6242",
+      "very restrictive" = "#ff0000",
+      "most restrictive" = "#c61a09",
+      "US Average" = "#006eff"
+    ),
+    breaks = policy_levels
+  ) +
+  theme_minimal() +
+  labs(
+    title = "Maternal Mortality Rates (2020-2022) per 100,000 Live Births by State",
+    x = "Maternal Mortality Rate per 100,000 Live Births",
+    y = "",
+    fill = "Abortion Policy"
+  ) +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 12),
+    axis.title.x = element_text(size = 10),
+    axis.text.y = element_text(size = 8),
+    axis.text.x = element_text(size = 8),
+    legend.position = "right",
+    legend.title = element_text(size = 9),
+    legend.text = element_text(size = 8),
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor = element_blank(),
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.background = element_rect(fill = "white", color = NA)
+  ) +
+  scale_x_continuous(
+    limits = c(0, 55),  
+    breaks = seq(0, 55, by = 10),
+    expand = expansion(mult = c(0, 0.1))
+  )
+
 ```

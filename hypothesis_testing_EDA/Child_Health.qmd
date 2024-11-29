@@ -1,6 +1,4 @@
 ---
-
-``---
 title: "Child Health"
 format: 
   html:
@@ -29,33 +27,33 @@ Null hypothesis: the mean infant mortality rate is the same across all abortion 
 Alternative hypothesis: the mean infant mortality rate is different in at least one of the abortion policy levels
 
 ```{r}
-df$infant_mortality_2022
+df$infant_mortality_2021
 ```
 
 ```{r}
 # Kruskal-Wallis test
-kruskal.test(infant_mortality_2022 ~ abortion_policies, data = df)
+kruskal.test(infant_mortality_2021 ~ abortion_policies, data = df)
 
 # If Kruskal-Wallis is significant, run pairwise Wilcoxon tests
-pairwise.wilcox.test(df$infant_mortality_2022, 
+pairwise.wilcox.test(df$infant_mortality_2021, 
                      df$abortion_policies,
                      p.adjust.method = "bonferroni")
 
 # accompanying boxplot visualization
 # accompanying boxplot visualization
-ggplot(df, aes(x = abortion_policies, y = infant_mortality_2022, fill=abortion_policies)) +
+ggplot(df, aes(x = abortion_policies, y = infant_mortality_2021, fill=abortion_policies)) +
   geom_boxplot() +
   theme_minimal() +
   theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1),
         axis.title.y = element_text(size = 10)) + 
   scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) +
   labs(x = "Abortion Policies", 
-       y = "Infant Morality rate per 100,000",
+       y = "Infant Morality rate per 1,000",
        title = "Infant Mortality Rate by Abortion Policy") +
   theme(plot.title = element_text(size = 20, hjust = 0.5))
 ```
 
-The Kruskal-Wallis test yields a statistically significant p-value of 0.01027, which provides strong evidence to suggest that we can reject the null hypothesis in favor of the alternative and speculate that the true mean infant mortality rate is different in at least one of the policy groups--- in other words, we have evidence to suggest that there is a relationship between abortion policy and infant mortality in U.S. states.
+The Kruskal-Wallis test yields a statistically significant p-value of 0.009246, which provides strong evidence to suggest that we can reject the null hypothesis in favor of the alternative and speculate that the true mean infant mortality rate is different in at least one of the policy groups--- in other words, we have evidence to suggest that there is a relationship between abortion policy and infant mortality in U.S. states.
 
 To further confirm these results, we will perform an ANOVA permutation test:
 
@@ -64,7 +62,7 @@ To further confirm these results, we will perform an ANOVA permutation test:
 N <- 10000 
 
 # Observed ANOVA F-statistic
-observed_anova <- aov(infant_mortality_2022 ~ abortion_policies, data = df)
+observed_anova <- aov(infant_mortality_2021 ~ abortion_policies, data = df)
 observed_F <- summary(observed_anova)[[1]][["F value"]][1]
 
 # Permutation loop
@@ -74,10 +72,10 @@ perm_F <- numeric(N)
 for (i in 1:N) {
   # Permute the response variable
   permuted_data <- df
-  permuted_data$infant_mortality_2022 <- sample(permuted_data$infant_mortality_2022)
+  permuted_data$infant_mortality_2021 <- sample(permuted_data$infant_mortality_2021)
   
   # Perform ANOVA on permuted data
-  perm_anova <- aov(infant_mortality_2022 ~ abortion_policies, data = permuted_data)
+  perm_anova <- aov(infant_mortality_2021 ~ abortion_policies, data = permuted_data)
   perm_F[i] <- summary(perm_anova)[[1]][["F value"]][1]
 }
 
@@ -102,49 +100,61 @@ abline(v = observed_F,
        lty = 2)
 ```
 
-The ANOVA permutation test yields a p-value of 0.0029, which further supports our rejection of the null hypothesis in favor of the alternative under the Kruskal-Wallis test. Therefore, we have additional evidence to suggest that there is a difference in infant mortality rates in states with different abortion policies.
+The ANOVA permutation test yields a p-value of 0.0048, which further supports our rejection of the null hypothesis in favor of the alternative under the Kruskal-Wallis test. Therefore, we have additional evidence to suggest that there is a difference in infant mortality rates in states with different abortion policies.
 
 ```{r}
 
 df_filtered <- df %>%
   filter(!is.na(`infant_mortality_2021`)) %>%
-  mutate(
-    simplified_policies = case_when(
-      abortion_policies %in% c("most restrictive", "very restrictive", "restrictive") ~ "Restrictive",
-      abortion_policies %in% c("most protective", "very protective", "protective") ~ "Protective",
-      TRUE ~ abortion_policies
-    )
-  ) %>%
   bind_rows(tibble(
-    State = "US Average",
+    State = "US Average",  # Removed c() since only adding one value
     `infant_mortality_2021` = 5.4,
-    simplified_policies = "US Average"
+    abortion_policies = "US Average"  # Removed "most restrictive" since only adding US Average
   ))
 
+policy_levels <- c(
+  "most protective",
+  "very protective", 
+  "protective",
+  "some restrictions/protections",
+  "restrictive",
+  "very restrictive",
+  "most restrictive",
+  "US Average"
+)
+
+df_filtered$abortion_policies <- factor(df_filtered$abortion_policies, 
+                                      levels = policy_levels)
+
 ggplot(df_filtered, 
-       aes(y = reorder(State, `infant_mortality_2021`), 
+       aes(y = reorder(State, `infant_mortality_2021`),
            x = `infant_mortality_2021`,
-           fill = simplified_policies)) +
+           fill = abortion_policies)) +
   geom_bar(stat = "identity", width = 0.7) +
-  geom_text(aes(label = sprintf("%.1f", `infant_mortality_2021`)),
-            hjust = -0.2,
-            size = 3) +
-  scale_fill_manual(values = c(
-    "Restrictive" = "#ff0000",    
-    "Protective" = "#4dbd00",    
-    "US Average" = "#006eff"   
-  )) +
+  scale_fill_manual(
+    values = c(
+      "most protective" = "#1c7416",
+      "very protective" = "#68bb59",
+      "protective" = "#acdf87",
+      "some restrictions/protections" = "#fab733",
+      "restrictive" = "#ff6242",
+      "very restrictive" = "#ff0000",
+      "most restrictive" = "#c61a09",
+      "US Average" = "#006eff"
+    ),
+    breaks = policy_levels
+  ) +
   theme_minimal() +
   labs(
-    title = "Infant Mortality Rates per 1,000 Live Births by State",
-    x = "Infant Mortality Rate per 1,000 Live Births",
+    title = "Infant Mortality Rate by State (2021)",  # Made title more concise
+    x = "Deaths per 1,000 Live Births",  # Corrected units
     y = "",
     fill = "Abortion Policy"
   ) +
   theme(
-    plot.title = element_text(hjust = 0.5, size = 12, face = "bold"),
+    plot.title = element_text(hjust = 0.5, size = 12),
     axis.title.x = element_text(size = 10),
-    axis.text.y = element_text(size = 8, color = "grey30"),
+    axis.text.y = element_text(size = 8),
     axis.text.x = element_text(size = 8),
     legend.position = "right",
     legend.title = element_text(size = 9),
@@ -155,8 +165,8 @@ ggplot(df_filtered,
     panel.background = element_rect(fill = "white", color = NA)
   ) +
   scale_x_continuous(
-    limits = c(0, 45),
-    breaks = seq(0, 40, by = 10),
+    limits = c(0, 15),
+    breaks = seq(0, 15, by = 5),  # Changed to increments of 5 for better readability
     expand = expansion(mult = c(0, 0.1))
   )
 ```
