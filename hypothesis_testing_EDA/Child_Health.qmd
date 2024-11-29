@@ -10,6 +10,8 @@ editor: visual
 ## Infant Mortality by Abortion Policy
 
 ```{r, warning=FALSE, message=FALSE}
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+install.packages("tidyverse")
 library(tidyverse)
 df <- read_csv("../data/clean_data/merged_data.csv", show_col_types = FALSE)
 df <- df[!is.na(df$abortion_policies), ]
@@ -43,11 +45,11 @@ ggplot(df, aes(x = abortion_policies, y = infant_mortality_2022, fill=abortion_p
   theme_minimal() +
   theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1),
         axis.title.y = element_text(size = 10)) + 
-  scale_fill_manual(values = c("palegreen", "palegreen3", "palegreen4",  
-                                "olivedrab4", "sienna", "sienna3", "red")) +
+  scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) +
   labs(x = "Abortion Policies", 
        y = "Infant Morality rate per 100,000",
-       title = "Infant Mortality Rate by Abortion Policy")
+       title = "Infant Mortality Rate by Abortion Policy") +
+  theme(plot.title = element_text(size = 20, hjust = 0.5))
 
 
 ```

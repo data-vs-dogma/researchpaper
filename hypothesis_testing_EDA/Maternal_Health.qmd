@@ -39,11 +39,11 @@ ggplot(df, aes(x = abortion_policies, y = `maternal_mortality_rates_2018_2022_pe
   theme_minimal() +
   theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1),
         axis.title.y = element_text(size = 10)) + 
-  scale_fill_manual(values = c("palegreen", "palegreen3", "palegreen4",  
-                                "olivedrab4", "sienna", "sienna3", "red")) +
+  scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) +
   labs(x = "Abortion Policies", 
        y = "Maternal Morality rate per 100,000",
-       title = "Maternal Mortality Rate by Abortion Policy")
+       title = "Maternal Mortality Rate by Abortion Policy") +
+  theme(plot.title = element_text(size = 20, hjust = 0.5))
 
 
 ```
@@ -122,11 +122,11 @@ ggplot(df, aes(x = abortion_policies, y = women_18_44_who_went_without_care_beca
   theme_minimal() +
   theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1),
         axis.title.y = element_text(size = 10)) + 
-  scale_fill_manual(values = c("palegreen", "palegreen3", "palegreen4",  
-                                "olivedrab4", "sienna", "sienna3", "red")) +
+  scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) +
   labs(x = "Abortion Policies", 
        y = "% Women Without Care per 100,000",
-       title = "Percentage of Women who went Without Care due to Cost by Abortion Policy")
+       title = "Percentage of Women who went Without Care due to Cost by Abortion Policy") +
+  theme(plot.title = element_text(size = 10, hjust = 0.5))
 ```
 
 The Kruskal-Wallis test here yields a statistically significant p-value of 0.02916, indicating evidence to accept the alternative hypothesis and suggest that the true mean percentage of women who went without care because of cost is different in at least one of the abortion policy more. The boxplot visualization indicates the scope of these differences. The plot demonstrates a clear relationship where as the abortion policy becomes more strict, the higher the mean percentage of women who did not receive care due to it being too expensive for them to afford. It appears that the mean percentage of women going without care in the most protective abortion policy states is about 12%, whereas in the states with the most restrictive abortion policy, the mean is about 18%.
@@ -180,7 +180,7 @@ The p-value produced by the permutation test is 0.496, which is extremely close 
 
 These findings highlight how in states that chose to implement restrictive abortion bans, there were already problems with women being unable to access adequate maternal care due to costs. Adding restrictive abortion measures, which has indirect effects on the quality and accessibility of other maternal health resources, would add an extra layer of difficulty to women who need maternal care but aren't able to afford it.
 
-## Percentage of Uninsured Women During Pregnancy in 2021 by Abortion Policy 
+## Percentage of Uninsured Women During Pregnancy in 2021 by Abortion Policy
 
 Null hypothesis: The percentage of uninsured women during pregnancy in 2021 is the same in all abortion policy groups.
 
@@ -201,11 +201,11 @@ ggplot(df, aes(x = abortion_policies, y = percent_uninsured_women_during_pregnan
   theme_minimal() +
   theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1),
         axis.title.y = element_text(size = 10)) + 
-  scale_fill_manual(values = c("palegreen", "palegreen3", "palegreen4",  
-                                "olivedrab4", "sienna", "sienna3", "red")) +
+  scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) +
   labs(x = "Abortion Policies", 
-       y = "% Women Without Care per 100,000",
-       title = "Percentage of Women who went Without Care due to Cost \nby Abortion Policy")
+       y = "% Women Uninsured",
+       title = "Percentage of Women Uninsured During Pregnancy \nby Abortion Policy") +
+  theme(plot.title = element_text(size = 10, hjust = 0.5))
 ```
 
 The Kruskal-Wallis test yields a p-value of 0.03475, providing significant evidence to reject the null hypothesis in favor of the alternative and suggest that the percentage of uninsured women during pregnancy is different in at least one of the abortion policy level groups. The boxplots give us some insight into the nature of these differences. Interestingly, the mean percentage of uninsured women during pregnancy appears to increase as the restrictiveness of abortion policy increases, until the most restrictive level where the mean and range drop significantly. It is difficult to understand why this may be. However, the clear trend among the previous six groups appears to be a significant indicator of the maternal population characteristics of the states in those levels.
