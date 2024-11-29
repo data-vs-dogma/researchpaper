@@ -256,6 +256,7 @@ ggplot(df, aes(x = abortion_policies, y = percent_women_working, fill = abortion
 ```
 
 ```{r}
+<<<<<<< HEAD
 library(dplyr)
 library(ggplot2)
 
@@ -274,11 +275,16 @@ df_count <- df %>%
   summarize(count = n(), .groups = "drop")
 
 # Convert counts to percentages
+=======
+>>>>>>> 19db44216dc1d4b4111ba1de00ca16563971fbc1
 df_count <- df_count %>%
   group_by(abortion_policies) %>%
   mutate(percentage = count / sum(count) * 100)
 
+<<<<<<< HEAD
 # Create the stacked bar chart
+=======
+>>>>>>> 19db44216dc1d4b4111ba1de00ca16563971fbc1
 ggplot(df_count, aes(x = abortion_policies, y = percentage, fill = above_or_below)) +
   geom_bar(stat = "identity", position = "stack", alpha = 0.7) +
   theme_minimal() +
@@ -522,26 +528,57 @@ ggplot(df, aes(x = abortion_policies, y = percent_women_who_received_a_postpartu
 ```
 
 ```{r}
+<<<<<<< HEAD
 # Calculate the overall average
 overall_avg <- mean(df$percent_women_who_received_a_postpartum_depression_screening_2021, na.rm = TRUE)
 
 # Filter and classify observations as above or below average
 df_filtered <- df %>%
+=======
+ggplot(df, aes(x = abortion_policies, y = percent_women_who_received_a_postpartum_depression_screening_2021, fill = abortion_policies)) +
+  geom_violin(alpha = 0.7) +
+  geom_jitter(width = 0.2, size = 1, alpha = 0.7) + 
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1),
+        axis.title.y = element_text(size = 10)) + 
+  scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) +
+  labs(x = "Abortion Policies", 
+       y = "% Women Receiving Postpartum Depression Screening",
+       title = "Percentage of Women who Received Postpartum Depression Screening by Abortion Policy") +
+  theme(plot.title = element_text(size = 8, hjust = 0.5))
+```
+
+```{r}
+
+overall_avg <- mean(df$percent_women_who_received_a_postpartum_depression_screening_2021, na.rm = TRUE)
+
+df <- df %>%
+>>>>>>> 19db44216dc1d4b4111ba1de00ca16563971fbc1
   filter(!is.na(abortion_policies) & !is.na(percent_women_who_received_a_postpartum_depression_screening_2021)) %>% 
   mutate(above_or_below = if_else(percent_women_who_received_a_postpartum_depression_screening_2021 > overall_avg, 
                                   "Above Average", "Below Average"))
 
+<<<<<<< HEAD
 # Group and count observations
 df_count <- df_filtered %>%
   group_by(abortion_policies, above_or_below) %>%
   summarize(count = n(), .groups = "drop")
 
 # Convert counts to percentages
+=======
+df_count <- df %>%
+  group_by(abortion_policies, above_or_below) %>%
+  summarize(count = n(), .groups = "drop")
+
+>>>>>>> 19db44216dc1d4b4111ba1de00ca16563971fbc1
 df_count <- df_count %>%
   group_by(abortion_policies) %>%
   mutate(percentage = count / sum(count) * 100)
 
+<<<<<<< HEAD
 # Create the stacked bar chart
+=======
+>>>>>>> 19db44216dc1d4b4111ba1de00ca16563971fbc1
 ggplot(df_count, aes(x = abortion_policies, y = percentage, fill = above_or_below)) +
   geom_bar(stat = "identity", position = "stack", alpha = 0.7) +
   theme_minimal() +
@@ -554,7 +591,10 @@ ggplot(df_count, aes(x = abortion_policies, y = percentage, fill = above_or_belo
         plot.title = element_text(size = 10, hjust = 0.5),
         axis.title.y = element_text(size = 10))
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 19db44216dc1d4b4111ba1de00ca16563971fbc1
 ```
 
 ### Percentage of Women Experiencing Intimate Partner Violence by Abortion Policy
@@ -583,6 +623,7 @@ ggplot(df, aes(x = abortion_policies, y = percent_women_experiencing_intimate_pa
 The Kruskal-Wallis Test and the boxplot visualization to not provide any evidence to suggest that there is a relationship between the prevalence of women experiencing domestic violence and the state's abortion policy.
 
 ```{r}
+<<<<<<< HEAD
 library(dplyr)
 library(ggplot2)
 
@@ -591,25 +632,44 @@ overall_avg <- mean(df$percent_women_experiencing_intimate_partner_violence_2021
 
 # Filter and classify observations as Above or Below Average
 df_filtered <- df %>%
+=======
+overall_avg <- mean(df$percent_women_experiencing_intimate_partner_violence_2021, na.rm = TRUE)
+
+df <- df %>%
+>>>>>>> 19db44216dc1d4b4111ba1de00ca16563971fbc1
   filter(!is.na(abortion_policies) & !is.na(percent_women_experiencing_intimate_partner_violence_2021)) %>% 
   mutate(above_or_below = if_else(percent_women_experiencing_intimate_partner_violence_2021 > overall_avg, 
                                   "Above Average", "Below Average"))
 
+<<<<<<< HEAD
 # Group and count observations
 df_count <- df_filtered %>%
   group_by(abortion_policies, above_or_below) %>%
   summarize(count = n(), .groups = "drop")
 
 # Convert counts to percentages
+=======
+df_count <- df %>%
+  group_by(abortion_policies, above_or_below) %>%
+  summarize(count = n(), .groups = "drop")
+
+>>>>>>> 19db44216dc1d4b4111ba1de00ca16563971fbc1
 df_count <- df_count %>%
   group_by(abortion_policies) %>%
   mutate(percentage = count / sum(count) * 100)
 
+<<<<<<< HEAD
 # Create the stacked bar chart
 ggplot(df_count, aes(x = abortion_policies, y = percentage, fill = above_or_below)) +
   geom_bar(stat = "identity", position = "stack", alpha = 0.7) +
   theme_minimal() +
   scale_fill_manual(values = c("Above Average" = "#ff0000", "Below Average" = "#1c7416")) +
+=======
+ggplot(df_count, aes(x = abortion_policies, y = percentage, fill = above_or_below)) +
+  geom_bar(stat = "identity", position = "stack", alpha = 0.7) +
+  theme_minimal() +
+  scale_fill_manual(values = c("Above Average" = "#1c7416", "Below Average" = "#ff0000")) +
+>>>>>>> 19db44216dc1d4b4111ba1de00ca16563971fbc1
   labs(x = "Abortion Policies", 
        y = "Percentage of Observations",
        fill = "Comparison to Average",
