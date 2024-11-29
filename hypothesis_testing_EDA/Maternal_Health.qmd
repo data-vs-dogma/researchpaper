@@ -254,3 +254,134 @@ abline(v = observed_F,
 ```
 
 The permutation test yields a p-value of 0.0252, which is statistically stronger than the p-value yielded by the Kruskal-Wallis test. This confirms that we have statistically significant evidence to suggest a difference in percentage of uninsured women during pregnancy in 2021 in at least one of the abortion policy levels.
+
+## Teen Birth Rate by Abortion Policy
+
+```{r}
+colnames(df)
+```
+
+```{r}
+df$abortion_policies <- factor(df$abortion_policies, 
+                              levels = c("most protective", "very protective", 
+                                         "protective", "some restrictions/protections", 
+                                         "restrictive", "very restrictive", "most restrictive"))
+# Kruskal-Wallis test
+kruskal.test(`teen_birth_rate_per_1,000_population_ages_15_19_2022` ~ abortion_policies, data = df)
+
+# If Kruskal-Wallis is significant, run pairwise Wilcoxon tests
+pairwise.wilcox.test(df$`teen_birth_rate_per_1,000_population_ages_15_19_2022`, 
+                     df$abortion_policies,
+                     p.adjust.method = "bonferroni")
+
+# accompanying boxplot visualization
+ggplot(df, aes(x = abortion_policies, y = `teen_birth_rate_per_1,000_population_ages_15_19_2022`, fill=abortion_policies)) +
+  geom_boxplot() +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1),
+        axis.title.y = element_text(size = 10)) + 
+  scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) +
+  labs(x = "Abortion Policies", 
+       y = "Teen Birth Rate per 100,000",
+       title = "Maternal Mortality Rate by Abortion Policy") +
+  theme(plot.title = element_text(size = 20, hjust = 0.5))
+```
+
+The Kruskal-Wallis test here yields a statistically significant p-value of 0.0002706, indicating evidence to accept the alternative hypothesis and suggest that the
+
+```{r}
+# Permutation Test
+N <- 100000 
+
+# Observed ANOVA F-statistic
+observed_anova <- aov(`teen_birth_rate_per_1,000_population_ages_15_19_2022` ~ abortion_policies, data = df)
+observed_F <- summary(observed_anova)[[1]][["F value"]][1]
+
+# Permutation loop
+set.seed(1234) 
+perm_F <- numeric(N)
+
+for (i in 1:N) {
+  # Permute the response variable
+  permuted_data <- df
+  permuted_data$`teen_birth_rate_per_1,000_population_ages_15_19_2022` <- sample(permuted_data$`teen_birth_rate_per_1,000_population_ages_15_19_2022`)
+  
+  # Perform ANOVA on permuted data
+  perm_anova <- aov(`teen_birth_rate_per_1,000_population_ages_15_19_2022` ~ abortion_policies, data = permuted_data)
+  perm_F[i] <- summary(perm_anova)[[1]][["F value"]][1]
+}
+
+# Calculate p-value
+p_value <- mean(perm_F >= observed_F)
+
+cat("Observed F-statistic:", observed_F, "\n")
+cat("Permutation Test p-value:", p_value, "\n")
+
+# Plot the permutation F-statistics
+hist(perm_F, 
+     breaks = 30, 
+     main = "Permutation Distribution of F-statistic", 
+     xlab = "F-statistic", 
+     col = "palegreen4",  
+     border = "white")    
+
+# F-statistic line 
+abline(v = observed_F, 
+       col = "red",       
+       lwd = 2, 
+       lty = 2)
+
+```
+
+interpret
+
+```{r}
+
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+install.packages("corrplot")
+library(corrplot)
+
+health_correlation_analysis <- function(data) {
+  selected_cols <- data[, c(
+    "teen_birth_rate_per_1,000_population_ages_15_19_2022",
+    "infant_mortality_2022",
+    "maternal_mortality_rates_2018_2022_per_100,000_live births",
+    "health_outcomes",
+    "overall_health_ranking"
+  )]
+  
+  names(selected_cols) <- c(
+    "Teen Birth Rate",
+    "Infant Mortality",
+    "Maternal Mortality",
+    "Health Outcomes",
+    "Overall Health"
+  )
+  
+  complete_data <- na.omit(selected_cols)
+ 
+  cor_matrix <- cor(complete_data)
+  
+  corrplot(cor_matrix, 
+          method = "color",
+          type = "upper",
+          order = "hclust",
+          addCoef.col = "black",
+          number.cex = 0.7,
+          tl.col = "black",
+          tl.srt = 45,
+          diag = FALSE,
+          col = colorRampPalette(c("#E5F5E0", "#74C476", "#005A32"))(200))  
+  
+  return(list(
+    correlations = cor_matrix,
+    sample_size = nrow(complete_data),
+    original_size = nrow(selected_cols)
+  ))
+}
+
+results <- health_correlation_analysis(df)
+print("Correlation Matrix:")
+print(round(results$correlations, 3))
+print(paste("\nAnalysis based on", results$sample_size, "complete observations out of", results$original_size, "total states"))
+```
