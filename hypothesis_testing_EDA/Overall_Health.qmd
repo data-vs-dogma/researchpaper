@@ -35,9 +35,9 @@ df <- df %>%
 
 # Reorder the levels of abortion policies
 df$abortion_policies <- factor(df$abortion_policies, 
-                              levels = c("most protective", "very protective", 
-                                         "protective", "some restrictions/protections", 
-                                         "restrictive", "very restrictive", "most restrictive"))
+                               levels = c("most protective", "very protective", 
+                                          "protective", "some restrictions/protections", 
+                                          "restrictive", "very restrictive", "most restrictive"))
 
 # Bin overall_health_ranking into categories
 df$overall_health_category <- cut(df$overall_health_ranking,
@@ -49,13 +49,18 @@ df$overall_health_category <- cut(df$overall_health_ranking,
 # Stacked bar plot by abortion policy
 ggplot(df, aes(x = abortion_policies, fill = overall_health_category)) +
   geom_bar(position = "fill") +
-  labs(x = "Abortion Policy", 
-       y = "Proportion", 
-       fill = "Overall Health Category") +
-  scale_fill_manual(values = c("palegreen", "palegreen3", "palegreen4",  
-                                "olivedrab4", "sienna", "sienna3", "red")) + 
+  labs(
+    x = "Abortion Policy", 
+    y = "Proportion", 
+    fill = "Overall Health Category",
+    title = "Proportion of Overall Health Categories by Abortion Policy"
+  ) +
+  scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000")) + 
   theme_classic() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(size = 12, face = "bold", hjust = 0.5)
+  )
 
 ```
 
@@ -123,7 +128,7 @@ r_squared <- round(summary(lm_model)$r.squared, 3)
 
 # Plot with R-squared annotation
 ggplot(processed_data, aes(x = abortion_policies, y = avg_ranking)) +
-  geom_point(size = 4, color = "olivedrab4") +
+  geom_point(size = 4, color = "blue") +
   geom_smooth(aes(group = 1), method = "lm", se = TRUE, color = "red") +
   labs(title = "Overall Health Ranking",
        x = "Abortion Policy",
@@ -150,14 +155,20 @@ df$medicaid_expansion <- factor(df$medicaid_expansion_status, levels = c("0", "1
 # Stacked bar plot of Medicaid Expansion Status with Abortion Policies as Fill
 ggplot(df, aes(x = medicaid_expansion, fill = abortion_policies)) +
   geom_bar(position = "fill") +
-  labs(x = "Medicaid Expansion Status", 
-       y = "Proportion", 
-       fill = "Abortion Policy") +
+  labs(
+    x = "Medicaid Expansion Status", 
+    y = "Proportion", 
+    fill = "Abortion Policy",
+    title = "Proportion of Abortion Policies by Medicaid Expansion Status"
+  ) +
   scale_x_discrete(labels = c("0" = "Not Expanded", "1" = "Expanded")) +
-  scale_fill_manual(values = c("palegreen", "palegreen3", "palegreen4",  
-                                "olivedrab4", "sienna", "sienna3", "red")) + 
+  scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) +
   theme_classic() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(size = 12, face = "bold", hjust = 0.5)
+  )
+
 ```
 
 This plot highlights how states that have not expanded Medicaid are disproportionately associated with more restrictive abortion policies. In contrast, states that have expanded Medicaid show a higher proportion of protective and less restrictive abortion policies. **This pattern suggests a potential relationship between policy choices around healthcare access (Medicaid expansion) and reproductive rights (abortion policies), where more progressive health policies align with broader healthcare access.**
@@ -219,11 +230,18 @@ The **exact logistic regression model yields a p-value of 0.0483** from the Wald
 # Boxplot for coverage and abortion policies
 ggplot(df, aes(x = abortion_policies, y = coverage_access_and_affordability, fill = abortion_policies)) +
   geom_boxplot() +
-  scale_fill_manual(values = c("palegreen", "palegreen3", "palegreen4",  
-                                "olivedrab4", "sienna", "sienna3", "red")) +
-  labs(x = "Abortion Policies", y = "Coverage Access and Affordability", fill = "Abortion Policies") +
+  scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) +
+  labs(
+    x = "Abortion Policies", 
+    y = "Coverage Access and Affordability", 
+    fill = "Abortion Policies",
+    title = "Coverage Access and Affordability by Abortion Policies"
+  ) +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(size = 12, face = "bold", hjust = 0.5)
+  )
 
 ```
 
@@ -302,8 +320,7 @@ ggplot(df, aes(x = requires_prescription, fill = abortion_policies)) +
        fill = "Abortion Policy",
        title = "Prescription Contraception Coverage Requirements by Abortion Policy") +
   scale_x_discrete(labels = c("0" = "Does Not Require", "1" = "Requires")) +
-  scale_fill_manual(values = c("palegreen", "palegreen3", "palegreen4",  
-                                "olivedrab4", "sienna", "sienna3", "red")) + 
+  scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) + 
   theme_classic() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
         plot.title = element_text(hjust = 0, size = 12)) 
@@ -370,8 +387,7 @@ This trend highlights a potential disconnect in restrictive states, which often 
 # Boxplot for health care quality and prevention by abortion policies
 ggplot(df, aes(x = abortion_policies, y = health_care_quality_and_prevention, fill = abortion_policies)) +
   geom_boxplot() +
-  scale_fill_manual(values = c("palegreen", "palegreen3", "palegreen4",  
-                                "olivedrab4", "sienna", "sienna3", "red")) +
+  scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) +
   labs(
     x = "Abortion Policies",
     y = "Health Care Quality and Prevention",
@@ -447,14 +463,51 @@ abline(v = observed_F,
 
 A **permutation test** was performed on the healthcare quality and prevention data in addition to the Kruskal-Wallis test to ensure the robustness of the findings across different statistical methods. The permutation test yielded a statistically significant p-value of 0.0186, confirming evidence that healthcare quality and prevention rankings differ among at least one of the abortion policy levels. This reinforces the conclusion that abortion policy restrictiveness is associated with variations in healthcare quality and prevention outcomes across states.
 
+```{r}
+library(dplyr)
+library(ggplot2)
+
+# Calculate the overall average
+overall_avg <- mean(df$health_care_quality_and_prevention, na.rm = TRUE)
+
+# Filter and classify observations as Above or Below Average
+df <- df %>%
+  filter(!is.na(abortion_policies) & !is.na(health_care_quality_and_prevention)) %>% 
+  mutate(above_or_below = if_else(health_care_quality_and_prevention > overall_avg, 
+                                  "Above Average", "Below Average"))
+
+# Group and count observations
+df_count <- df %>%
+  group_by(abortion_policies, above_or_below) %>%
+  summarize(count = n(), .groups = "drop")
+
+# Convert counts to percentages
+df_count <- df_count %>%
+  group_by(abortion_policies) %>%
+  mutate(percentage = count / sum(count) * 100)
+
+# Create the stacked bar chart
+ggplot(df_count, aes(x = abortion_policies, y = percentage, fill = above_or_below)) +
+  geom_bar(stat = "identity", position = "stack", alpha = 0.7) +
+  theme_minimal() +
+  scale_fill_manual(values = c("Above Average" = "#ff0000", "Below Average" = "#1c7416")) +
+  labs(x = "Abortion Policies", 
+       y = "Percentage of Observations",
+       fill = "Comparison to Average",
+       title = "Percentage of Above/Below Average Health Care Quality and Prevention\nby Abortion Policy") +
+  theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1),
+        plot.title = element_text(size = 10, hjust = 0.5),
+        axis.title.y = element_text(size = 10))
+
+```
+
 ### Health Outcomes by Abortion Policy
 
 ```{r}
 # Boxplot for health outcomes by abortion policies
 ggplot(df, aes(x = abortion_policies, y = health_outcomes, fill = abortion_policies)) +
   geom_boxplot() +
-  scale_fill_manual(values = c("palegreen", "palegreen3", "palegreen4",  
-                                "olivedrab4", "sienna", "sienna3", "red")) +
+  scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) +
   labs(
     x = "Abortion Policies",
     y = "Health Care Quality and Prevention",
@@ -533,6 +586,44 @@ A **permutation test** was performed on health outcomes by abortion policy to va
 
 This result supports the conclusion that health outcomes vary significantly across abortion policy levels. The visualization of the permutation distribution shows that the observed F-statistic lies far to the right of the simulated null distribution, providing strong evidence that these differences are unlikely to have arisen by chance. **These findings underscore the measurable impact of abortion policy restrictiveness on broader health outcomes, indicating systemic disparities in public health quality across states.**
 
+```{r}
+library(dplyr)
+library(ggplot2)
+
+# Calculate the overall average
+overall_avg <- mean(df$health_outcomes, na.rm = TRUE)
+
+# Filter and classify observations as Above or Below Average
+df <- df %>%
+  filter(!is.na(abortion_policies) & !is.na(health_outcomes)) %>% 
+  mutate(above_or_below = if_else(health_outcomes > overall_avg, 
+                                  "Above Average", "Below Average"))
+
+# Group and count observations
+df_count <- df %>%
+  group_by(abortion_policies, above_or_below) %>%
+  summarize(count = n(), .groups = "drop")
+
+# Convert counts to percentages
+df_count <- df_count %>%
+  group_by(abortion_policies) %>%
+  mutate(percentage = count / sum(count) * 100)
+
+# Create the stacked bar chart
+ggplot(df_count, aes(x = abortion_policies, y = percentage, fill = above_or_below)) +
+  geom_bar(stat = "identity", position = "stack", alpha = 0.7) +
+  theme_minimal() +
+  scale_fill_manual(values = c("Above Average" = "#ff0000", "Below Average" = "#1c7416")) +
+  labs(x = "Abortion Policies", 
+       y = "Percentage of Observations",
+       fill = "Comparison to Average",
+       title = "Percentage of Above/Below Average Health Outcomes by Abortion Policy") +
+  theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1),
+        plot.title = element_text(size = 10, hjust = 0.5),
+        axis.title.y = element_text(size = 10))
+
+```
+
 ### OBGYN Ratios by Abortion Policy
 
 ```{r}
@@ -559,8 +650,7 @@ print(ratio_summary)
 ```{r}
 ggplot(df, aes(x = abortion_policies, y = obgyn_ratio, fill = abortion_policies)) +
   geom_boxplot() +
-  scale_fill_manual(values = c("palegreen", "palegreen3", "palegreen4", 
-                                "olivedrab4", "sienna", "sienna3", "red")) +
+  scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) +
   labs(
     x = "Abortion Policies",
     y = "Ratio of OB-GYNs to Women (15-44)",
@@ -611,6 +701,48 @@ abline(v = observed_F, col = "red", lwd = 2, lty = 2)
 ```
 
 The **permutation test** for the ratio of OB-GYNs to women aged 15--44 yields an observed F-statistic of 5.608316 with a highly significant p-value of 0.0003. This result indicates that there is strong evidence to suggest that the distribution of OB-GYN ratios significantly varies across abortion policy categories. The significant result underscores that states with differing abortion policies also exhibit distinct disparities in OB-GYN accessibility, pointing to potential inequities in access to reproductive healthcare resources.
+
+```{r}
+library(dplyr)
+library(ggplot2)
+
+# Calculate the overall average
+overall_avg <- mean(df$obgyn_ratio, na.rm = TRUE)
+
+# Filter and classify observations as Above or Below Average
+df <- df %>%
+  filter(!is.na(abortion_policies) & !is.na(obgyn_ratio)) %>% 
+  mutate(above_or_below = if_else(obgyn_ratio > overall_avg, 
+                                  "Above Average", "Below Average"))
+
+# Group and count observations
+df_count <- df %>%
+  group_by(abortion_policies, above_or_below) %>%
+  summarize(count = n(), .groups = "drop")
+
+# Convert counts to percentages
+df_count <- df_count %>%
+  group_by(abortion_policies) %>%
+  mutate(percentage = count / sum(count) * 100)
+
+# Create the stacked bar chart
+ggplot(df_count, aes(x = abortion_policies, y = percentage, fill = above_or_below)) +
+  geom_bar(stat = "identity", position = "stack", alpha = 0.7) +
+  theme_minimal() +
+  scale_fill_manual(values = c("Above Average" = "#1c7416", "Below Average" = "#ff0000")) +
+  labs(x = "Abortion Policies", 
+       y = "Percentage of Observations",
+       fill = "Comparison to Average",
+       title = "Percentage of Above/Below Average OBGYN Ratio by Abortion Policy") +
+  theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1),
+        plot.title = element_text(size = 10, hjust = 0.5),
+        axis.title.y = element_text(size = 10))
+
+```
+
+```{r}
+
+```
 
 # Conclusions
 
