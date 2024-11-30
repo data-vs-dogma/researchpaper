@@ -244,7 +244,7 @@ library(clinfun)
 
 jt_test <- jonckheere.test(df$percent_uninsured_women_during_pregnancy_2021, 
                           as.numeric(df$abortion_policies), 
-                          alternative="decreasing",
+                          alternative="increasing",
                           nperm = 10000)
 print(jt_test)
 

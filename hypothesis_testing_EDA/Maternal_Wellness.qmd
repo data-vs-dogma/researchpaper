@@ -584,7 +584,7 @@ plot_usmap(data = abortion_map_data, values = "change") +
   ) +
   theme(
     legend.position = "right",
-    plot.title = element_text(size = 14, hjust = 0.5, face = "bold")
+    plot.title = element_text(size = 14, hjust = 0.5)
   ) +
   labs(title = "Change in Clinician-Provided Abortions Since 2020 by State")
 
