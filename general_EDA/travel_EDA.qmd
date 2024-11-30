@@ -23,33 +23,15 @@ unique(policy_travel$abortion_policies)
 ```
 
 ```{r}
-# Define abortion policy levels in order
-policy_levels <- c(
-    "most protective", "very protective", "protective",
-    "some restrictions/protections", "restrictive",
-    "very restrictive", "most restrictive"
-)
-
-# Standardize abortion policies as a factor with pre-defined levels
-policy_travel <- policy_travel %>%
-    mutate(
-        abortion_policies = factor(abortion_policies, levels = policy_levels)
-    )
-
-# Validate if all policy levels are present
-if (any(is.na(policy_travel$abortion_policies))) {
-    warning("Some 'abortion_policies' values do not match the expected levels.")
-}
-
-# Count the number of states in each policy category
-policy_distribution <- policy_travel %>%
-    count(abortion_policies, name = "State_Count") %>%
-    arrange(desc(State_Count)) %>% # Order by descending state count
-    mutate(abortion_policies = factor(abortion_policies, levels = abortion_policies)) # Reorder factor levels
-
-# Plot the bar chart using lightblue to red gradient
+# Plot the bar chart with labels next to the bars
 ggplot(policy_distribution, aes(x = abortion_policies, y = State_Count, fill = abortion_policies)) +
     geom_bar(stat = "identity", color = "black", width = 0.7) +
+    geom_text(
+        aes(label = State_Count), # Add state count as labels
+        hjust = 1.1, # Adjust placement inside or near the end of the bar
+        size = 6, # Adjust label size
+        color = "black" # Ensure visibility of text on colored bars
+    ) +
     scale_fill_manual(
         values = c(
             "most protective" = "#1c7416",
@@ -64,18 +46,27 @@ ggplot(policy_distribution, aes(x = abortion_policies, y = State_Count, fill = a
     labs(
         title = "Abortion Policies Across U.S. States (2023)",
         subtitle = "States categorized by level of policy restrictiveness",
-        x = "Abortion Policy Level",
-        y = "Number of States",
+        x = NULL, # Remove x-axis label
+        y = NULL, # Remove y-axis label
         fill = "Policy Level"
     ) +
     theme_minimal() +
     theme(
-        plot.title = element_text(size = 14, hjust = 0.5), # Smaller title
-        plot.subtitle = element_text(size = 11, hjust = 0.5), # Smaller subtitle
-        axis.text.x = element_text(angle = 45, hjust = 1),
-        legend.position = "none"
+        plot.title = element_text(size = 20, hjust = 0.5), # Bigger and bold title
+        plot.subtitle = element_text(size = 16, hjust = 0.5), # Bigger subtitle
+        axis.title.x = element_blank(), # Remove x-axis title
+        axis.text.x = element_blank(), # Remove x-axis text
+        axis.ticks.x = element_blank(), # Remove x-axis ticks
+        axis.title.y = element_text(size = 16), # Keep y-axis title for clarity
+        axis.text.y = element_text(size = 14), # Bigger y-axis text
+        legend.title = element_text(size = 14), # Bigger legend title
+        legend.text = element_text(size = 12), # Bigger legend text
+        panel.grid.major.x = element_blank(), # Remove vertical grid lines
+        panel.grid.minor.x = element_blank() # Remove minor grid lines
     ) +
     coord_flip() # Flip the coordinates for better readability
+
+
 ```
 
 ```{r}

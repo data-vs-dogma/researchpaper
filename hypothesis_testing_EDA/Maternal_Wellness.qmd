@@ -553,3 +553,84 @@ jt_test <- jonckheere.test(df$percent_women_experiencing_intimate_partner_violen
                           nperm = 10000)
 print(jt_test)
 ```
+
+## Travel
+
+```{r}
+
+install.packages("usmap")
+library(usmap)
+
+library()
+abortion_map_data <- df %>%
+  select(State, `percent_increase_in_clinician_provided_abortions_since_2020`) %>%
+  filter(!is.na(`percent_increase_in_clinician_provided_abortions_since_2020`)) %>%
+  mutate(
+    state = State,
+    change = `percent_increase_in_clinician_provided_abortions_since_2020`
+  ) 
+
+print("First few rows of our data:")
+head(abortion_map_data)
+
+plot_usmap(data = abortion_map_data, values = "change") +
+  scale_fill_gradient2(
+    name = "% Change",
+    low = "#ff6b6b",   
+    mid = "#ffffff",    
+    high = "#4dbd00",  
+    midpoint = 0,
+    na.value = "gray80"  
+  ) +
+  theme(
+    legend.position = "right",
+    plot.title = element_text(size = 14, hjust = 0.5, face = "bold")
+  ) +
+  labs(title = "Change in Clinician-Provided Abortions Since 2020 by State")
+
+```
+
+```{r}
+install.packages(c("usmap", "ggplot2"))
+library(usmap)
+library(ggplot2)
+
+# Create data frame with state capitals for the specified states
+capitals_df <- data.frame(
+  lon = c(-116.200, -100.346, -93.603, -92.189, -92.289,
+          -91.187, -97.743, -97.503, -90.182, -86.279,
+          -84.280, -86.781, -84.878, -86.162, -81.633),
+  lat = c(43.617, 44.367, 41.591, 38.579, 34.746,
+          30.457, 30.266, 35.482, 32.298, 32.377,
+          30.438, 36.162, 38.186, 39.768, 38.336),
+  state = c("Idaho", "South Dakota", "Iowa", "Missouri", "Arkansas",
+            "Louisiana", "Texas", "Oklahoma", "Mississippi", "Alabama",
+            "Florida", "Tennessee", "Kentucky", "Indiana", "West Virginia")
+)
+
+# Convert longitude/latitude to usmap coordinates
+capitals_mapped <- usmap_transform(capitals_df, input_names = c("lon", "lat"))
+
+# Map with stars only
+plot_usmap(data = abortion_map_data, values = "change") +
+  geom_point(data = capitals_mapped, 
+             aes(x = x, y = y),
+             shape = 8,        # Star shape
+             size = 4,         # Size of stars
+             color = "black",  # Color of stars
+             stroke = 1.5) +   # Thickness of stars
+  scale_fill_gradient2(
+    name = "% Change",
+    low = "#ff6b6b",
+    mid = "#ffffff",
+    high = "#4dbd00",
+    midpoint = 0,
+    na.value = "gray80"
+  ) +
+  theme(
+    legend.position = "right",
+    plot.title = element_text(size = 14, hjust = 0.5)
+  ) +
+  labs(title = "Change in Clinician-Provided Abortions Since 2020 by State",
+       caption = "* Stars indicate states with significant changes”)”
+```
