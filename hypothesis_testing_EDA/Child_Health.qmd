@@ -55,6 +55,19 @@ ggplot(df, aes(x = abortion_policies, y = infant_mortality_2021, fill=abortion_p
 
 The Kruskal-Wallis test yields a statistically significant p-value of 0.009246, which provides strong evidence to suggest that we can reject the null hypothesis in favor of the alternative and speculate that the true mean infant mortality rate is different in at least one of the policy groups--- in other words, we have evidence to suggest that there is a relationship between abortion policy and infant mortality in U.S. states.
 
+```{r}
+
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+install.packages("clinfun")
+library(clinfun)
+
+jt_test <- jonckheere.test(df$infant_mortality_2021, 
+                          as.numeric(df$abortion_policies), 
+                          alternative="increasing",
+                          nperm = 10000)
+print(jt_test)
+```
+
 To further confirm these results, we will perform an ANOVA permutation test:
 
 ```{r}
