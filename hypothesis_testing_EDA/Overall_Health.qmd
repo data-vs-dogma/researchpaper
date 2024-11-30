@@ -89,11 +89,10 @@ library(clinfun)
 table(df$abortion_policies)
 
 # Run Jonckheere-Terpstra test
-# Note: alternative="decreasing" because we expect higher OBGYN ratios in more protective states
 jt_test <- jonckheere.test(df$overall_health_ranking, 
-                as.numeric(df$abortion_policies), 
-                nperm = 10000)
-
+                          as.numeric(df$abortion_policies), 
+                          alternative="increasing",
+                          nperm = 10000)
 print(jt_test)
 ```
 
@@ -283,9 +282,9 @@ The **Kruskal-Wallis test** yielded a **chi-squared value of 22.583 with 6 degre
 # Run Jonckheere-Terpstra test
 
 jt_test <- jonckheere.test(df$coverage_access_and_affordability, 
-                as.numeric(df$abortion_policies), 
-                nperm = 10000)
-
+                          as.numeric(df$abortion_policies), 
+                          alternative="increasing",
+                          nperm = 10000)
 print(jt_test)
 ```
 
@@ -417,7 +416,7 @@ ggplot(df, aes(x = abortion_policies, y = health_care_quality_and_prevention, fi
   geom_boxplot() +
   scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) +
   labs(
-    title = "Boxplot for Health Care Quality and Prevention by Abortion Policies",
+    title = "Health Care Quality and Prevention by Abortion Policies",
     x = "Abortion Policies",
     y = "Health Care Quality and Prevention",
     fill = "Abortion Policies"
@@ -448,9 +447,9 @@ The **Kruskal-Wallis test** yielded a chi-squared statistic of 22.583 (df = 6, p
 # Run Jonckheere-Terpstra test
 
 jt_test <- jonckheere.test(df$health_care_quality_and_prevention, 
-                as.numeric(df$abortion_policies), 
-                nperm = 10000)
-
+                          as.numeric(df$abortion_policies), 
+                          alternative="increasing",
+                          nperm = 10000)
 print(jt_test)
 ```
 
@@ -547,7 +546,7 @@ ggplot(df, aes(x = abortion_policies, y = health_outcomes, fill = abortion_polic
   geom_boxplot() +
   scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) +
   labs(
-    title = "Boxplot for Health Outcomes by Abortion Policies",
+    title = "Health Outcomes by Abortion Policies",
     x = "Abortion Policies",
     y = "Health Outcomes",
     fill = "Abortion Policies"
@@ -579,10 +578,11 @@ The **Kruskal-Wallis** test for health outcomes across abortion policy levels re
 
 ```{r}
 #Jonckheere test
-jt_test <- jonckheere.test(df$health_outcomes, 
-                          as.numeric(df$abortion_policies),
-                          alternative="increasing")
 
+jt_test <- jonckheere.test(df$health_outcomes, 
+                          as.numeric(df$abortion_policies), 
+                          alternative="increasing",
+                          nperm = 10000)
 print(jt_test)
 ```
 
@@ -796,15 +796,10 @@ p-val also high
 
 ```{r}
 
-# First, check sample sizes in each group
-table(df$abortion_policies)
-
-# Run Jonckheere-Terpstra test
-# Note: alternative="decreasing" because we expect higher OBGYN ratios in more protective states
 jt_test <- jonckheere.test(df$obgyn_per_100k, 
-                          as.numeric(df$abortion_policies),
-                          alternative="decreasing")
-
+                          as.numeric(df$abortion_policies), 
+                          alternative="decreasing",
+                          nperm = 10000)
 print(jt_test)
 ```
 
