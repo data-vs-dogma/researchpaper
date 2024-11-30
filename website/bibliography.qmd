@@ -1,6 +1,6 @@
 ---
 title: "Bibliography"
-bibliography: references.bib  # Ensure the file path is correct
+bibliography: references.bib  
 nocite: |
   @*  
 csl: apa.csl 
