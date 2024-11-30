@@ -170,7 +170,7 @@ protective and very restrictive, p-val = 0.0429
 
 very restrictive and very protective, p-val = 0.0122
 
-## Maternal Mortality 
+## Maternal Mortality
 
 ```{r}
 

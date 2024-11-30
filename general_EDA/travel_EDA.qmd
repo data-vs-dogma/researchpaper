@@ -52,13 +52,13 @@ ggplot(policy_distribution, aes(x = abortion_policies, y = State_Count, fill = a
     geom_bar(stat = "identity", color = "black", width = 0.7) +
     scale_fill_manual(
         values = c(
-            "most protective" = "lightblue",
-            "very protective" = "violet",
-            "protective" = "magenta",
-            "some restrictions/protections" = "blue",
-            "restrictive" = "violet",
-            "very restrictive" = "deepskyblue",
-            "most restrictive" = "red"
+            "most protective" = "#1c7416",
+            "very protective" = "#68bb59",
+            "protective" = "#acdf87",
+            "some restrictions/protections" = "#fab733",
+            "restrictive" = "#ff6242",
+            "very restrictive" = "#ff0000",
+            "most restrictive" = "#c61a09"
         )
     ) +
     labs(
@@ -70,7 +70,7 @@ ggplot(policy_distribution, aes(x = abortion_policies, y = State_Count, fill = a
     ) +
     theme_minimal() +
     theme(
-        plot.title = element_text(size = 14, face = "bold", hjust = 0.5), # Smaller title
+        plot.title = element_text(size = 14, hjust = 0.5), # Smaller title
         plot.subtitle = element_text(size = 11, hjust = 0.5), # Smaller subtitle
         axis.text.x = element_text(angle = 45, hjust = 1),
         legend.position = "none"
@@ -114,7 +114,7 @@ ggplot(map_data, aes(long, lat, group = group, fill = policy_score)) +
     coord_fixed(1.3) +
     theme_minimal() +
     scale_fill_gradientn(
-        colors = c("lightblue", "skyblue", "violet", "magenta", "red"),
+        colors = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09"),
         breaks = c(1, 4, 7), # Fewer labels: First, Middle, and Last
         labels = c("Most (+)", "Some (+/-)", "Most (-)"), # Simplified labels
         na.value = "gray80",
@@ -131,7 +131,7 @@ ggplot(map_data, aes(long, lat, group = group, fill = policy_score)) +
         fill = "Policy Restrictiveness"
     ) +
     theme(
-        plot.title = element_text(size = 18, face = "bold", hjust = 0.5),
+        plot.title = element_text(size = 18, hjust = 0.5),
         plot.subtitle = element_text(size = 12, hjust = 0.5),
         legend.title = element_text(size = 12, hjust = 0.5),
         legend.text = element_text(size = 10, angle = 45, vjust = 1, hjust = 1), # Rotate labels to reduce clutter
@@ -166,7 +166,7 @@ ggplot(map_data, aes(long, lat, group = group, fill = total_inbound)) +
     geom_polygon(color = "black", size = 0.2) +
     coord_fixed(1.3) +
     scale_fill_gradientn(
-        colors = c("lightyellow", "orange", "red"),
+        colors = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09"),
         na.value = "gray80",
         name = "Inbound Travel"
     ) +

@@ -59,7 +59,7 @@ ggplot(df, aes(x = abortion_policies, fill = overall_health_category)) +
   theme_classic() +
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1),
-    plot.title = element_text(size = 12, face = "bold", hjust = 0.5)
+    plot.title = element_text(size = 12, hjust = 0.5)
   )
 ```
 
@@ -184,7 +184,7 @@ ggplot(df, aes(x = medicaid_expansion, fill = abortion_policies)) +
   theme_classic() +
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1),
-    plot.title = element_text(size = 12, face = "bold", hjust = 0.5)
+    plot.title = element_text(size = 12, hjust = 0.5)
   )
 
 ```
@@ -258,7 +258,7 @@ ggplot(df, aes(x = abortion_policies, y = coverage_access_and_affordability, fil
   theme_minimal() +
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1),
-    plot.title = element_text(size = 12, face = "bold", hjust = 0.5)
+    plot.title = element_text(size = 12, hjust = 0.5)
   )
 
 ```

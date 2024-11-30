@@ -10,7 +10,7 @@ format:
 ```{r}
 
 library(readr)
-df <- read_csv("data/clean_data/merged_data.csv")
+df <- read_csv("../data/clean_data/merged_data.csv")
 
 head(df)
 
@@ -27,7 +27,7 @@ library(dplyr)
 ```{r}
 
 head(df)
-colnames(df) 
+colnames(df)
 
 ```
 
@@ -44,23 +44,23 @@ library(dplyr)
 # wide to long format
 
 df_racial_mortality <- pivot_longer(
-  data = df,
-  cols = c(
-    maternal_mortality_mothers_race_is_black_2017_2022,
-    maternal_mortality_mothers_race_is_white_2017_2022
-  ),
-  names_to = "Race",
-  values_to = "MortalityRate"
+    data = df,
+    cols = c(
+        maternal_mortality_mothers_race_is_black_2017_2022,
+        maternal_mortality_mothers_race_is_white_2017_2022
+    ),
+    names_to = "Race",
+    values_to = "MortalityRate"
 )
 
 df_racial_mortality$Race <- ifelse(
-  df_racial_mortality$Race == "maternal_mortality_mothers_race_is_black_2017_2022", 
-  "Black",
-  ifelse(
-    df_racial_mortality$Race == "maternal_mortality_mothers_race_is_white_2017_2022",
-    "White",
-    df_racial_mortality$Race
-  )
+    df_racial_mortality$Race == "maternal_mortality_mothers_race_is_black_2017_2022",
+    "Black",
+    ifelse(
+        df_racial_mortality$Race == "maternal_mortality_mothers_race_is_white_2017_2022",
+        "White",
+        df_racial_mortality$Race
+    )
 )
 
 ```
@@ -69,24 +69,26 @@ df_racial_mortality$Race <- ifelse(
 
 # box plot for maternal mortality by race
 
-ggplot(data = df_racial_mortality, 
-       aes(x = Race, y = MortalityRate, fill = Race)) +
-  geom_boxplot(alpha = 0.7) +
-  labs(
-    title = "Distribution of Maternal Mortality Rates by Race (2017-2022)",
-    x = "Race",
-    y = "Mortality Rate per 100,000 Live Births",
-    caption = "Data source: Merged healthcare dataset"
-  ) +
-  scale_fill_manual(
-    values = c("Black" = "#1f77b4", "White" = "#ff7f0e")
-  ) +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
-    axis.title = element_text(size = 12),
-    legend.position = "none"
-  )
+ggplot(
+    data = df_racial_mortality,
+    aes(x = Race, y = MortalityRate, fill = Race)
+) +
+    geom_boxplot(alpha = 0.7) +
+    labs(
+        title = "Distribution of Maternal Mortality Rates by Race (2017-2022)",
+        x = "Race",
+        y = "Mortality Rate per 100,000 Live Births",
+        caption = "Data source: Merged healthcare dataset"
+    ) +
+    scale_fill_manual(
+        values = c("Black" = "#1f77b4", "White" = "#ff7f0e")
+    ) +
+    theme_minimal() +
+    theme(
+        plot.title = element_text(hjust = 0.5, size = 14),
+        axis.title = element_text(size = 12),
+        legend.position = "none"
+    )
 
 ```
 
@@ -114,47 +116,51 @@ The p value is extremely small and less than .05. Therefore, we can reject the n
 ```{r}
 
 df_long_infant <- pivot_longer(
-  data = df,
-  cols = c(total_infant_mortality_white, 
-           total_infant_mortality_black, 
-           total_infant_mortality_hispanic),
-  names_to = "Group",
-  values_to = "InfantMortalityRate"
+    data = df,
+    cols = c(
+        total_infant_mortality_white,
+        total_infant_mortality_black,
+        total_infant_mortality_hispanic
+    ),
+    names_to = "Group",
+    values_to = "InfantMortalityRate"
 )
 
 df_long_infant$Group <- ifelse(
-  df_long_infant$Group == "total_infant_mortality_white", "White",
-  ifelse(
-    df_long_infant$Group == "total_infant_mortality_black", "Black",
+    df_long_infant$Group == "total_infant_mortality_white", "White",
     ifelse(
-      df_long_infant$Group == "total_infant_mortality_hispanic", "Hispanic",
-      df_long_infant$Group
+        df_long_infant$Group == "total_infant_mortality_black", "Black",
+        ifelse(
+            df_long_infant$Group == "total_infant_mortality_hispanic", "Hispanic",
+            df_long_infant$Group
+        )
     )
-  )
 )
 
 ```
 
 ```{r}
 
-ggplot(data = df_long_infant, 
-       aes(x = Group, y = InfantMortalityRate, fill = Group)) +
-  geom_boxplot(alpha = 0.7) +
-  labs(
-    title = "Distribution of Infant Mortality Rates by Race/Ethnicity",
-    x = "Race/Ethnicity",
-    y = "Infant Mortality Rate per 1,000 Live Births",
-    caption = "Data source: Merged healthcare dataset"
-  ) +
-  scale_fill_manual(
-    values = c("White" = "#1f77b4", "Black" = "#ff7f0e", "Hispanic" = "#2ca02c")
-  ) +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
-    axis.title = element_text(size = 12),
-    legend.position = "none"
-  )
+ggplot(
+    data = df_long_infant,
+    aes(x = Group, y = InfantMortalityRate, fill = Group)
+) +
+    geom_boxplot(alpha = 0.7) +
+    labs(
+        title = "Distribution of Infant Mortality Rates by Race/Ethnicity",
+        x = "Race/Ethnicity",
+        y = "Infant Mortality Rate per 1,000 Live Births",
+        caption = "Data source: Merged healthcare dataset"
+    ) +
+    scale_fill_manual(
+        values = c("White" = "#1f77b4", "Black" = "#ff7f0e", "Hispanic" = "#2ca02c")
+    ) +
+    theme_minimal() +
+    theme(
+        plot.title = element_text(hjust = 0.5, size = 14),
+        axis.title = element_text(size = 12),
+        legend.position = "none"
+    )
 
 ```
 
@@ -164,43 +170,47 @@ Need to use a different statistical test for this since there are three groups w
 ```{r}
 
 mortality_plot <- pivot_longer(
-  data = df,
-  cols = starts_with("infant_mortality_"),
-  names_to = "year",
-  values_to = "mortality_rate"
+    data = df,
+    cols = starts_with("infant_mortality_"),
+    names_to = "year",
+    values_to = "mortality_rate"
 )
 
 mortality_plot$year <- as.numeric(substr(
-  mortality_plot$year, 
-  nchar("infant_mortality_") + 1, 
-  nchar(mortality_plot$year)
+    mortality_plot$year,
+    nchar("infant_mortality_") + 1,
+    nchar(mortality_plot$year)
 ))
 
 mortality_plot <- mortality_plot[
-  mortality_plot$abortion_policies == "most restrictive" & 
-  !is.na(mortality_plot$abortion_policies),
+    mortality_plot$abortion_policies == "most restrictive" &
+        !is.na(mortality_plot$abortion_policies),
 ]
 
-ggplot(data = mortality_plot, 
-       aes(x = year, y = mortality_rate,
-           color = State, group = State)) +
-  geom_line(linewidth = 1) +
-  geom_point(size = 2) +
-  theme_minimal() +
-  labs(
-    title = "Infant Mortality Rates in Most Restrictive States (2017-2022)",
-    x = "Year",
-    y = "Infant Mortality Rate per 1,000 Live Births",
-    color = "State",
-    caption = "Data source: Merged healthcare dataset"
-  ) +
-  scale_x_continuous(breaks = 2017:2022) +
-  theme(
-    legend.position = "right",
-    plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
-    axis.title = element_text(size = 12),
-    axis.text = element_text(size = 10)
-  )
+ggplot(
+    data = mortality_plot,
+    aes(
+        x = year, y = mortality_rate,
+        color = State, group = State
+    )
+) +
+    geom_line(linewidth = 1) +
+    geom_point(size = 2) +
+    theme_minimal() +
+    labs(
+        title = "Infant Mortality Rates in Most Restrictive States (2017-2022)",
+        x = "Year",
+        y = "Infant Mortality Rate per 1,000 Live Births",
+        color = "State",
+        caption = "Data source: Merged healthcare dataset"
+    ) +
+    scale_x_continuous(breaks = 2017:2022) +
+    theme(
+        legend.position = "right",
+        plot.title = element_text(hjust = 0.5, size = 14,
+        axis.title = element_text(size = 12),
+        axis.text = element_text(size = 10)
+    )
 
 ```
 
@@ -211,82 +221,86 @@ Some go up, some go down. Not very telling!
 
 # Add a new column for OB/GYN proportion in the original data frame
 df <- df %>%
-  filter(!is.na(abortion_policies) & 
-         abortion_policies != "" & 
-         abortion_policies != "NA") %>%
-  mutate(
-    abortion_policies = tolower(trimws(abortion_policies)),
-    obgyn_proportion = (number_of_obstetricians_and_gynecologists_employed_2023 /
-                        total_sumber_of_women_aged_15_44_2017) * 100000
-  )
+    filter(!is.na(abortion_policies) &
+        abortion_policies != "" &
+        abortion_policies != "NA") %>%
+    mutate(
+        abortion_policies = tolower(trimws(abortion_policies)),
+        obgyn_proportion = (number_of_obstetricians_and_gynecologists_employed_2023 /
+            total_sumber_of_women_aged_15_44_2017) * 100000
+    )
 
 ```
 
 ```{r}
 
 create_ban_type_viz <- function(data, metric_col, title, y_label, plot_type = "bar") {
-  ban_order <- c("total_abortion_ban",
-                 "week_ban_6",
-                 "week_ban_12",
-                 "week_ban_15",
-                 "week_ban_18_to_23",
-                 "week_ban_24_to_26",
-                 "no_gestational_ban")
-  
-  reshaped_data <- data %>%
-    select(all_of(ban_order), !!sym(metric_col)) %>%
-    pivot_longer(
-      cols = all_of(ban_order),
-      names_to = "ban_type",
-      values_to = "has_ban"
-    ) %>%
-    filter(has_ban == 1) %>%
-    group_by(ban_type) %>%
-    summarise(avg_value = mean(!!sym(metric_col), na.rm = TRUE)) %>%
-    mutate(
-      ban_type = factor(ban_type, levels = ban_order),
-      ban_numeric = as.numeric(factor(ban_type, levels = ban_order))
+    ban_order <- c(
+        "total_abortion_ban",
+        "week_ban_6",
+        "week_ban_12",
+        "week_ban_15",
+        "week_ban_18_to_23",
+        "week_ban_24_to_26",
+        "no_gestational_ban"
     )
-  
-  p <- ggplot(reshaped_data, aes(x = ban_type, y = avg_value))
-  
-  if (plot_type == "scatter") {
-    model <- lm(avg_value ~ ban_numeric, data = reshaped_data)
-    r_squared <- round(summary(model)$r.squared, 3)
-    
-    p <- p +
-      geom_point(size = 4, color = "steelblue") +
-      geom_smooth(aes(x = ban_numeric), method = "lm", se = TRUE, color = "red") +
-      annotate("text", 
-               x = length(ban_order) - 0.5,
-               y = max(reshaped_data$avg_value),
-               label = paste0("R² = ", r_squared),
-               size = 4, hjust = 1)
-  } else {
 
-    p <- p + geom_bar(stat = "identity", fill = "steelblue")
-  }
-  
-  p + labs(
-    title = title,
-    x = "Abortion Ban Type",
-    y = y_label
-  ) +
-    theme_minimal() +
-    theme(
-      axis.text.x = element_text(angle = 45, hjust = 1),
-      plot.title = element_text(hjust = 0.5, size = 14, face = "bold"),
-      axis.title = element_text(size = 12)
-    )
+    reshaped_data <- data %>%
+        select(all_of(ban_order), !!sym(metric_col)) %>%
+        pivot_longer(
+            cols = all_of(ban_order),
+            names_to = "ban_type",
+            values_to = "has_ban"
+        ) %>%
+        filter(has_ban == 1) %>%
+        group_by(ban_type) %>%
+        summarise(avg_value = mean(!!sym(metric_col), na.rm = TRUE)) %>%
+        mutate(
+            ban_type = factor(ban_type, levels = ban_order),
+            ban_numeric = as.numeric(factor(ban_type, levels = ban_order))
+        )
+
+    p <- ggplot(reshaped_data, aes(x = ban_type, y = avg_value))
+
+    if (plot_type == "scatter") {
+        model <- lm(avg_value ~ ban_numeric, data = reshaped_data)
+        r_squared <- round(summary(model)$r.squared, 3)
+
+        p <- p +
+            geom_point(size = 4, color = "steelblue") +
+            geom_smooth(aes(x = ban_numeric), method = "lm", se = TRUE, color = "red") +
+            annotate("text",
+                x = length(ban_order) - 0.5,
+                y = max(reshaped_data$avg_value),
+                label = paste0("R² = ", r_squared),
+                size = 4, hjust = 1
+            )
+    } else {
+        p <- p + geom_bar(stat = "identity", fill = "steelblue")
+    }
+
+    p + labs(
+        title = title,
+        x = "Abortion Ban Type",
+        y = y_label
+    ) +
+        theme_minimal() +
+        theme(
+            axis.text.x = element_text(angle = 45, hjust = 1),
+            plot.title = element_text(hjust = 0.5, size = 14),
+            axis.title = element_text(size = 12)
+        )
 }
 
 ```
 
 ```{r}
 
-all_cause_mortality <- create_ban_type_viz(df, "all_cause_mortality_rate_per_100,000_women_ages 15_44_2022",
-                                    "All Cause Mortality Rate Women 15-44, 2022",
-                                    "Rate")
+all_cause_mortality <- create_ban_type_viz(
+    df, "all_cause_mortality_rate_per_100,000_women_ages 15_44_2022",
+    "All Cause Mortality Rate Women 15-44, 2022",
+    "Rate"
+)
 
 ```
 
@@ -305,131 +319,136 @@ The total abortion ban category is significantly higher despite all of the other
 ```{r}
 
 df_filtered <- df %>%
-  filter(!is.na(`maternal_mortality_rates_2018_2022_per_100,000_live births`)) %>%
-  filter(State != "US") %>%
-  bind_rows(tibble(
-    State = "US Average",
-    `maternal_mortality_rates_2018_2022_per_100,000_live births` = 23.2,
-    abortion_policies = "US Average"
-  )) %>%
-  mutate(
-    abortion_policies = factor(
-      abortion_policies,
-      levels = c(
-        "most restrictive", "very restrictive", "restrictive",
-        "some restrictions/protections", 
-        "protective", "very protective", "most protective", "US Average"
-      )
+    filter(!is.na(`maternal_mortality_rates_2018_2022_per_100,000_live births`)) %>%
+    filter(State != "US") %>%
+    bind_rows(tibble(
+        State = "US Average",
+        `maternal_mortality_rates_2018_2022_per_100,000_live births` = 23.2,
+        abortion_policies = "US Average"
+    )) %>%
+    mutate(
+        abortion_policies = factor(
+            abortion_policies,
+            levels = c(
+                "most restrictive", "very restrictive", "restrictive",
+                "some restrictions/protections",
+                "protective", "very protective", "most protective", "US Average"
+            )
+        )
     )
-  )
 
-ggplot(df_filtered, 
-       aes(y = reorder(State, `maternal_mortality_rates_2018_2022_per_100,000_live births`), 
-           x = `maternal_mortality_rates_2018_2022_per_100,000_live births`,
-           fill = abortion_policies)) +
-
-  geom_bar(stat = "identity", width = 0.7) +
-  geom_text(aes(label = sprintf("%.1f", `maternal_mortality_rates_2018_2022_per_100,000_live births`)),
-            hjust = -0.2,
-            size = 3) +
-
-  scale_fill_manual(values = c(
-    "most restrictive" = "#bd0000",     
-    "very restrictive" = "#ff0000",     
-    "restrictive" = "#ff866b",    
-    "some restrictions/protections" = "#ffe857", 
-    "protective" = "#b6ff83",           
-    "very protective" = "#2ae81e",    
-    "most protective" = "#1e9400",    
-    "US Average" = "#0056df"   
-  )) +
-
-  theme_minimal() +
-  labs(
-    title = "Maternal Mortality Rates (2018-2022) per 100,000 Live Births by State",
-    x = "Maternal Mortality Rate per 100,000 Live Births",
-    y = "",
-    fill = "Abortion Policy"
-  ) +
-
-  theme(
-    plot.title = element_text(hjust = 0.5, size = 12, face = "bold"),
-    axis.title.x = element_text(size = 10),
-    axis.text.y = element_text(size = 8, color = "grey30"),
-    axis.text.x = element_text(size = 8),
-    legend.position = "right",
-    legend.title = element_text(size = 9),
-    legend.text = element_text(size = 8),
-    panel.grid.major.y = element_blank(),
-    panel.grid.minor = element_blank(),
-    plot.background = element_rect(fill = "white", color = NA),
-    panel.background = element_rect(fill = "white", color = NA)
-  ) +
-
-  scale_x_continuous(
-    limits = c(0, 45),
-    breaks = seq(0, 40, by = 10),
-    expand = expansion(mult = c(0, 0.1))
-  )
+ggplot(
+    df_filtered,
+    aes(
+        y = reorder(State, `maternal_mortality_rates_2018_2022_per_100,000_live births`),
+        x = `maternal_mortality_rates_2018_2022_per_100,000_live births`,
+        fill = abortion_policies
+    )
+) +
+    geom_bar(stat = "identity", width = 0.7) +
+    geom_text(aes(label = sprintf("%.1f", `maternal_mortality_rates_2018_2022_per_100,000_live births`)),
+        hjust = -0.2,
+        size = 3
+    ) +
+    scale_fill_manual(values = c(
+        "most restrictive" = "#bd0000",
+        "very restrictive" = "#ff0000",
+        "restrictive" = "#ff866b",
+        "some restrictions/protections" = "#ffe857",
+        "protective" = "#b6ff83",
+        "very protective" = "#2ae81e",
+        "most protective" = "#1e9400",
+        "US Average" = "#0056df"
+    )) +
+    theme_minimal() +
+    labs(
+        title = "Maternal Mortality Rates (2018-2022) per 100,000 Live Births by State",
+        x = "Maternal Mortality Rate per 100,000 Live Births",
+        y = "",
+        fill = "Abortion Policy"
+    ) +
+    theme(
+        plot.title = element_text(hjust = 0.5, size = 12),
+        axis.title.x = element_text(size = 10),
+        axis.text.y = element_text(size = 8, color = "grey30"),
+        axis.text.x = element_text(size = 8),
+        legend.position = "right",
+        legend.title = element_text(size = 9),
+        legend.text = element_text(size = 8),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.background = element_rect(fill = "white", color = NA),
+        panel.background = element_rect(fill = "white", color = NA)
+    ) +
+    scale_x_continuous(
+        limits = c(0, 45),
+        breaks = seq(0, 40, by = 10),
+        expand = expansion(mult = c(0, 0.1))
+    )
 
 ```
 
 ```{r}
 
 df_filtered <- df %>%
-  filter(!is.na(`maternal_mortality_rates_2018_2022_per_100,000_live births`)) %>%
-  filter(State != "US" & State != "Ohio" & State != "Nevada") %>%
-  mutate(
-    simplified_policies = case_when(
-      abortion_policies %in% c("most restrictive", "very restrictive", "restrictive") ~ "Restrictive",
-      abortion_policies %in% c("most protective", "very protective", "protective") ~ "Protective",
-      TRUE ~ abortion_policies
-    )
-  ) %>%
-  bind_rows(tibble(
-    State = "US Average",
-    `maternal_mortality_rates_2018_2022_per_100,000_live births` = 23.2,
-    simplified_policies = "US Average"
-  ))
+    filter(!is.na(`maternal_mortality_rates_2018_2022_per_100,000_live births`)) %>%
+    filter(State != "US" & State != "Ohio" & State != "Nevada") %>%
+    mutate(
+        simplified_policies = case_when(
+            abortion_policies %in% c("most restrictive", "very restrictive", "restrictive") ~ "Restrictive",
+            abortion_policies %in% c("most protective", "very protective", "protective") ~ "Protective",
+            TRUE ~ abortion_policies
+        )
+    ) %>%
+    bind_rows(tibble(
+        State = "US Average",
+        `maternal_mortality_rates_2018_2022_per_100,000_live births` = 23.2,
+        simplified_policies = "US Average"
+    ))
 
-ggplot(df_filtered, 
-       aes(y = reorder(State, `maternal_mortality_rates_2018_2022_per_100,000_live births`), 
-           x = `maternal_mortality_rates_2018_2022_per_100,000_live births`,
-           fill = simplified_policies)) +
-  geom_bar(stat = "identity", width = 0.7) +
-  geom_text(aes(label = sprintf("%.1f", `maternal_mortality_rates_2018_2022_per_100,000_live births`)),
-            hjust = -0.2,
-            size = 3) +
-  scale_fill_manual(values = c(
-    "Restrictive" = "#ff0000",    
-    "Protective" = "#4dbd00",    
-    "US Average" = "#006eff"   
-  )) +
-  theme_minimal() +
-  labs(
-    title = "Maternal Mortality Rates (2018-2022) per 100,000 Live Births by State",
-    x = "Maternal Mortality Rate per 100,000 Live Births",
-    y = "",
-    fill = "Abortion Policy"
-  ) +
-  theme(
-    plot.title = element_text(hjust = 0.5, size = 12, face = "bold"),
-    axis.title.x = element_text(size = 10),
-    axis.text.y = element_text(size = 8, color = "grey30"),
-    axis.text.x = element_text(size = 8),
-    legend.position = "right",
-    legend.title = element_text(size = 9),
-    legend.text = element_text(size = 8),
-    panel.grid.major.y = element_blank(),
-    panel.grid.minor = element_blank(),
-    plot.background = element_rect(fill = "white", color = NA),
-    panel.background = element_rect(fill = "white", color = NA)
-  ) +
-  scale_x_continuous(
-    limits = c(0, 45),
-    breaks = seq(0, 40, by = 10),
-    expand = expansion(mult = c(0, 0.1))
-  )
+ggplot(
+    df_filtered,
+    aes(
+        y = reorder(State, `maternal_mortality_rates_2018_2022_per_100,000_live births`),
+        x = `maternal_mortality_rates_2018_2022_per_100,000_live births`,
+        fill = simplified_policies
+    )
+) +
+    geom_bar(stat = "identity", width = 0.7) +
+    geom_text(aes(label = sprintf("%.1f", `maternal_mortality_rates_2018_2022_per_100,000_live births`)),
+        hjust = -0.2,
+        size = 3
+    ) +
+    scale_fill_manual(values = c(
+        "Restrictive" = "#ff0000",
+        "Protective" = "#4dbd00",
+        "US Average" = "#006eff"
+    )) +
+    theme_minimal() +
+    labs(
+        title = "Maternal Mortality Rates (2018-2022) per 100,000 Live Births by State",
+        x = "Maternal Mortality Rate per 100,000 Live Births",
+        y = "",
+        fill = "Abortion Policy"
+    ) +
+    theme(
+        plot.title = element_text(hjust = 0.5, size = 12),
+        axis.title.x = element_text(size = 10),
+        axis.text.y = element_text(size = 8, color = "grey30"),
+        axis.text.x = element_text(size = 8),
+        legend.position = "right",
+        legend.title = element_text(size = 9),
+        legend.text = element_text(size = 8),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.background = element_rect(fill = "white", color = NA),
+        panel.background = element_rect(fill = "white", color = NA)
+    ) +
+    scale_x_continuous(
+        limits = c(0, 45),
+        breaks = seq(0, 40, by = 10),
+        expand = expansion(mult = c(0, 0.1))
+    )
 
 ```
 
@@ -443,30 +462,49 @@ library(usmap)
 
 library()
 abortion_map_data <- df %>%
-  select(State, `percent_increase_in_clinician_provided_abortions_since_2020`) %>%
-  filter(!is.na(`percent_increase_in_clinician_provided_abortions_since_2020`)) %>%
-  mutate(
-    state = State,
-    change = `percent_increase_in_clinician_provided_abortions_since_2020`
-  ) 
+    select(State, `percent_increase_in_clinician_provided_abortions_since_2020`) %>%
+    filter(!is.na(`percent_increase_in_clinician_provided_abortions_since_2020`)) %>%
+    mutate(
+        state = State,
+        change = `percent_increase_in_clinician_provided_abortions_since_2020`
+    )
 
 print("First few rows of our data:")
 head(abortion_map_data)
 
-plot_usmap(data = abortion_map_data, values = "change") +
-  scale_fill_gradient2(
-    name = "% Change",
-    low = "#ff6b6b",   
-    mid = "#ffffff",    
-    high = "#4dbd00",  
-    midpoint = 0,
-    na.value = "gray80"  
-  ) +
-  theme(
-    legend.position = "right",
-    plot.title = element_text(size = 14, hjust = 0.5, face = "bold")
-  ) +
-  labs(title = "Change in Clinician-Provided Abortions Since 2020 by State")
+capitals_df <- data.frame(
+  long = c(-116.200, -100.346, -93.603, -92.189, -92.289,
+          -91.187, -97.743, -97.503, -90.182, -86.279,
+          -84.280, -86.781, -84.878, -86.162, -81.633),
+  lat = c(43.617, 44.367, 41.591, 38.579, 34.746,
+          30.457, 30.266, 35.482, 32.298, 32.377,
+          30.438, 36.162, 38.186, 39.768, 38.336),
+  state = c("Idaho", "South Dakota", "Iowa", "Missouri", "Arkansas",
+            "Louisiana", "Texas", "Oklahoma", "Mississippi", "Alabama",
+            "Florida", "Tennessee", "Kentucky", "Indiana", "West Virginia")
+)
+
+capitals_mapped <- usmap_transform(capitals_df, input_names = c("long", "lat"))
+
+plot_usmap(data = abortion_map_data, values = "change") + geom_point(data = capitals_mapped, 
+             aes(x = x, y = y),
+             shape = 8,        # Star shape
+             size = 4,         # Size of stars
+             color = "black",  # Color of stars
+             stroke = 1.5) +   # Thickness of stars
+    scale_fill_gradient2(
+        name = "% Change",
+        low = "#ff6b6b",
+        mid = "#ffffff",
+        high = "#4dbd00",
+        midpoint = 0,
+        na.value = "gray80"
+    ) +
+    theme(
+        legend.position = "right",
+        plot.title = element_text(size = 14, hjust = 0.5)
+    ) +
+    labs(title = "Change in Clinician-Provided Abortions Since 2020 by State", caption = "* indicate Most Restrictive States")
 
 ```
 
@@ -478,44 +516,46 @@ Cool, you can see it goes up near the abortion ban states.
 library(corrplot)
 
 healthcare_metrics <- df %>%
-  select(
-    overall_health_ranking,
-    coverage_access_and_affordability,
-    health_care_quality_and_prevention,
-    health_outcomes,
-    women_18_44_who_went_without_care_because_of_cost.1
-  ) %>%
-  rename(
-    "Overall Health Ranking" = overall_health_ranking,
-    "Coverage & Access" = coverage_access_and_affordability,
-    "Healthcare Quality" = health_care_quality_and_prevention,
-    "Health Outcomes" = health_outcomes,
-    "Care Cost Barriers" = women_18_44_who_went_without_care_because_of_cost.1
-  )
+    select(
+        overall_health_ranking,
+        coverage_access_and_affordability,
+        health_care_quality_and_prevention,
+        health_outcomes,
+        women_18_44_who_went_without_care_because_of_cost.1
+    ) %>%
+    rename(
+        "Overall Health Ranking" = overall_health_ranking,
+        "Coverage & Access" = coverage_access_and_affordability,
+        "Healthcare Quality" = health_care_quality_and_prevention,
+        "Health Outcomes" = health_outcomes,
+        "Care Cost Barriers" = women_18_44_who_went_without_care_because_of_cost.1
+    )
 
 cor_matrix <- cor(healthcare_metrics, use = "complete.obs")
 
-corrplot(cor_matrix, 
-         method = "color",        
-         type = "upper",           
-         tl.col = "black",        
-         tl.srt = 45,            
-         addCoef.col = "black",    
-         number.cex = 0.7,       
-         col = colorRampPalette(c("#E41A1C", "#FFFFFF", "#4DAF4A"))(200),  
-         tl.cex = 0.7,            
-         cl.cex = 0.7,            
-         diag = FALSE,           
-         mar = c(0,0,1,0),        
-         title = "Healthcare Metrics Correlations",
-         family = "Arial",
-         bg = "white",
-         addgrid.col = "gray90")  
+corrplot(cor_matrix,
+    method = "color",
+    type = "upper",
+    tl.col = "black",
+    tl.srt = 45,
+    addCoef.col = "black",
+    number.cex = 0.7,
+    col = colorRampPalette(c("#E41A1C", "#FFFFFF", "#4DAF4A"))(200),
+    tl.cex = 0.7,
+    cl.cex = 0.7,
+    diag = FALSE,
+    mar = c(0, 0, 1, 0),
+    title = "Healthcare Metrics Correlations",
+    family = "Arial",
+    bg = "white",
+    addgrid.col = "gray90"
+)
 
-title("Correlations Between Healthcare Metrics", 
-      line = -0.5, 
-      cex.main = 1.2, 
-      font.main = 2)
+title("Correlations Between Healthcare Metrics",
+    line = -0.5,
+    cex.main = 1.2,
+    font.main = 2
+)
 
 ```
 
@@ -527,50 +567,52 @@ Love this
 library(corrplot)
 
 healthcare_metrics <- df %>%
-  select(
-    overall_health_ranking,
-    coverage_access_and_affordability,
-    health_care_quality_and_prevention,
-    health_outcomes,
-    women_18_44_who_went_without_care_because_of_cost.1,
-    `percent_uninsured_women_ages 19_64`,
-    `teen_birth_rate_per_1,000_population_ages_15_19_2022.1`,
-    `maternal_mortality_rates_2018_2022_per_100,000_live births`
-  ) %>%
-  rename(
-    "Overall Health Ranking" = overall_health_ranking,
-    "Coverage & Access" = coverage_access_and_affordability,
-    "Healthcare Quality" = health_care_quality_and_prevention,
-    "Health Outcomes" = health_outcomes,
-    "Care Cost Barriers" = women_18_44_who_went_without_care_because_of_cost.1,
-    "Uninsured Women %" = `percent_uninsured_women_ages 19_64`,
-    "Teen Birth Rate" = `teen_birth_rate_per_1,000_population_ages_15_19_2022.1`,
-    "Maternal Mortality" = `maternal_mortality_rates_2018_2022_per_100,000_live births`
-  )
+    select(
+        overall_health_ranking,
+        coverage_access_and_affordability,
+        health_care_quality_and_prevention,
+        health_outcomes,
+        women_18_44_who_went_without_care_because_of_cost.1,
+        `percent_uninsured_women_ages 19_64`,
+        `teen_birth_rate_per_1,000_population_ages_15_19_2022.1`,
+        `maternal_mortality_rates_2018_2022_per_100,000_live births`
+    ) %>%
+    rename(
+        "Overall Health Ranking" = overall_health_ranking,
+        "Coverage & Access" = coverage_access_and_affordability,
+        "Healthcare Quality" = health_care_quality_and_prevention,
+        "Health Outcomes" = health_outcomes,
+        "Care Cost Barriers" = women_18_44_who_went_without_care_because_of_cost.1,
+        "Uninsured Women %" = `percent_uninsured_women_ages 19_64`,
+        "Teen Birth Rate" = `teen_birth_rate_per_1,000_population_ages_15_19_2022.1`,
+        "Maternal Mortality" = `maternal_mortality_rates_2018_2022_per_100,000_live births`
+    )
 
 cor_matrix <- cor(healthcare_metrics, use = "complete.obs")
 
-corrplot(cor_matrix, 
-         method = "color",        
-         type = "upper",           
-         tl.col = "black",        
-         tl.srt = 45,            
-         addCoef.col = "black",    
-         number.cex = 0.7,       
-         col = colorRampPalette(c("#E41A1C", "#FFFFFF", "#4DAF4A"))(200),  
-         tl.cex = 0.7,            
-         cl.cex = 0.7,            
-         diag = FALSE,           
-         mar = c(0,0,1,0),        
-         title = "Healthcare Metrics Correlations",
-         family = "Arial",
-         bg = "white",
-         addgrid.col = "gray90")  
+corrplot(cor_matrix,
+    method = "color",
+    type = "upper",
+    tl.col = "black",
+    tl.srt = 45,
+    addCoef.col = "black",
+    number.cex = 0.7,
+    col = colorRampPalette(c("#E41A1C", "#FFFFFF", "#4DAF4A"))(200),
+    tl.cex = 0.7,
+    cl.cex = 0.7,
+    diag = FALSE,
+    mar = c(0, 0, 1, 0),
+    title = "Healthcare Metrics Correlations",
+    family = "Arial",
+    bg = "white",
+    addgrid.col = "gray90"
+)
 
-title("Correlations Between Healthcare Metrics", 
-      line = -0.5, 
-      cex.main = 1.2, 
-      font.main = 2)
+title("Correlations Between Healthcare Metrics",
+    line = -0.5,
+    cex.main = 1.2,
+    font.main = 2
+)
 
 ```
 
@@ -580,16 +622,21 @@ Can add more, have to decide which.
 ```{r}
 
 # Convert abortion policies to a numeric scale (fix potential missing levels issue)
-data$abortion_policies_numeric <- as.numeric(factor(data$abortion_policies, 
-                                         levels = c("most restrictive", "very restrictive", 
-                                                    "restrictive", "some restrictions/protections", 
-                                                    "protective", "very protective", "most protective")))
+data$abortion_policies_numeric <- as.numeric(factor(data$abortion_policies,
+    levels = c(
+        "most restrictive", "very restrictive",
+        "restrictive", "some restrictions/protections",
+        "protective", "very protective", "most protective"
+    )
+))
 
 # Subset the relevant variables (ensure consistent column naming)
-relevant_data <- data[, c("abortion_policies_numeric", 
-                          "twenty_five_and_older_had_bachelors_by_higher_2021", 
-                          "teen_birth_rate_per_1,000_population_ages_15_19_2022",
-                          "maternity_care_workforce_per_100,000_women_ages_15_44")]
+relevant_data <- data[, c(
+    "abortion_policies_numeric",
+    "twenty_five_and_older_had_bachelors_by_higher_2021",
+    "teen_birth_rate_per_1,000_population_ages_15_19_2022",
+    "maternity_care_workforce_per_100,000_women_ages_15_44"
+)]
 
 # Rename columns (ensure the number of new names matches the columns)
 colnames(relevant_data) <- c("abortion_policies", "education", "teen_birth_rate", "maternity_care_workforce")
@@ -653,13 +700,15 @@ library(ggplot2)
 
 # Create the scatter plot with custom cluster colors
 ggplot(health_metrics, aes(x = health_outcomes, y = overall_health_ranking, color = cluster)) +
-  geom_point(size = 3) +
-  geom_text_repel(aes(label = abortion_policies), size = 3) +
-  scale_color_manual(values = c("1" = "#008e17", "2" = "#cf0000", "3" = "#fad100")) +
-  labs(title = "Clusters of States by Health Metrics and Abortion Policies", 
-       x = "Health Outcomes", 
-       y = "Overall Health Ranking") +
-  theme_minimal()
+    geom_point(size = 3) +
+    geom_text_repel(aes(label = abortion_policies), size = 3) +
+    scale_color_manual(values = c("1" = "#008e17", "2" = "#cf0000", "3" = "#fad100")) +
+    labs(
+        title = "Clusters of States by Health Metrics and Abortion Policies",
+        x = "Health Outcomes",
+        y = "Overall Health Ranking"
+    ) +
+    theme_minimal()
 
 ```
 
@@ -671,13 +720,15 @@ Kind of cool because looks at two variables and you can clearly see higher ranki
 ```{r}
 # Boxplot by abortion policies
 ggplot(df, aes(x = abortion_policies, y = women_18_44_who_went_without_care_because_of_cost.1, fill = abortion_policies)) +
-  geom_boxplot() +
-  scale_fill_manual(values = policy_colors) +
-  labs(title = "Women Without Care Due to Cost Across Abortion Policies",
-       x = "Abortion Policies",
-       y = "Percentage of Women Without Care") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+    geom_boxplot() +
+    scale_fill_manual(values = policy_colors) +
+    labs(
+        title = "Women Without Care Due to Cost Across Abortion Policies",
+        x = "Abortion Policies",
+        y = "Percentage of Women Without Care"
+    ) +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
 

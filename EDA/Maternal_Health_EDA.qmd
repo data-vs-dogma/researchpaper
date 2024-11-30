@@ -16,7 +16,7 @@ library(readr)
 
 ```{r}
 
-df <- read_csv("data/clean_data/merged_data.csv", show_col_types = FALSE)
+df <- read_csv("../data/clean_data/merged_data.csv", show_col_types = FALSE)
 df <- df[!is.na(df$abortion_policies), ]
 df_test <- df[df$State != "US", ]
 
