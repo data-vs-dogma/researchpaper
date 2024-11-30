@@ -48,6 +48,20 @@ ggplot(df, aes(x = abortion_policies, y = `maternal_mortality_rates_2020_2022_pe
 
 The Kruskal-Wallis test yields a p-value of 0.009736, providing significant evidence to suggest that the null hypothesis can be rejected and we can say that in at least one policy group, the maternal mortality rate is different from the rest. This accompanying visualization provides us additional insight into the characteristics of this difference(s). As we can see, the maternal mortality rates in the most restrictive abortion policy states have the largest and highest range and the greatest mean mortality rate. The mean mortality rate in the most protective states appears to be the lowest (or tied with the rate in the protective policy states). The visualization shows that for the most part, as the restrictiveness of abortion policy increases, so does the mean maternal mortality rate.
 
+```{r}
+
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+install.packages("clinfun")
+library(clinfun)
+
+jt_test <- jonckheere.test(df$"maternal_mortality_rates_2020_2022_per_100,000_live births", 
+                          as.numeric(df$abortion_policies), 
+                          alternative="increasing",
+                          nperm = 10000)
+print(jt_test)
+
+```
+
 To further confirm these findings, we will perform a permutation test on the ANOVA mean differences:
 
 ```{r}
@@ -129,6 +143,20 @@ ggplot(df, aes(x = abortion_policies, y = women_18_44_who_went_without_care_beca
 
 The Kruskal-Wallis test here yields a statistically significant p-value of 0.01516, indicating evidence to accept the alternative hypothesis and suggest that the true mean percentage of women who went without care because of cost is different in at least one of the abortion policy more. The boxplot visualization indicates the scope of these differences. The plot demonstrates a clear relationship where as the abortion policy becomes more strict, the higher the mean percentage of women who did not receive care due to it being too expensive for them to afford. It appears that the mean percentage of women going without care in the most protective abortion policy states is about 12%, whereas in the states with the most restrictive abortion policy, the mean is about 18%.
 
+```{r}
+
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+install.packages("clinfun")
+library(clinfun)
+
+jt_test <- jonckheere.test(df$women_18_44_who_went_without_care_because_of_cost, 
+                          as.numeric(df$abortion_policies), 
+                          alternative="increasing",
+                          nperm = 10000)
+print(jt_test)
+
+```
+
 To confirm the strength of the difference in means, we will perform a permutation test:
 
 ```{r}
@@ -207,6 +235,20 @@ ggplot(df, aes(x = abortion_policies, y = percent_uninsured_women_during_pregnan
 ```
 
 The Kruskal-Wallis test yields a p-value of 0.03475, providing significant evidence to reject the null hypothesis in favor of the alternative and suggest that the percentage of uninsured women during pregnancy is different in at least one of the abortion policy level groups. The boxplots give us some insight into the nature of these differences. Interestingly, the mean percentage of uninsured women during pregnancy appears to increase as the restrictiveness of abortion policy increases, until the most restrictive level where the mean and range drop significantly. It is difficult to understand why this may be. However, the clear trend among the previous six groups appears to be a significant indicator of the maternal population characteristics of the states in those levels.
+
+```{r}
+
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+install.packages("clinfun")
+library(clinfun)
+
+jt_test <- jonckheere.test(df$percent_uninsured_women_during_pregnancy_2021, 
+                          as.numeric(df$abortion_policies), 
+                          alternative="decreasing",
+                          nperm = 10000)
+print(jt_test)
+
+```
 
 While the p-value produced was moderately strong, we will not perform an ANOVA permutation test to further validate the significance of these associations:
 
@@ -288,6 +330,16 @@ ggplot(df, aes(x = abortion_policies, y = `teen_birth_rate_per_1,000_population_
 ```
 
 The Kruskal-Wallis test here yields a statistically significant p-value of 0.0002706, indicating evidence to accept the alternative hypothesis and suggest that the
+
+```{r}
+
+jt_test <- jonckheere.test(df$"teen_birth_rate_per_1,000_population_ages_15_19_2022", 
+                          as.numeric(df$abortion_policies), 
+                          alternative="increasing",
+                          nperm = 10000)
+print(jt_test)
+
+```
 
 ```{r}
 # Permutation Test
