@@ -1,6 +1,10 @@
 ---
 title: "Conditions Impacting Maternal Wellness by US State"
 subtitle: "(abortion is good)"
+format:
+  html:
+    mermaid:
+      theme: dark
 ---
 
 Problem & objectives
@@ -10,3 +14,44 @@ Your Introduction will fully explain and describe the problem (or question or is
 For example, start with a clearly defined problem: A government contractor is experiencing rising costs and is no longer able to submit competitive contract proposals. One of many questions to solve this business problem might include: Can the company reduce its staff without compromising quality?
 
 ![](images/policy_map.png)
+
+
+
+## Research Questions
+
+
+
+```{mermaid}
+
+flowchart TD
+
+  A(Does Abortion Policy Impact Well-being?):::main
+
+  A --> B(Does Abortion Policy Impact Maternal Health?):::sub
+  B --> F(Maternal Mortality):::node
+  B --> G(Ratio of OBGYNs):::node
+  B --> H(Healthcare Access):::node
+  B --> I(Medicaid Coverage):::node
+  B --> J(Contraception Coverage):::node
+
+  A --> C(Does Abortion Policy Impact Education?):::sub
+  C --> K(Higher Education Attainment):::node
+
+  A --> D(Are There Economic Ramifications For Abortion Policy?):::sub
+  D --> L(Cost Barriers):::node
+  D --> M(Uninsured Women During Pregnancy):::node
+  D --> N(Parental Leave Policies):::node
+  D --> O(Teen Birth Rates):::node
+
+  A --> E(Does Abortion Policy Impact Children's Well-being?):::sub
+  E --> P(Infant Mortality):::node
+  E --> Q(Foster Care System):::node
+
+  classDef main font-size:24px, font-weight:bold, fill:#f9f9f9, stroke:#333, stroke-width:2px;
+  classDef sub font-size:20px, fill:#e6f7ff, stroke:#2a6592, stroke-width:1px;
+  classDef node font-size:18px, fill:#f0f8ff, stroke:#87ceeb, stroke-width:1px;
+
+
+```
+
+

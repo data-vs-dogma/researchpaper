@@ -59,6 +59,10 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+<meta name="mermaid-theme" content="dark">
+<script src="site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
 
 
 <link rel="stylesheet" href="styles.css">
@@ -135,7 +139,7 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text">Overview of Data Sources</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./bibliography/bibliography.html" rel="" target="">
+    <a class="nav-link" href="./bibliography.html" rel="" target="">
  <span class="menu-text">Bibliography</span></a>
   </li>  
 </ul>
@@ -148,13 +152,21 @@ ul.task-list li input[type="checkbox"] {
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
 <!-- sidebar -->
-  
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul class="collapse">
+  <li><a href="#research-questions" id="toc-research-questions" class="nav-link active" data-scroll-target="#research-questions">Research Questions</a></li>
+  </ul>
+</nav>
+</nav>
 <div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
     </div>
 <!-- main -->
-<main class="content column-page" id="quarto-document-content">
+<main class="content column-page-right" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
@@ -178,8 +190,49 @@ ul.task-list li input[type="checkbox"] {
 <p>Your Introduction will fully explain and describe the problem (or question or issue), its history, who it affects, why it matters, etc.</p>
 <p>For example, start with a clearly defined problem: A government contractor is experiencing rising costs and is no longer able to submit competitive contract proposals. One of many questions to solve this business problem might include: Can the company reduce its staff without compromising quality?</p>
 <p><img src="images/policy_map.png" class="img-fluid"></p>
+<section id="research-questions" class="level2">
+<h2 class="anchored" data-anchor-id="research-questions">Research Questions</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<div>
+<pre class="mermaid mermaid-js">flowchart TD
+
+  A(Does Abortion Policy Impact Well-being?):::main
+
+  A --&gt; B(Does Abortion Policy Impact Maternal Health?):::sub
+  B --&gt; F(Maternal Mortality):::node
+  B --&gt; G(Ratio of OBGYNs):::node
+  B --&gt; H(Healthcare Access):::node
+  B --&gt; I(Medicaid Coverage):::node
+  B --&gt; J(Contraception Coverage):::node
+
+  A --&gt; C(Does Abortion Policy Impact Education?):::sub
+  C --&gt; K(Higher Education Attainment):::node
+
+  A --&gt; D(Are There Economic Ramifications For Abortion Policy?):::sub
+  D --&gt; L(Cost Barriers):::node
+  D --&gt; M(Uninsured Women During Pregnancy):::node
+  D --&gt; N(Parental Leave Policies):::node
+  D --&gt; O(Teen Birth Rates):::node
+
+  A --&gt; E(Does Abortion Policy Impact Children's Well-being?):::sub
+  E --&gt; P(Infant Mortality):::node
+  E --&gt; Q(Foster Care System):::node
+
+  classDef main font-size:24px, font-weight:bold, fill:#f9f9f9, stroke:#333, stroke-width:2px;
+  classDef sub font-size:20px, fill:#e6f7ff, stroke:#2a6592, stroke-width:1px;
+  classDef node font-size:18px, fill:#f0f8ff, stroke:#87ceeb, stroke-width:1px;
 
 
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

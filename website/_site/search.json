@@ -47,5 +47,12 @@
     "title": "Bibliography",
     "section": "",
     "text": "References\n\nBureau of Labor Statistics. (2024). Number of obstetricians and gynecologists employed in the united states in 2023, by state [graph]. In Statista.\n\n\nCohen, D. S., Donley, G., & Rebouché, R. (2023). The new abortion battleground. Colum. L. Rev., 123, 1.\n\n\nCollins, S. R., & al., et. (2024). 2024 state scorecard on women’s health and reproductive care. Commonwealth Fund.\n\n\nGuttmacher, A. F. (1956). Factors affecting normal expectancy of conception. Journal of the American Medical Association, 161(9), 855–860.\n\n\nHoyert, D. L. (2023). Maternal mortality rates in the united states, 2021. NCHS Health E-Stats. https://doi.org/10.15620/cdc:124678\n\n\nKaiser Family Foundation (KFF). (2024). State health facts: Births financed by medicaid.\n\n\nO’Neill, S. (2022). Fertility trends and the rising costs of children."
+  },
+  {
+    "objectID": "index.html#research-questions",
+    "href": "index.html#research-questions",
+    "title": "Conditions Impacting Maternal Wellness by US State",
+    "section": "Research Questions",
+    "text": "Research Questions\n\n\n\n\nflowchart TD\n\n  A(Does Abortion Policy Impact Well-being?):::main\n\n  A --&gt; B(Does Abortion Policy Impact Maternal Health?):::sub\n  B --&gt; F(Maternal Mortality):::node\n  B --&gt; G(Ratio of OBGYNs):::node\n  B --&gt; H(Healthcare Access):::node\n  B --&gt; I(Medicaid Coverage):::node\n  B --&gt; J(Contraception Coverage):::node\n\n  A --&gt; C(Does Abortion Policy Impact Education?):::sub\n  C --&gt; K(Higher Education Attainment):::node\n\n  A --&gt; D(Are There Economic Ramifications For Abortion Policy?):::sub\n  D --&gt; L(Cost Barriers):::node\n  D --&gt; M(Uninsured Women During Pregnancy):::node\n  D --&gt; N(Parental Leave Policies):::node\n  D --&gt; O(Teen Birth Rates):::node\n\n  A --&gt; E(Does Abortion Policy Impact Children's Well-being?):::sub\n  E --&gt; P(Infant Mortality):::node\n  E --&gt; Q(Foster Care System):::node\n\n  classDef main font-size:24px, font-weight:bold, fill:#f9f9f9, stroke:#333, stroke-width:2px;\n  classDef sub font-size:20px, fill:#e6f7ff, stroke:#2a6592, stroke-width:1px;\n  classDef node font-size:18px, fill:#f0f8ff, stroke:#87ceeb, stroke-width:1px;"
   }
 ]
