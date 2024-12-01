@@ -7,26 +7,20 @@ website:
     left:
       - href: index.qmd
         text: Home
-      - href: report.qmd
-        text: Report
-      - text: Cleaning
-        menu: 
-          - href: cleaning/cleaning_1.qmd
-            text: Cleaning This Data
-          - href: cleaning/cleaning_2.qmd
-            text: Cleaning That Data
-      - text: Analysis
-        menu: 
-          - href: analysis/analysis_placeholder.qmd
-            text: Placeholder Analysis
-          - href: analysis/another_analysis.qmd
-            text: Another Analysis
-      - text: Interpretation
-        menu: 
-          - href: interpretation/interpretation_1.qmd
-            text: Interpretation 1
-      - href: the_data.qmd
-        text: Overview of Data Sources
+      - href: findings.qmd
+        text: Findings
+      - href: overall_health.qmd
+        text: Overall Health
+      - href: maternal_health.qmd
+        text: Maternal Health
+      - href: maternal_wellness.qmd
+        text: Maternal Wellness
+      - href: child_health.qmd
+        text: Child Health
+      - href: child_wellness.qmd
+        text: Child Wellness
+      - href: travel.qmd
+        text: Travel
       - href: bibliography.qmd
         text: Bibliography
 
