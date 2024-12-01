@@ -7,19 +7,49 @@ format:
       theme: dark
 ---
 
-Problem & objectives
+## Problem & Objectives
 
-Your Introduction will fully explain and describe the problem (or question or issue), its history, who it affects, why it matters, etc.
+**\
+**Abortion is a unique and contentious political issue in the United States. In 1973, the landmark Supreme Court case Roe v. Wade established the constitutional right to abortion on a federal level. However, in 2022, this decision was overturned by the same court, making abortion regulation a state-level issue. This reversal intensified the political divide, with Democrats and liberals typically advocating for abortion rights, while Republicans and conservatives strongly opposed them. Despite this polarized political landscape, public opinion surveys consistently show that a majority of Americans support the right to abortion. For example, a 2022 Pew Research study highlights widespread support for abortion access across various demographics \[<https://www.pewresearch.org/religion/fact-sheet/public-opinion-on-abortion/>\].
 
-For example, start with a clearly defined problem: A government contractor is experiencing rising costs and is no longer able to submit competitive contract proposals. One of many questions to solve this business problem might include: Can the company reduce its staff without compromising quality?
+Abortion policy now varies significantly across states, reflecting the political leanings of their governments. Some states have enacted sweeping bans or severe restrictions, while others have worked to protect or expand access. This disparity has led to profound public health implications, as the ability to access abortion services is intrinsically tied to maternal and child health outcomes. A visualization of the geographic variability is shown below.
 
 ![](images/policy_map.png)
 
+Traditionally, debates around abortion have been framed in moral and ethical terms, which often overshadow empirical evidence and data. While ethical considerations are important, this perspective tends to neglect the measurable impact of abortion policy on health and well-being. In this research project, we aim to take a data-driven approach to objectively examine how abortion policy affects maternal wellness across the United States.
 
+Our central research question is: *How do state-level abortion policies impact maternal well-being, and what broader factors contribute to state-to-state variation in these outcomes?*
+
+To answer this question, we will analyze public health data at the state level, using abortion policy as a key variable. By doing so, we hope to provide a more concrete, evidence-based understanding of the relationship between abortion policy and maternal health. Ultimately, this research seeks to contribute to the broader policy discourse by grounding it in the lived experiences and health outcomes of women.
+
+## Context & Case Studies
+
+**\
+**Since the reversal of Roe v. Wade in 2022, numerous stories have emerged illustrating the devastating impact of abortion bans on women and children’s health. For example, a study by Stevenson (2021) projected a 7% increase in maternal mortality in the first year following widespread abortion bans, with the rate rising to 23% in the subsequent year \[\@stevenson2021pregnancy\]. These findings highlight the immediate and severe health risks associated with restrictive abortion policies. Notably, vulnerable populations, including racial minorities and those with low socioeconomic status, are disproportionately affected.
+
+While maternal mortality is one critical measure, it is only one piece of the larger picture. Well-being encompasses a wide range of factors, including access to prenatal care, economic stability, and the mental health of mothers and families. These indicators often vary widely across states, driven by differences in healthcare infrastructure, economic resources, and social support.
 
 ## Research Questions
 
+Data science question: what conditions cause variation in maternal wellness by state? 
 
+1.  What is the association of abortion policy and infant/maternal mortality? 
+
+2.  What is the association of race and  infant/maternal mortality? 
+
+3.  What is the association of healthcare quality and abortion policy? 
+
+4.  What is the association of healthcare quality and infant and maternal mortality? 
+
+5.  What is the association between mandated policy (for example parental leave) and abortion policy?
+
+6.  Do states with policies that make conditions for women having babies more difficult, tend to have higher infant and maternal mortality rates? 
+
+    1.  Parental leave 
+
+    2.  Abortion laws 
+
+7.  Do states with stricter maternal condition policies have worse healthcare?
 
 ```{mermaid}
 
@@ -55,10 +85,4 @@ flowchart TD
   
   A --> F(Child Wellness)
   F --> U(Foster Care)
-  
-
-
 ```
-
-
-

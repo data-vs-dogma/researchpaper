@@ -136,7 +136,9 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul class="collapse">
-  <li><a href="#research-questions" id="toc-research-questions" class="nav-link active" data-scroll-target="#research-questions">Research Questions</a></li>
+  <li><a href="#problem-objectives" id="toc-problem-objectives" class="nav-link active" data-scroll-target="#problem-objectives">Problem &amp; Objectives</a></li>
+  <li><a href="#context-case-studies" id="toc-context-case-studies" class="nav-link" data-scroll-target="#context-case-studies">Context &amp; Case Studies</a></li>
+  <li><a href="#research-questions" id="toc-research-questions" class="nav-link" data-scroll-target="#research-questions">Research Questions</a></li>
   </ul>
 </nav>
 </nav>
@@ -165,12 +167,38 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<p>Problem &amp; objectives</p>
-<p>Your Introduction will fully explain and describe the problem (or question or issue), its history, who it affects, why it matters, etc.</p>
-<p>For example, start with a clearly defined problem: A government contractor is experiencing rising costs and is no longer able to submit competitive contract proposals. One of many questions to solve this business problem might include: Can the company reduce its staff without compromising quality?</p>
+<section id="problem-objectives" class="level2">
+<h2 class="anchored" data-anchor-id="problem-objectives">Problem &amp; Objectives</h2>
+<p><strong><br>
+</strong>Abortion is a unique and contentious political issue in the United States. In 1973, the landmark Supreme Court case Roe v. Wade established the constitutional right to abortion on a federal level. However, in 2022, this decision was overturned by the same court, making abortion regulation a state-level issue. This reversal intensified the political divide, with Democrats and liberals typically advocating for abortion rights, while Republicans and conservatives strongly opposed them. Despite this polarized political landscape, public opinion surveys consistently show that a majority of Americans support the right to abortion. For example, a 2022 Pew Research study highlights widespread support for abortion access across various demographics [<a href="https://www.pewresearch.org/religion/fact-sheet/public-opinion-on-abortion/" class="uri">https://www.pewresearch.org/religion/fact-sheet/public-opinion-on-abortion/</a>].</p>
+<p>Abortion policy now varies significantly across states, reflecting the political leanings of their governments. Some states have enacted sweeping bans or severe restrictions, while others have worked to protect or expand access. This disparity has led to profound public health implications, as the ability to access abortion services is intrinsically tied to maternal and child health outcomes. A visualization of the geographic variability is shown below.</p>
 <p><img src="images/policy_map.png" class="img-fluid"></p>
+<p>Traditionally, debates around abortion have been framed in moral and ethical terms, which often overshadow empirical evidence and data. While ethical considerations are important, this perspective tends to neglect the measurable impact of abortion policy on health and well-being. In this research project, we aim to take a data-driven approach to objectively examine how abortion policy affects maternal wellness across the United States.</p>
+<p>Our central research question is: <em>How do state-level abortion policies impact maternal well-being, and what broader factors contribute to state-to-state variation in these outcomes?</em></p>
+<p>To answer this question, we will analyze public health data at the state level, using abortion policy as a key variable. By doing so, we hope to provide a more concrete, evidence-based understanding of the relationship between abortion policy and maternal health. Ultimately, this research seeks to contribute to the broader policy discourse by grounding it in the lived experiences and health outcomes of women.</p>
+</section>
+<section id="context-case-studies" class="level2">
+<h2 class="anchored" data-anchor-id="context-case-studies">Context &amp; Case Studies</h2>
+<p><strong><br>
+</strong>Since the reversal of Roe v. Wade in 2022, numerous stories have emerged illustrating the devastating impact of abortion bans on women and children’s health. For example, a study by Stevenson (2021) projected a 7% increase in maternal mortality in the first year following widespread abortion bans, with the rate rising to 23% in the subsequent year [@stevenson2021pregnancy]. These findings highlight the immediate and severe health risks associated with restrictive abortion policies. Notably, vulnerable populations, including racial minorities and those with low socioeconomic status, are disproportionately affected.</p>
+<p>While maternal mortality is one critical measure, it is only one piece of the larger picture. Well-being encompasses a wide range of factors, including access to prenatal care, economic stability, and the mental health of mothers and families. These indicators often vary widely across states, driven by differences in healthcare infrastructure, economic resources, and social support.</p>
+</section>
 <section id="research-questions" class="level2">
 <h2 class="anchored" data-anchor-id="research-questions">Research Questions</h2>
+<p>Data science question: what conditions cause variation in maternal wellness by state?&nbsp;</p>
+<ol type="1">
+<li><p>What is the association of abortion policy and infant/maternal mortality?&nbsp;</p></li>
+<li><p>What is the association of race and&nbsp; infant/maternal mortality?&nbsp;</p></li>
+<li><p>What is the association of healthcare quality and abortion policy?&nbsp;</p></li>
+<li><p>What is the association of healthcare quality and infant and maternal mortality?&nbsp;</p></li>
+<li><p>What is the association between mandated policy (for example parental leave) and abortion policy?</p></li>
+<li><p>Do states with policies that make conditions for women having babies more difficult, tend to have higher infant and maternal mortality rates?&nbsp;</p>
+<ol type="1">
+<li><p>Parental leave&nbsp;</p></li>
+<li><p>Abortion laws&nbsp;</p></li>
+</ol></li>
+<li><p>Do states with stricter maternal condition policies have worse healthcare?</p></li>
+</ol>
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -179,12 +207,12 @@ ul.task-list li input[type="checkbox"] {
 
   A(Association Between Abortion Policy and Health Outcomes):::main
 
-  A --&gt; B(Maternal Health):::sub
-  B --&gt; X(Maternal Mortality):::node
-  B --&gt; V(Cost Barriers):::node
-  B --&gt; H(Uninsured Women During Pregnancy):::node
+  A --&gt; B(Maternal Health)
+  B --&gt; X(Maternal Mortality)
+  B --&gt; V(Cost Barriers)
+  B --&gt; H(Uninsured Women During Pregnancy)
 
-  A --&gt; C(Maternal Wellness):::sub
+  A --&gt; C(Maternal Wellness)
   C --&gt; G(Economic Wellness)
   G --&gt; W(Parental Leave)
   G --&gt; I(Women in the Workforce)
@@ -196,7 +224,7 @@ ul.task-list li input[type="checkbox"] {
   M --&gt; O(Intimate Partner Violence)
   
   
-  A --&gt; D(Overall Health):::sub
+  A --&gt; D(Overall Health)
   D --&gt; P(Ratio of OBGYN)
   D --&gt; Q(Health Coverage)
   D --&gt; R(Medicaid Expansion)
@@ -207,9 +235,6 @@ ul.task-list li input[type="checkbox"] {
   
   A --&gt; F(Child Wellness)
   F --&gt; U(Foster Care)
-  
-
-
 </pre>
 </div>
 </div>
