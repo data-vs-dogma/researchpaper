@@ -25,33 +25,40 @@ For example, start with a clearly defined problem: A government contractor is ex
 
 flowchart TD
 
-  A(Does Abortion Policy Impact Well-being?):::main
+  A(Association Between Abortion Policy and Health Outcomes):::main
 
-  A --> B(Does Abortion Policy Impact Maternal Health?):::sub
-  B --> F(Maternal Mortality):::node
-  B --> G(Ratio of OBGYNs):::node
-  B --> H(Healthcare Access):::node
-  B --> I(Medicaid Coverage):::node
-  B --> J(Contraception Coverage):::node
+  A --> B(Maternal Health)
+  B --> X(Maternal Mortality)
+  B --> V(Cost Barriers)
+  B --> H(Uninsured Women During Pregnancy)
 
-  A --> C(Does Abortion Policy Impact Education?):::sub
-  C --> K(Higher Education Attainment):::node
+  A --> C(Maternal Wellness)
+  C --> G(Economic Wellness)
+  G --> W(Parental Leave)
+  G --> I(Women in the Workforce)
+  G --> J(Teen Birth Rate)
+  C --> K(Education Wellness)
+  K --> L(Higher Education)
+  C --> M(Mental Health)
+  M --> N(Postpartum Depression)
+  M --> O(Intimate Partner Violence)
+  
+  
+  A --> D(Overall Health)
+  D --> P(Ratio of OBGYN)
+  D --> Q(Health Coverage)
+  D --> R(Medicaid Expansion)
+  D --> S(Contraception Coverage)
 
-  A --> D(Are There Economic Ramifications For Abortion Policy?):::sub
-  D --> L(Cost Barriers):::node
-  D --> M(Uninsured Women During Pregnancy):::node
-  D --> N(Parental Leave Policies):::node
-  D --> O(Teen Birth Rates):::node
-
-  A --> E(Does Abortion Policy Impact Children's Well-being?):::sub
-  E --> P(Infant Mortality):::node
-  E --> Q(Foster Care System):::node
-
-  classDef main font-size:24px, font-weight:bold, fill:#f9f9f9, stroke:#333, stroke-width:2px;
-  classDef sub font-size:20px, fill:#e6f7ff, stroke:#2a6592, stroke-width:1px;
-  classDef node font-size:18px, fill:#f0f8ff, stroke:#87ceeb, stroke-width:1px;
+  A --> E(Child Health )
+  E --> T(Infant Mortality)
+  
+  A --> F(Child Wellness)
+  F --> U(Foster Care)
+  
 
 
 ```
+
 
 
