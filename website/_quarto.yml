@@ -21,6 +21,8 @@ website:
         text: Child Wellness
       - href: travel.qmd
         text: Travel
+      - href: complications.qmd
+        text: Complications & Unsafe Abortion
       - href: bibliography.qmd
         text: Bibliography
 

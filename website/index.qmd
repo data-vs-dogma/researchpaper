@@ -5,12 +5,13 @@ format:
   html:
     mermaid:
       theme: dark
+bibliography: references.bib
 ---
 
 ## Problem & Objectives
 
 **\
-**Abortion is a unique and contentious political issue in the United States. In 1973, the landmark Supreme Court case Roe v. Wade established the constitutional right to abortion on a federal level. However, in 2022, this decision was overturned by the same court, making abortion regulation a state-level issue. This reversal intensified the political divide, with Democrats and liberals typically advocating for abortion rights, while Republicans and conservatives strongly opposed them. Despite this polarized political landscape, public opinion surveys consistently show that a majority of Americans support the right to abortion. For example, a 2022 Pew Research study highlights widespread support for abortion access across various demographics \[<https://www.pewresearch.org/religion/fact-sheet/public-opinion-on-abortion/>\].
+**Abortion is a unique and contentious political issue in the United States. In 1973, the landmark Supreme Court case Roe v. Wade established the constitutional right to abortion on a federal level. However, in 2022, this decision was overturned by the same court, making abortion regulation a state-level issue. This reversal intensified the political divide, with Democrats and liberals typically advocating for abortion rights, while Republicans and conservatives strongly opposed them. Despite this polarized political landscape, public opinion surveys consistently show that a majority of Americans support the right to abortion. For example, a 2022 Pew Research study highlights widespread support for abortion access across various demographics [@adkins2024association].
 
 Abortion policy now varies significantly across states, reflecting the political leanings of their governments. Some states have enacted sweeping bans or severe restrictions, while others have worked to protect or expand access. This disparity has led to profound public health implications, as the ability to access abortion services is intrinsically tied to maternal and child health outcomes. A visualization of the geographic variability is shown below.
 
@@ -25,7 +26,7 @@ To answer this question, we will analyze public health data at the state level, 
 ## Context & Case Studies
 
 **\
-**Since the reversal of Roe v. Wade in 2022, numerous stories have emerged illustrating the devastating impact of abortion bans on women and children’s health. For example, a study by Stevenson (2021) projected a 7% increase in maternal mortality in the first year following widespread abortion bans, with the rate rising to 23% in the subsequent year \[\@stevenson2021pregnancy\]. These findings highlight the immediate and severe health risks associated with restrictive abortion policies. Notably, vulnerable populations, including racial minorities and those with low socioeconomic status, are disproportionately affected.
+**Since the reversal of Roe v. Wade in 2022, numerous stories have emerged illustrating the devastating impact of abortion bans on women and children’s health. For example, a study by Stevenson (2021) projected a 7% increase in maternal mortality in the first year following widespread abortion bans, with the rate rising to 23% in the subsequent year [@Stevenson2021]. These findings highlight the immediate and severe health risks associated with restrictive abortion policies. Notably, vulnerable populations, including racial minorities and those with low socioeconomic status, are disproportionately affected.
 
 While maternal mortality is one critical measure, it is only one piece of the larger picture. Well-being encompasses a wide range of factors, including access to prenatal care, economic stability, and the mental health of mothers and families. These indicators often vary widely across states, driven by differences in healthcare infrastructure, economic resources, and social support.
 

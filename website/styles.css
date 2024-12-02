@@ -1,1 +1,5 @@
 /* css styles */
+
+body {
+    zoom: 0.9; /* Adjust zoom level (e.g., 1.2 = 120%, 0.8 = 80%) */
+  }
