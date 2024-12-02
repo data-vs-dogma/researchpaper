@@ -2,29 +2,34 @@ project:
   type: website
 
 website:
-  title: "website"
+  title: "DSAN 5100"
   navbar:
     left:
       - href: index.qmd
         text: Home
+      - text: Results
+        menu: 
+          - href: overall_health.qmd
+            text: Overall Health
+          - href: maternal_health.qmd
+            text: Maternal Health
+          - href: maternal_wellness.qmd
+            text: Maternal Wellness
+          - href: child_health.qmd
+            text: Child Health
+          - href: child_wellness.qmd
+            text: Child Wellness
       - href: findings.qmd
-        text: Findings
-      - href: overall_health.qmd
-        text: Overall Health
-      - href: maternal_health.qmd
-        text: Maternal Health
-      - href: maternal_wellness.qmd
-        text: Maternal Wellness
-      - href: child_health.qmd
-        text: Child Health
-      - href: child_wellness.qmd
-        text: Child Wellness
+        text: Conclusions
       - href: travel.qmd
         text: Travel
       - href: complications.qmd
         text: Complications & Unsafe Abortion
       - href: bibliography.qmd
         text: Bibliography
+      - href: appendix.qmd
+        text: Appendix
+
 
 
 

@@ -1,6 +1,6 @@
 ---
 title: "Conditions Impacting Maternal Wellness by US State"
-subtitle: "(abortion is good)"
+subtitle: "Introduction"
 format:
   html:
     mermaid:
@@ -87,3 +87,7 @@ flowchart TD
   A --> F(Child Wellness)
   F --> U(Foster Care)
 ```
+
+## 
+
+## Statistical Methods & Models
