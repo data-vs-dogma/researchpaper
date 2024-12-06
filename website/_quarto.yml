@@ -4,6 +4,11 @@ project:
 website:
   title: "5100"
   navbar:
+    tools:
+      - icon: github
+        menu: 
+          - text: Github Repo
+            href: https://github.com/EB-Sam/5100_project
     left:
       - href: index.qmd
         text: Home
@@ -29,6 +34,7 @@ website:
         text: Bibliography
       - href: appendix.qmd
         text: Appendix
+
 
 
 
