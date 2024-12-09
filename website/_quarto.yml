@@ -2,13 +2,15 @@ project:
   type: website
 
 website:
-  title: "Abortion Policy, Health, & Wellness"
+  title: "DSAN 5100"
   favicon: "images/gu-logo.png"
   navbar:
     search: true
     left:
       - href: index.qmd
-        text: Home
+        text: Introduction
+      - href: statistical_analysis.qmd
+        text: Statistical Analysis
       - text: Results
         menu: 
           - href: results/overall_health.qmd
