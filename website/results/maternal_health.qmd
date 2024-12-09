@@ -1,0 +1,565 @@
+---
+title: "Maternal Health"
+format: 
+  html:
+    embed-resources: true
+    code-fold: true
+editor: visual
+---
+
+## Maternal Morality by Abortion Policy
+
+Null hypothesis: the maternal mortality rate is the same across different abortion policies.
+
+Alternative hypothesis: the maternal mortality rate in at least one abortion policy group is different from the rest.
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+df <- read_csv("../data/clean_data/merged_data.csv", show_col_types = FALSE)
+df <- df[!is.na(df$abortion_policies), ]
+df_test <- df[df$State != "US", ]
+```
+
+```{r}
+df$abortion_policies <- factor(df$abortion_policies, 
+                              levels = c("most protective", "very protective", 
+                                         "protective", "some restrictions/protections", 
+                                         "restrictive", "very restrictive", "most restrictive"))
+# Kruskal-Wallis test
+kruskal.test(`maternal_mortality_rates_2020_2022_per_100,000_live births` ~ abortion_policies, data = df)
+
+# If Kruskal-Wallis is significant, run pairwise Wilcoxon tests
+pairwise.wilcox.test(df$`maternal_mortality_rates_2020_2022_per_100,000_live births`, 
+                     df$abortion_policies,
+                     p.adjust.method = "bonferroni")
+
+# accompanying boxplot visualization
+ggplot(df, aes(x = abortion_policies, y = `maternal_mortality_rates_2020_2022_per_100,000_live births`, fill=abortion_policies)) +
+  geom_boxplot() +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1),
+        axis.title.y = element_text(size = 10)) + 
+  scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) +
+  labs(x = "Abortion Policies", 
+       y = "Maternal Morality rate per 100,000",
+       title = "Maternal Mortality Rate by Abortion Policy") +
+  theme(plot.title = element_text(size = 20, hjust = 0.5))
+```
+
+The Kruskal-Wallis test yields a p-value of 0.009736, providing significant evidence to suggest that the null hypothesis can be rejected and we can say that in at least one policy group, the maternal mortality rate is different from the rest. This accompanying visualization provides us additional insight into the characteristics of this difference(s). As we can see, the maternal mortality rates in the most restrictive abortion policy states have the largest and highest range and the greatest mean mortality rate. The mean mortality rate in the most protective states appears to be the lowest (or tied with the rate in the protective policy states). The visualization shows that for the most part, as the restrictiveness of abortion policy increases, so does the mean maternal mortality rate.
+
+```{r}
+
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+install.packages("clinfun")
+library(clinfun)
+
+jt_test <- jonckheere.test(df$"maternal_mortality_rates_2020_2022_per_100,000_live births", 
+                          as.numeric(df$abortion_policies), 
+                          alternative="increasing",
+                          nperm = 10000)
+print(jt_test)
+
+```
+
+To further confirm these findings, we will perform a permutation test on the ANOVA mean differences:
+
+```{r}
+# Permutation Test
+N <- 10000 
+
+# Observed ANOVA F-statistic
+observed_anova <- aov(`maternal_mortality_rates_2020_2022_per_100,000_live births` ~ abortion_policies, data = df)
+observed_F <- summary(observed_anova)[[1]][["F value"]][1]
+
+# Permutation loop
+set.seed(1234) 
+perm_F <- numeric(N)
+
+for (i in 1:N) {
+  # Permute the response variable
+  permuted_data <- df
+  permuted_data$`maternal_mortality_rates_2020_2022_per_100,000_live births` <- sample(permuted_data$`maternal_mortality_rates_2020_2022_per_100,000_live births`)
+  
+  # Perform ANOVA on permuted data
+  perm_anova <- aov(`maternal_mortality_rates_2020_2022_per_100,000_live births` ~ abortion_policies, data = permuted_data)
+  perm_F[i] <- summary(perm_anova)[[1]][["F value"]][1]
+}
+
+# Calculate p-value
+p_value <- mean(perm_F >= observed_F)
+
+cat("Observed F-statistic:", observed_F, "\n")
+cat("Permutation Test p-value:", p_value, "\n")
+
+# Plot the permutation F-statistics
+hist(perm_F, 
+     breaks = 30, 
+     main = "Permutation Distribution of F-statistic", 
+     xlab = "F-statistic", 
+     col = "palegreen4",  
+     border = "white")    
+
+# F-statistic line 
+abline(v = observed_F, 
+       col = "red",       
+       lwd = 2, 
+       lty = 2)
+```
+
+The permutation test also yields a statistically significant p-value, further providing evidence to suggest a true mean difference in maternal mortality rates among abortion policy groups.
+
+Abortions are critical for preserving maternal health and mortality. There are many situations in which an abortion is life-saving for the mother. By restricting or banning abortions, more mothers are at risk for maternal mortality by being prohibited or limited in accessing or being treated with necessary measures. If abortions are banned or heavily restricted, it is reasonable to assume that maternal mortality would increase in those states as more women suffer the effects of a complicated or terminal pregnancy without intervention. Additionally, prohibiting abortion forces women who aren't ready to have babies to give birth, even if they are too young, facing other health risks or problems, or don't have the financial resources or health insurance to access adequate care during pregnancy, which are all risk factors for maternal mortality.
+
+When states choose to implement the restrictive abortion policies, even with data on maternal mortality in their state, they are consciously establishing conditions that could exacerbate preventable deaths in women.
+
+## Women who Went Without Care due to Cost by Abortion Policy
+
+Null hypothesis: the mean percentage of women who went without care because of cost is the same in each abortion policy group.
+
+Alternative hypothesis: the mean percentage of women who went without care because of cost is different in at least one of the abortion policy groups.
+
+```{r, warning=FALSE}
+# Kruskal-Wallis test
+kruskal.test(women_18_44_who_went_without_care_because_of_cost ~ abortion_policies, data = df)
+
+# If Kruskal-Wallis is significant, run pairwise Wilcoxon tests
+pairwise.wilcox.test(df$women_18_44_who_went_without_care_because_of_cost, 
+                     df$abortion_policies,
+                     p.adjust.method = "bonferroni")
+
+# accompanying boxplot visualization
+ggplot(df, aes(x = abortion_policies, y = women_18_44_who_went_without_care_because_of_cost, fill=abortion_policies)) +
+  geom_boxplot() +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1),
+        axis.title.y = element_text(size = 10)) + 
+  scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) +
+  labs(x = "Abortion Policies", 
+       y = "% Women Without Care per 100,000",
+       title = "Percentage of Women who went Without Care due to Cost by Abortion Policy") +
+  theme(plot.title = element_text(size = 10, hjust = 0.5))
+```
+
+The Kruskal-Wallis test here yields a statistically significant p-value of 0.01516, indicating evidence to accept the alternative hypothesis and suggest that the true mean percentage of women who went without care because of cost is different in at least one of the abortion policy more. The boxplot visualization indicates the scope of these differences. The plot demonstrates a clear relationship where as the abortion policy becomes more strict, the higher the mean percentage of women who did not receive care due to it being too expensive for them to afford. It appears that the mean percentage of women going without care in the most protective abortion policy states is about 12%, whereas in the states with the most restrictive abortion policy, the mean is about 18%.
+
+```{r}
+
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+install.packages("clinfun")
+library(clinfun)
+
+jt_test <- jonckheere.test(df$women_18_44_who_went_without_care_because_of_cost, 
+                          as.numeric(df$abortion_policies), 
+                          alternative="increasing",
+                          nperm = 10000)
+print(jt_test)
+
+```
+
+To confirm the strength of the difference in means, we will perform a permutation test:
+
+```{r}
+# Permutation Test
+N <- 10000 
+
+# Observed ANOVA F-statistic
+observed_anova <- aov(women_18_44_who_went_without_care_because_of_cost ~ abortion_policies, data = df)
+observed_F <- summary(observed_anova)[[1]][["F value"]][1]
+
+# Permutation loop
+set.seed(1234) 
+perm_F <- numeric(N)
+
+for (i in 1:N) {
+  # Permute the response variable
+  permuted_data <- df
+  permuted_data$women_18_44_who_went_without_care_because_of_cost <- sample(permuted_data$women_18_44_who_went_without_care_because_of_cost)
+  
+  # Perform ANOVA on permuted data
+  perm_anova <- aov(women_18_44_who_went_without_care_because_of_cost ~ abortion_policies, data = permuted_data)
+  perm_F[i] <- summary(perm_anova)[[1]][["F value"]][1]
+}
+
+# Calculate p-value
+p_value <- mean(perm_F >= observed_F)
+
+cat("Observed F-statistic:", observed_F, "\n")
+cat("Permutation Test p-value:", p_value, "\n")
+
+# Plot the permutation F-statistics
+hist(perm_F, 
+     breaks = 30, 
+     main = "Permutation Distribution of F-statistic", 
+     xlab = "F-statistic", 
+     col = "palegreen4",  
+     border = "white")    
+
+# F-statistic line 
+abline(v = observed_F, 
+       col = "red",       
+       lwd = 2, 
+       lty = 2)
+```
+
+The p-value produced by the permutation test is 0.496, which is extremely close to the alpha level we are using of 0.05. This p-value suggests that while the likelihood of observing the observed ANOVA test statistic under the null hypothesis is very low, it is not as low as in other tests we've seen. It may be more appropriate to say that the permutation test provides moderately strong evidence to suggest that there is a true difference in the mean percentage of women who went without care due to cost in states with different abortion policy levels.
+
+These findings highlight how in states that chose to implement restrictive abortion bans, there were already problems with women being unable to access adequate maternal care due to costs. Adding restrictive abortion measures, which has indirect effects on the quality and accessibility of other maternal health resources, would add an extra layer of difficulty to women who need maternal care but aren't able to afford it.
+
+## Percentage of Uninsured Women During Pregnancy in 2021 by Abortion Policy
+
+Null hypothesis: The percentage of uninsured women during pregnancy in 2021 is the same in all abortion policy groups.
+
+Alternative hypothesis: The percentage of uninsured women during pregnancy in 2021 is different in at least one abortion policy level.
+
+```{r, warning=FALSE}
+# Kruskal-Wallis test
+kruskal.test(percent_uninsured_women_during_pregnancy_2021 ~ abortion_policies, data = df)
+
+# If Kruskal-Wallis is significant, run pairwise Wilcoxon tests
+pairwise.wilcox.test(df$percent_uninsured_women_during_pregnancy_2021, 
+                     df$abortion_policies,
+                     p.adjust.method = "bonferroni")
+
+# accompanying boxplot visualization
+ggplot(df, aes(x = abortion_policies, y = percent_uninsured_women_during_pregnancy_2021, fill=abortion_policies)) +
+  geom_boxplot() +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1),
+        axis.title.y = element_text(size = 10)) + 
+  scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) +
+  labs(x = "Abortion Policies", 
+       y = "% Women Uninsured",
+       title = "Percentage of Women Uninsured During Pregnancy \nby Abortion Policy") +
+  theme(plot.title = element_text(size = 10, hjust = 0.5))
+```
+
+The Kruskal-Wallis test yields a p-value of 0.03475, providing significant evidence to reject the null hypothesis in favor of the alternative and suggest that the percentage of uninsured women during pregnancy is different in at least one of the abortion policy level groups. The boxplots give us some insight into the nature of these differences. Interestingly, the mean percentage of uninsured women during pregnancy appears to increase as the restrictiveness of abortion policy increases, until the most restrictive level where the mean and range drop significantly. It is difficult to understand why this may be. However, the clear trend among the previous six groups appears to be a significant indicator of the maternal population characteristics of the states in those levels.
+
+```{r}
+
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+install.packages("clinfun")
+library(clinfun)
+
+jt_test <- jonckheere.test(df$percent_uninsured_women_during_pregnancy_2021, 
+                          as.numeric(df$abortion_policies), 
+                          alternative="increasing",
+                          nperm = 10000)
+print(jt_test)
+
+```
+
+While the p-value produced was moderately strong, we will not perform an ANOVA permutation test to further validate the significance of these associations:
+
+```{r}
+# Permutation Test
+N <- 10000 
+
+# Observed ANOVA F-statistic
+observed_anova <- aov(percent_uninsured_women_during_pregnancy_2021 ~ abortion_policies, data = df)
+observed_F <- summary(observed_anova)[[1]][["F value"]][1]
+
+# Permutation loop
+set.seed(1234) 
+perm_F <- numeric(N)
+
+for (i in 1:N) {
+  # Permute the response variable
+  permuted_data <- df
+  permuted_data$percent_uninsured_women_during_pregnancy_2021 <- sample(permuted_data$percent_uninsured_women_during_pregnancy_2021)
+  
+  # Perform ANOVA on permuted data
+  perm_anova <- aov(percent_uninsured_women_during_pregnancy_2021 ~ abortion_policies, data = permuted_data)
+  perm_F[i] <- summary(perm_anova)[[1]][["F value"]][1]
+}
+
+# Calculate p-value
+p_value <- mean(perm_F >= observed_F)
+
+cat("Observed F-statistic:", observed_F, "\n")
+cat("Permutation Test p-value:", p_value, "\n")
+
+# Plot the permutation F-statistics
+hist(perm_F, 
+     breaks = 30, 
+     main = "Permutation Distribution of F-statistic", 
+     xlab = "F-statistic", 
+     col = "palegreen4",  
+     border = "white")    
+
+# F-statistic line 
+abline(v = observed_F, 
+       col = "red",       
+       lwd = 2, 
+       lty = 2)
+```
+
+The permutation test yields a p-value of 0.0252, which is statistically stronger than the p-value yielded by the Kruskal-Wallis test. This confirms that we have statistically significant evidence to suggest a difference in percentage of uninsured women during pregnancy in 2021 in at least one of the abortion policy levels.
+
+## Teen Birth Rate by Abortion Policy
+
+```{r}
+colnames(df)
+```
+
+```{r}
+df$abortion_policies <- factor(df$abortion_policies, 
+                              levels = c("most protective", "very protective", 
+                                         "protective", "some restrictions/protections", 
+                                         "restrictive", "very restrictive", "most restrictive"))
+# Kruskal-Wallis test
+kruskal.test(`teen_birth_rate_per_1,000_population_ages_15_19_2022` ~ abortion_policies, data = df)
+
+# If Kruskal-Wallis is significant, run pairwise Wilcoxon tests
+pairwise.wilcox.test(df$`teen_birth_rate_per_1,000_population_ages_15_19_2022`, 
+                     df$abortion_policies,
+                     p.adjust.method = "bonferroni")
+
+# accompanying boxplot visualization
+ggplot(df, aes(x = abortion_policies, y = `teen_birth_rate_per_1,000_population_ages_15_19_2022`, fill=abortion_policies)) +
+  geom_boxplot() +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1),
+        axis.title.y = element_text(size = 10)) + 
+  scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) +
+  labs(x = "Abortion Policies", 
+       y = "Teen Birth Rate per 100,000",
+       title = "Teen Birth Rate by Abortion Policy") +
+  theme(plot.title = element_text(size = 20, hjust = 0.5))
+```
+
+The Kruskal-Wallis test here yields a statistically significant p-value of 0.0002706, indicating evidence to accept the alternative hypothesis and suggest that the
+
+```{r}
+
+jt_test <- jonckheere.test(df$"teen_birth_rate_per_1,000_population_ages_15_19_2022", 
+                          as.numeric(df$abortion_policies), 
+                          alternative="increasing",
+                          nperm = 10000)
+print(jt_test)
+
+```
+
+```{r}
+# Permutation Test
+N <- 100000 
+
+# Observed ANOVA F-statistic
+observed_anova <- aov(`teen_birth_rate_per_1,000_population_ages_15_19_2022` ~ abortion_policies, data = df)
+observed_F <- summary(observed_anova)[[1]][["F value"]][1]
+
+# Permutation loop
+set.seed(1234) 
+perm_F <- numeric(N)
+
+for (i in 1:N) {
+  # Permute the response variable
+  permuted_data <- df
+  permuted_data$`teen_birth_rate_per_1,000_population_ages_15_19_2022` <- sample(permuted_data$`teen_birth_rate_per_1,000_population_ages_15_19_2022`)
+  
+  # Perform ANOVA on permuted data
+  perm_anova <- aov(`teen_birth_rate_per_1,000_population_ages_15_19_2022` ~ abortion_policies, data = permuted_data)
+  perm_F[i] <- summary(perm_anova)[[1]][["F value"]][1]
+}
+
+# Calculate p-value
+p_value <- mean(perm_F >= observed_F)
+
+cat("Observed F-statistic:", observed_F, "\n")
+cat("Permutation Test p-value:", p_value, "\n")
+
+# Plot the permutation F-statistics
+hist(perm_F, 
+     breaks = 30, 
+     main = "Permutation Distribution of F-statistic", 
+     xlab = "F-statistic", 
+     col = "palegreen4",  
+     border = "white")    
+
+# F-statistic line 
+abline(v = observed_F, 
+       col = "red",       
+       lwd = 2, 
+       lty = 2)
+
+```
+
+interpret
+
+```{r}
+
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+install.packages("corrplot")
+library(corrplot)
+
+health_correlation_analysis <- function(data) {
+  selected_cols <- data[, c(
+    "teen_birth_rate_per_1,000_population_ages_15_19_2022",
+    "infant_mortality_2021",
+    "maternal_mortality_rates_2020_2022_per_100,000_live births",
+    "health_outcomes",
+    "overall_health_ranking"
+  )]
+  
+  names(selected_cols) <- c(
+    "Teen Birth Rate",
+    "Infant Mortality",
+    "Maternal Mortality",
+    "Health Outcomes",
+    "Overall Health"
+  )
+  
+  complete_data <- na.omit(selected_cols)
+ 
+  cor_matrix <- cor(complete_data)
+  
+  corrplot(cor_matrix, 
+          method = "color",
+          type = "upper",
+          order = "hclust",
+          addCoef.col = "black",
+          number.cex = 0.7,
+          tl.col = "black",
+          tl.srt = 45,
+          diag = FALSE,
+          col = colorRampPalette(c("#E5F5E0", "#74C476", "#005A32"))(200))  
+  
+  return(list(
+    correlations = cor_matrix,
+    sample_size = nrow(complete_data),
+    original_size = nrow(selected_cols)
+  ))
+}
+
+results <- health_correlation_analysis(df)
+print("Correlation Matrix:")
+print(round(results$correlations, 3))
+print(paste("\nAnalysis based on", results$sample_size, "complete observations out of", results$original_size, "total states"))
+```
+
+```{r}
+
+library(corrplot)
+
+health_education_correlation <- function(data) {
+  # Select relevant columns
+  selected_cols <- data[, c(
+    "teen_birth_rate_per_1,000_population_ages_15_19_2022",
+    "percentage_women_BA_or_higher",
+    "percent_women_working"
+  )]
+  
+  # Rename columns for better readability
+  names(selected_cols) <- c(
+    "Teen_Birth_Rate",
+    "Women_with_BA",
+    "Women_Working"
+  )
+  
+  # Remove rows with missing values
+  complete_data <- na.omit(selected_cols)
+  
+  # Calculate correlation matrix
+  cor_matrix <- cor(complete_data)
+  
+  # Set margins
+  par(mar = c(2, 2, 1, 2))
+  
+  # Create correlation plot
+  corrplot(cor_matrix, 
+          method = "color",
+          type = "upper",
+          order = "hclust",
+          addCoef.col = "black",
+          number.cex = 0.7,
+          tl.col = "black",
+          tl.srt = 45,
+          diag = FALSE,
+          col = colorRampPalette(c("#E5F5E0", "#74C476", "#005A32"))(200),
+          title = "Teen Birth Rate, Education, and Socioeconomic Correlations",
+          mar = c(0,0,1,0))
+  
+  return(list(
+    correlations = cor_matrix,
+    sample_size = nrow(complete_data),
+    original_size = nrow(selected_cols)
+  ))
+}
+
+# Run the analysis
+results <- health_education_correlation(df)
+print("Correlation Matrix:")
+print(round(results$correlations, 3))
+print(paste("\nAnalysis based on", results$sample_size, "complete observations out of", results$original_size, "total states"))
+```
+
+```{r}
+
+df_filtered <- df %>%
+  filter(!is.na(`maternal_mortality_rates_2020_2022_per_100,000_live births`)) %>%
+  bind_rows(tibble(
+    State = c("US Average", "Tennessee"),
+    `maternal_mortality_rates_2020_2022_per_100,000_live births` = c(23.2, 51.1),
+    abortion_policies = c("US Average", "most restrictive") 
+  ))
+
+policy_levels <- c(
+  "most protective",
+  "very protective", 
+  "protective",
+  "some restrictions/protections",
+  "restrictive",
+  "very restrictive",
+  "most restrictive",
+  "US Average"
+)
+
+df_filtered$abortion_policies <- factor(df_filtered$abortion_policies, 
+                                      levels = policy_levels)
+
+ggplot(df_filtered, 
+       aes(y = reorder(State, `maternal_mortality_rates_2020_2022_per_100,000_live births`),
+           x = `maternal_mortality_rates_2020_2022_per_100,000_live births`,
+           fill = abortion_policies)) +
+  geom_bar(stat = "identity", width = 0.7) +
+  scale_fill_manual(
+    values = c(
+      "most protective" = "#1c7416",
+      "very protective" = "#68bb59",
+      "protective" = "#acdf87",
+      "some restrictions/protections" = "#fab733",
+      "restrictive" = "#ff6242",
+      "very restrictive" = "#ff0000",
+      "most restrictive" = "#c61a09",
+      "US Average" = "#006eff"
+    ),
+    breaks = policy_levels
+  ) +
+  theme_minimal() +
+  labs(
+    title = "Maternal Mortality Rates (2020-2022) per 100,000 Live Births by State",
+    x = "Maternal Mortality Rate per 100,000 Live Births",
+    y = "",
+    fill = "Abortion Policy"
+  ) +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 12),
+    axis.title.x = element_text(size = 10),
+    axis.text.y = element_text(size = 8),
+    axis.text.x = element_text(size = 8),
+    legend.position = "right",
+    legend.title = element_text(size = 9),
+    legend.text = element_text(size = 8),
+    panel.grid.major.y = element_blank(),
+    panel.grid.minor = element_blank(),
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.background = element_rect(fill = "white", color = NA)
+  ) +
+  scale_x_continuous(
+    limits = c(0, 55),  
+    breaks = seq(0, 55, by = 10),
+    expand = expansion(mult = c(0, 0.1))
+  )
+
+```

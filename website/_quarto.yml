@@ -4,11 +4,6 @@ project:
 website:
   title: "5100"
   navbar:
-    tools:
-      - icon: github
-        menu: 
-          - text: Github Repo
-            href: https://github.com/EB-Sam/5100_project
     left:
       - href: index.qmd
         text: Home
@@ -26,7 +21,7 @@ website:
             text: Child Wellness
       - href: findings.qmd
         text: Conclusions
-      - href: travel.qmd
+      - href: results/travel.qmd
         text: Travel
       - href: complications.qmd
         text: Complications & Unsafe Abortion
@@ -34,7 +29,6 @@ website:
         text: Bibliography
       - href: appendix.qmd
         text: Appendix
-
 
 
 

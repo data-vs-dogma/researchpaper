@@ -1,0 +1,858 @@
+---
+title: "Overall Health - Statistical Modeling"
+author: "Courtney Green" 
+format: 
+  html:
+    embed-resources: true
+    code-fold: true
+    toc: true
+editor: visual
+---
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(readr)
+df <- read_csv("../data/clean_data/merged_data.csv", show_col_types = FALSE)
+
+# Filter out rows with missing values in critical columns
+df <- df %>% 
+  filter(!is.na(overall_health_ranking) & 
+         !is.na(coverage_access_and_affordability) &
+         !is.na(health_care_quality_and_prevention) &
+         !is.na(health_outcomes) &
+         !is.na(medicaid_expansion_status) &
+         !is.na(state_requires_coverage_of_prescription_contraception) 
+         )
+
+#head(df)
+```
+
+## Overall Health
+
+### Overall Health Ranking by Abortion Policy
+
+```{r}
+
+# Reorder the levels of abortion policies
+df$abortion_policies <- factor(df$abortion_policies, 
+                               levels = c("most protective", "very protective", 
+                                          "protective", "some restrictions/protections", 
+                                          "restrictive", "very restrictive", "most restrictive"))
+
+# Bin overall_health_ranking into categories
+df$overall_health_category <- cut(df$overall_health_ranking,
+                                  breaks = c(-Inf, 10, 20, 30, 40, 50, Inf),
+                                  labels = c("most healthy", "very healthy", 
+                                             "healthy", "average", 
+                                             "below average", "unhealthy"))
+
+# Stacked bar plot by abortion policy
+ggplot(df, aes(x = abortion_policies, fill = overall_health_category)) +
+  geom_bar(position = "fill") +
+  labs(
+    x = "Abortion Policy", 
+    y = "Proportion", 
+    fill = "Overall Health Category",
+    title = "Proportion of Overall Health Categories by Abortion Policy"
+  ) +
+  scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000")) + 
+  theme_classic() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(size = 12, hjust = 0.5)
+  )
+```
+
+This plot reveals that states with "most protective" abortion policies tend to have the highest proportions of "most healthy" and "very healthy" health outcomes. In contrast, as policies become more restrictive, there is an apparent increase in the proportion of states categorized as "unhealthy" or "below average." **This suggests that states with restrictive abortion policies are not only limiting access to reproductive healthcare but may also be falling behind in fostering broader public health outcomes.** These restrictive states disproportionately represent environments where overall health conditions are poorer, potentially reflecting a lack of investment in comprehensive healthcare systems or preventative care infrastructure.
+
+Alternatively, **states with protective abortion policies appear to align with stronger public health systems, where access to care and preventative measures may contribute to better overall health rankings.** This pattern underscores a broader connection between policy decisions prioritizing individual health rights and the overall well-being of a population.
+
+```{r,message = FALSE, warning=FALSE}
+# Kruskal-Wallis Test: captures difference in overall_healths numeric rankings
+
+kruskal_test <- kruskal.test(overall_health_ranking ~ abortion_policies, data = df)
+print(kruskal_test)
+
+# If Kruskal-Wallis is significant, run pairwise Wilcoxon tests 
+pairwise.wilcox.test(df$overall_health_ranking,
+                     df$abortion_policies, p.adjust.method = "bonferroni")
+```
+
+The **Kruskal-Wallis Test (χ² = 23.649, df = 6, p = 0.0006058)** reveals statistically significant differences in the numeric overall health rankings across the seven levels of abortion policy restrictiveness. This suggests that abortion policy restrictiveness correlates with variations in health outcomes. The low p-value (\< 0.05) indicates that these differences are unlikely to have occurred by chance. This result supports the observation from the stacked bar plot: more restrictive abortion policies tend to align with poorer health outcomes, while more protective policies are associated with better health outcomes.
+
+```{r}
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+install.packages("clinfun")
+library(clinfun)
+
+# First, check sample sizes in each group
+table(df$abortion_policies)
+
+# Run Jonckheere-Terpstra test
+jt_test <- jonckheere.test(df$overall_health_ranking, 
+                          as.numeric(df$abortion_policies), 
+                          alternative="increasing",
+                          nperm = 10000)
+print(jt_test)
+```
+
+Now we will perform linear regression to investigate the direction of this relationship. Before doing so, we must check assumptions:
+
+```{r}
+# Assumptions: 
+library(lmtest)
+processed_data <- df %>%
+  group_by(abortion_policies) %>%
+  summarise(avg_ranking = mean(overall_health_ranking, na.rm = TRUE))
+
+# 1. Linearity 
+ggplot(processed_data, aes(x = factor(abortion_policies), y = avg_ranking)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = TRUE, color = "red") +
+  labs(title = "Linearity Check")
+
+# 2. Independence 
+lm_model <- lm(avg_ranking ~ as.numeric(abortion_policies), data = processed_data)
+dwtest(lm_model)
+
+
+# 3. Homoscedasticity
+plot(lm_model, which = 1)  # plots the residuals vs fitted  
+bptest(lm_model) # heteroscedasticity test-- p-val < 0.05 indicates clear violation of homoscedasticity 
+
+#2. Normality of residuals 
+plot(lm_model, which = 2)  # qq plot
+hist(resid(lm_model), main = "Histogram of Residuals", xlab = "Residuals")
+
+```
+
+None of the assumptions for linear regression appear to be significantly violated, based on these tests. Since the heteroscedasticity test yields. p-value of 0.245, there is no significant evidence to suggest this data violates the homoscedasticity assumption. The qq-plot and histogram indicate that the data is, for the most part, approximately Normal, but the small sample size is likely the main factor impacting the strange shape of the histogram. Nevertheless, we assume that none of these slight deviations are extreme enough to violate the assumption, so we can continue with our linear regression:
+
+Null hypothesis: the mean overall health ranking is the same in each level of abortion policy.
+
+Alternative hypothesis: at least one abortion policy group has a significantly different effect on the mean overall health ranking.
+
+```{r}
+# Linear Regression
+processed_data <- df %>%
+  group_by(abortion_policies) %>%
+  summarise(avg_ranking = mean(overall_health_ranking, na.rm = TRUE))
+
+# Fit linear model to calculate R-squared
+lm_model <- lm(avg_ranking ~ as.numeric(abortion_policies), data = processed_data)
+r_squared <- round(summary(lm_model)$r.squared, 3)
+
+# Plot with R-squared annotation
+ggplot(processed_data, aes(x = abortion_policies, y = avg_ranking)) +
+  geom_point(size = 4, color = "blue") +
+  geom_smooth(aes(group = 1), method = "lm", se = TRUE, color = "red") +
+  labs(title = "Overall Health Ranking",
+       x = "Abortion Policy",
+       y = "Ranking") +
+  annotate("text", 
+           x = length(levels(processed_data$abortion_policies)) - 0.5, 
+           y = max(processed_data$avg_ranking), 
+           label = paste0("R² = ", r_squared),
+           size = 5, 
+           color = "black") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), 
+        plot.title = element_text(hjust = 0.5, size = 14))
+
+```
+
+With a p-value of 0.0006981, this linear regression model provides significant evidence to reject the null hypothesis in favor of the alternative and suggest that at least one level of abortion policy has a significant inclufence on the overall health ranking. This **linear regression plot** shows a strong, positive relationship between abortion policy restrictiveness and overall health ranking. As abortion policies become more restrictive (moving from "most protective" to "most restrictive"), the overall health ranking worsens (increases numerically). The R² value of 0.917 indicates that 91.7% of the variation in overall health ranking is explained by the level of restrictiveness in abortion policies. This suggests a clear and significant trend where stricter abortion policies are associated with poorer overall health outcomes.
+
+MISSING PERMUTATION TEST
+
+### Medicaid Expansion Status by Abortion Policy
+
+```{r}
+df$medicaid_expansion <- factor(df$medicaid_expansion_status, levels = c("0", "1"))
+
+# Stacked bar plot of Medicaid Expansion Status with Abortion Policies as Fill
+ggplot(df, aes(x = medicaid_expansion, fill = abortion_policies)) +
+  geom_bar(position = "fill") +
+  labs(
+    x = "Medicaid Expansion Status", 
+    y = "Proportion", 
+    fill = "Abortion Policy",
+    title = "Proportion of Abortion Policies by Medicaid Expansion Status"
+  ) +
+  scale_x_discrete(labels = c("0" = "Not Expanded", "1" = "Expanded")) +
+  scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) +
+  theme_classic() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(size = 12, hjust = 0.5)
+  )
+
+```
+
+This plot highlights how states that have not expanded Medicaid are disproportionately associated with more restrictive abortion policies. In contrast, states that have expanded Medicaid show a higher proportion of protective and less restrictive abortion policies. **This pattern suggests a potential relationship between policy choices around healthcare access (Medicaid expansion) and reproductive rights (abortion policies), where more progressive health policies align with broader healthcare access.**
+
+```{r}
+# Fisher's Exact Test
+contingency_table <- table(df$medicaid_expansion_status, df$abortion_policies)
+
+fisher_test_result <- fisher.test(contingency_table)
+print(fisher_test_result)
+
+```
+
+The **Fisher's Exact Test** yielded a p-value of **0.03091**, indicating a statistically significant association between Medicaid expansion status and abortion policies. This suggests that the distribution of Medicaid expansion (expanded vs. not expanded) varies significantly across different abortion policy categories. States' decisions on Medicaid expansion may align with their stance on abortion policies.
+
+Now we will perform logistic regression to investigate the direction of this relationship, since our dependent variable is a binary categorical variable:
+
+```{r}
+# Check assumptions for logistic regression 
+table(df$medicaid_expansion_status, df$abortion_policies)
+
+```
+
+Sample sizes for logistic regression are too small, so we must use exact logistic regression to account for this size and separation:
+
+```{r, warning = FALSE}
+
+library(logistf)
+
+# Fit the exact logistic regression model
+fit <- logistf(medicaid_expansion_status ~ factor(abortion_policies), data = df)
+
+summary(fit)
+
+```
+
+```{r}
+# Generate predicted probabilities
+df$predicted_prob <- predict(fit, type = "response")
+
+# visualize
+ggplot(df, aes(x = abortion_policies, y = predicted_prob)) +
+  geom_point(position = position_jitter(width = 0.2), alpha = 0.6) +
+  stat_summary(fun = mean, geom = "point", color = "red", size = 3) +
+  labs(x = "Abortion Policies", 
+       y = "Predicted Probability",
+       title = "Medicaid Expansion Status \nPredicted Probabilities by Abortion Policy") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.title = element_text(hjust = 0.5, size = 14))
+
+```
+
+The **exact logistic regression model yields a p-value of 0.0483** from the Wald test, indicating that abortion policies are significantly associated with Medicaid expansion status. **The slope coefficients suggest that as abortion policies become more restrictive, the predicted probability of Medicaid expansion decreases.** The visualization reinforces this relationship, showing higher predicted probabilities of Medicaid expansion among states with protective abortion policies and sharply lower probabilities in states with restrictive abortion policies. **This pattern highlights a critical divide in policy decisions: states prioritizing broader reproductive rights are also more likely to expand healthcare access through Medicaid, whereas restrictive abortion policies align with reduced Medicaid expansion.** This underscores the broader policy implications of prioritizing access to healthcare and reproductive rights.
+
+### Coverage, Access, and Affordability by Abortion Policy
+
+```{r}
+# Boxplot for coverage and abortion policies
+ggplot(df, aes(x = abortion_policies, y = coverage_access_and_affordability, fill = abortion_policies)) +
+  geom_boxplot() +
+  scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) +
+  labs(
+    x = "Abortion Policies", 
+    y = "Coverage Access and Affordability", 
+    fill = "Abortion Policies",
+    title = "Coverage Access and Affordability by Abortion Policies"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(size = 12, hjust = 0.5)
+  )
+
+```
+
+States with "most protective" abortion policies tend to have better rankings (lower values), indicating higher coverage access and affordability. Conversely, states with more restrictive abortion policies exhibit worse rankings (higher values), suggesting reduced coverage access and affordability. This trend may reflect that states with protective abortion policies prioritize healthcare equity and access more effectively than those with restrictive policies.
+
+This disparity also highlights inconsistencies in the priorities of restrictive states. States with protective abortion policies might integrate reproductive healthcare into broader healthcare initiatives, fostering better access and affordability. **In contrast, restrictive states, which often frame their policies as being "pro-life," may focus on generalized or inconsistent healthcare frameworks, leading to poorer outcomes.** The lack of affordable and accessible healthcare in these states undermines their claims to protect life, as they fail to support the broader well-being of the populations they govern. These findings underscore both the interconnectedness between reproductive healthcare policy and overall healthcare accessibility and affordability, and the disconnect in restrictive states between policy rhetoric and actionable support for healthier communities.
+
+```{r, warning=FALSE, message=FALSE}
+kruskal_test <- kruskal.test(coverage_access_and_affordability ~ abortion_policies, data = df)
+print(kruskal_test)
+
+# If Kruskal-Wallis is significant, run pairwise Wilcoxon tests 
+pairwise.wilcox.test(df$coverage_access_and_affordability,
+                     df$abortion_policies, p.adjust.method = "bonferroni")
+```
+
+The **Kruskal-Wallis test** yielded a **chi-squared value of 22.583 with 6 degrees of freedom and a p of 0.0009489.** This statistically significant result indicates that there are differences in coverage access and affordability rankings among the seven abortion policy levels. States with more restrictive abortion policies appear to have higher (worse) rankings for coverage access and affordability compared to states with more protective policies, reinforcing the association between policy restrictiveness and reduced access to affordable care.
+
+```{r}
+# Run Jonckheere-Terpstra test
+
+jt_test <- jonckheere.test(df$coverage_access_and_affordability, 
+                          as.numeric(df$abortion_policies), 
+                          alternative="increasing",
+                          nperm = 10000)
+print(jt_test)
+```
+
+```{r}
+# Permutation Test Implementation for Coverage Access and Affordability
+N <- 10000 
+
+# Observed ANOVA F-statistic
+observed_anova <- aov(coverage_access_and_affordability ~ abortion_policies, data = df)
+observed_F <- summary(observed_anova)[[1]][["F value"]][1]
+
+# Permutation loop
+set.seed(1234) 
+perm_F <- numeric(N)
+
+for (i in 1:N) {
+  # Permute the response variable
+  permuted_data <- df
+  permuted_data$coverage_access_and_affordability <- sample(permuted_data$coverage_access_and_affordability)
+  
+  # Perform ANOVA on permuted data
+  perm_anova <- aov(coverage_access_and_affordability ~ abortion_policies, data = permuted_data)
+  perm_F[i] <- summary(perm_anova)[[1]][["F value"]][1]
+}
+
+# Calculate p-value
+p_value <- mean(perm_F >= observed_F)
+
+cat("Observed F-statistic:", observed_F, "\n")
+cat("Permutation Test p-value:", p_value, "\n")
+```
+
+```{r}
+# Plot the permutation F-statistics
+hist(perm_F, 
+     breaks = 30, 
+     main = "Permutation Distribution of F-statistic", 
+     xlab = "F-statistic", 
+     col = "palegreen4",  
+     border = "white")    
+
+# F-statistic line 
+abline(v = observed_F, 
+       col = "red",       
+       lwd = 2, 
+       lty = 2)
+```
+
+**A permutation test** was performed on this data in addition to the Kruskal-Wallis test to ensure the robustness of the findings across different methods. The observed F-statistic of 6.089754 (indicated by the red dashed line) lies far to the right of the permutation distribution, representing F-statistics generated under the null hypothesis. The permutation test produced a statistically significant p-value of 1x10\^-4, providing strong evidence that the observed differences in coverage access and affordability across abortion policy levels are unlikely to be due to random chance. This result supports the conclusion that coverage access and affordability rankings vary significantly by abortion policy level.
+
+### Prescription Contraception Coverage Requirements by Abortion Policy
+
+```{r}
+df$requires_prescription <- factor(df$state_requires_coverage_of_prescription_contraception, levels = c("0", "1"))
+
+# Stacked bar plot for Prescription Contraception Coverage Requirements
+ggplot(df, aes(x = requires_prescription, fill = abortion_policies)) +
+  geom_bar(position = "fill") +
+  labs(x = "Requires Prescription Coverage", 
+       y = "Proportion", 
+       fill = "Abortion Policy",
+       title = "Prescription Contraception Coverage Requirements by Abortion Policy") +
+  scale_x_discrete(labels = c("0" = "Does Not Require", "1" = "Requires")) +
+  scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) + 
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.title = element_text(hjust = 0, size = 12)) 
+
+```
+
+The stacked bar plot demonstrates that states that do not require prescription coverage are predominantly associated with more restrictive abortion policies, whereas states that require prescription coverage tend to align with more protective abortion policies.
+
+This pattern reveals a significant gap in healthcare priorities among restrictive abortion policy states. **By failing to require prescription coverage, particularly for contraceptives, these states not only limit access to essential tools for preventing unintended pregnancies, effectively undermining efforts to reduce the need for abortions in the first place, but also neglect the broader healthcare needs of individuals.** Contraceptives are often prescribed to manage health conditions such as dysmenorrhea, endometriosis, or hormonal regulation, which can significantly impact quality of life. States with protective abortion policies, which typically require prescription coverage, demonstrate a more holistic approach to healthcare, supporting both reproductive autonomy and broader health outcomes.
+
+```{r}
+contingency_table <- table(df$state_requires_coverage_of_prescription_contraception, df$abortion_policies)
+fisher_test_result <- fisher.test(contingency_table)
+print(fisher_test_result)
+```
+
+The **Fisher's Exact Test results yield a p-value of 0.01764**, indicating a statistically significant association between whether a state requires prescription coverage and its abortion policy. This suggests that the distribution of states requiring or not requiring prescription coverage is not independent of their abortion policy levels. The association highlights how policy decisions in these states may systematically limit or increase access to reproductive healthcare and broader health support systems, reinforcing disparities in healthcare infrastructure and prioritization.
+
+Now, we will perform logistic regression to investigate the direction of this relationship:
+
+```{r}
+# Check assumptions for logistic regression 
+table(df$state_requires_coverage_of_prescription_contraception, df$abortion_policies)
+
+```
+
+Sample sizes for logistic regression are too small, so we must use exact logistic regression to account for this size and separation...
+
+```{r}
+
+# Logistic Regression
+library(logistf)
+
+# Fit logistic regression model
+fit <- logistf(state_requires_coverage_of_prescription_contraception ~ factor(abortion_policies), data = df)
+
+# View results
+summary(fit)
+```
+
+```{r}
+# Generate predicted probabilities
+df$predicted_prob <- predict(fit, type = "response")
+
+# Visualize predicted probabilities
+ggplot(df, aes(x = abortion_policies, y = predicted_prob)) +
+  geom_point(position = position_jitter(width = 0.2), alpha = 0.6) +
+  stat_summary(fun = mean, geom = "point", color = "red", size = 3) +
+  labs(x = "Abortion Policies",
+       y = "Predicted Probability",
+       title = "Predicted Probability of Prescription Contraceptive Coverage \nby Abortion Policy") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.title = element_text(hjust = 0.5, size = 14))
+```
+
+The **exact logistic regression analysis** provides evidence of a significant relationship between abortion policy restrictiveness and the likelihood of requiring prescription contraceptive coverage, as shown by the likelihood ratio test (p=0.0419). **The predicted probabilities visualized here demonstrate a clear gradient: states with more restrictive abortion policies consistently exhibit lower probabilities of requiring prescription contraceptive coverage compared to those with more protective policies.**
+
+This trend highlights a potential disconnect in restrictive states, which often emphasize policies purportedly in favor of life but fail to mandate coverage for contraceptives that could prevent unintended pregnancies or support broader healthcare needs. On the other hand, states with protective abortion policies are more likely to require coverage, aligning with healthcare frameworks that prioritize both reproductive autonomy and overall well-being. These findings underscore how policy decisions around abortion can reflect broader approaches---or lack thereof---toward supporting individuals' health and autonomy.
+
+### Healthcare Quality and Prevention by Abortion Policy
+
+```{r}
+ggplot(df, aes(x = abortion_policies, y = health_care_quality_and_prevention, fill = abortion_policies)) +
+  geom_boxplot() +
+  scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) +
+  labs(
+    title = "Health Care Quality and Prevention by Abortion Policies",
+    x = "Abortion Policies",
+    y = "Health Care Quality and Prevention",
+    fill = "Abortion Policies"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 12),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "right"
+  )
+
+```
+
+States with "most protective" abortion policies are clustered at the lower end of the ranking scale, indicating better healthcare quality and prevention outcomes. Conversely, states with "most restrictive" abortion policies show higher rankings, reflecting poorer performance in healthcare quality and prevention metrics. **The trend suggests that states with protective abortion policies may prioritize robust healthcare systems, integrating reproductive health within broader preventative and quality-focused frameworks. In contrast, states with restrictive abortion policies consistently rank worse, potentially indicating less emphasis on preventative care or healthcare quality.** This highlights how restrictive reproductive healthcare policies may correlate with broader systemic healthcare shortcomings, potentially exacerbating health inequities in those states.
+
+```{r,message=FALSE, warning=FALSE}
+kruskal_test <- kruskal.test(health_care_quality_and_prevention ~ abortion_policies, data = df)
+print(kruskal_test)
+
+# If Kruskal-Wallis is significant, run pairwise Wilcoxon tests 
+pairwise.wilcox.test(df$health_care_quality_and_prevention,
+                     df$abortion_policies, p.adjust.method = "bonferroni")
+```
+
+The **Kruskal-Wallis test** yielded a chi-squared statistic of 22.583 (df = 6, p = 0.02865), indicating statistically significant differences in healthcare quality and prevention rankings across the seven levels of abortion policy restrictiveness. This result aligns with the observations from the boxplot, suggesting that states with more protective abortion policies tend to perform better in healthcare quality and prevention rankings, while more restrictive policies are associated with poorer outcomes.
+
+```{r}
+# Run Jonckheere-Terpstra test
+
+jt_test <- jonckheere.test(df$health_care_quality_and_prevention, 
+                          as.numeric(df$abortion_policies), 
+                          alternative="increasing",
+                          nperm = 10000)
+print(jt_test)
+```
+
+```{r}
+# Permutation Test Implementation for Health Care Quality and Prevention
+N <- 10000 
+
+# Observed ANOVA F-statistic
+observed_anova <- aov(health_care_quality_and_prevention ~ abortion_policies, data = df)
+observed_F <- summary(observed_anova)[[1]][["F value"]][1]
+
+# Permutation loop
+set.seed(1234) # For reproducibility
+perm_F <- numeric(N)
+
+for (i in 1:N) {
+  # Permute the response variable
+  permuted_data <- df
+  permuted_data$health_care_quality_and_prevention <- sample(permuted_data$health_care_quality_and_prevention)
+  
+  # Perform ANOVA on permuted data
+  perm_anova <- aov(health_care_quality_and_prevention ~ abortion_policies, data = permuted_data)
+  perm_F[i] <- summary(perm_anova)[[1]][["F value"]][1]
+}
+
+# Calculate p-value
+p_value <- mean(perm_F >= observed_F)
+
+cat("Observed F-statistic:", observed_F, "\n")
+cat("Permutation Test p-value:", p_value, "\n")
+```
+
+```{r}
+# Plot the permutation F-statistics
+hist(perm_F, 
+     breaks = 30, 
+     main = "Permutation Distribution of F-statistic", 
+     xlab = "F-statistic", 
+     col = "olivedrab4",  
+     border = "white")    
+
+# F-statistic line 
+abline(v = observed_F, 
+       col = "red",       
+       lwd = 2, 
+       lty = 2)
+
+```
+
+A **permutation test** was performed on the healthcare quality and prevention data in addition to the Kruskal-Wallis test to ensure the robustness of the findings across different statistical methods. The permutation test yielded a statistically significant p-value of 0.0186, confirming evidence that healthcare quality and prevention rankings differ among at least one of the abortion policy levels. This reinforces the conclusion that abortion policy restrictiveness is associated with variations in healthcare quality and prevention outcomes across states.
+
+```{r}
+library(dplyr)
+library(ggplot2)
+
+# Calculate the overall average
+overall_avg <- mean(df$health_care_quality_and_prevention, na.rm = TRUE)
+
+# Filter and classify observations as Above or Below Average
+df <- df %>%
+  filter(!is.na(abortion_policies) & !is.na(health_care_quality_and_prevention)) %>% 
+  mutate(above_or_below = if_else(health_care_quality_and_prevention > overall_avg, 
+                                  "Above Average", "Below Average"))
+
+# Group and count observations
+df_count <- df %>%
+  group_by(abortion_policies, above_or_below) %>%
+  summarize(count = n(), .groups = "drop")
+
+# Convert counts to percentages
+df_count <- df_count %>%
+  group_by(abortion_policies) %>%
+  mutate(percentage = count / sum(count) * 100)
+
+# Create the stacked bar chart
+ggplot(df_count, aes(x = abortion_policies, y = percentage, fill = above_or_below)) +
+  geom_bar(stat = "identity", position = "stack", alpha = 0.7) +
+  theme_minimal() +
+  scale_fill_manual(values = c("Above Average" = "#ff0000", "Below Average" = "#1c7416")) +
+  labs(x = "Abortion Policies", 
+       y = "Percentage of Observations",
+       fill = "Comparison to Average",
+       title = "Percentage of Above/Below Average Health Care Quality and Prevention\nby Abortion Policy") +
+  theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1),
+        plot.title = element_text(size = 10, hjust = 0.5),
+        axis.title.y = element_text(size = 10))
+
+```
+
+### Health Outcomes by Abortion Policy
+
+```{r}
+ggplot(df, aes(x = abortion_policies, y = health_outcomes, fill = abortion_policies)) +
+  geom_boxplot() +
+  scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) +
+  labs(
+    title = "Health Outcomes by Abortion Policies",
+    x = "Abortion Policies",
+    y = "Health Outcomes",
+    fill = "Abortion Policies"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 12),
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "right"
+  )
+
+
+```
+
+This boxplot illustrates the relationship between abortion policies and health outcomes, where a lower number/rank indicates better outcomes. **States with "most protective" abortion policies demonstrate the best health outcomes, with rankings clustered toward the lower end of the scale. As abortion policies become increasingly restrictive, health outcomes generally worsen, with rankings shifting higher. States with "most restrictive" abortion policies exhibit the poorest health outcomes, with a higher concentration of rankings near the bottom of the boxplot.**
+
+These **trends suggest that states with more restrictive abortion policies may lack broader investments in public health infrastructure and services, contributing to poorer overall health outcomes.** In contrast, states with protective abortion policies might prioritize comprehensive healthcare systems that address a wider array of health determinants. This disparity underscores the broader implications of policy decisions on public health and well-being, highlighting potential inequities in access to essential healthcare resources.
+
+```{r,message = FALSE, warning = FALSE}
+kruskal_test <- kruskal.test(health_outcomes ~ abortion_policies, data = df)
+print(kruskal_test)
+
+# If Kruskal-Wallis is significant, run pairwise Wilcoxon tests 
+pairwise.wilcox.test(df$health_outcomes,
+                     df$abortion_policies, p.adjust.method = "bonferroni")
+```
+
+The **Kruskal-Wallis** test for health outcomes across abortion policy levels reveals a chi-squared value of **21.669** with **6 degrees of freedom** and a **p-value of 0.00139**. This statistically significant result indicates that health outcomes vary meaningfully across at least one level of abortion policy. This reinforces the trends observed in the boxplot: states with "most protective" abortion policies tend to achieve better health outcomes, while those with "most restrictive" policies are associated with worse rankings.
+
+```{r}
+#Jonckheere test
+
+jt_test <- jonckheere.test(df$health_outcomes, 
+                          as.numeric(df$abortion_policies), 
+                          alternative="increasing",
+                          nperm = 10000)
+print(jt_test)
+```
+
+```{r}
+# Permutation Test Implementation for Health Outcomes by Abortion Policy
+N <- 10000 
+
+# Observed ANOVA F-statistic
+observed_anova <- aov(health_outcomes ~ abortion_policies, data = df)
+observed_F <- summary(observed_anova)[[1]][["F value"]][1]
+
+# Permutation loop
+set.seed(1234) # For reproducibility
+perm_F <- numeric(N)
+
+for (i in 1:N) {
+  # Permute the response variable
+  permuted_data <- df
+  permuted_data$health_outcomes <- sample(permuted_data$health_outcomes)
+  
+  # Perform ANOVA on permuted data
+  perm_anova <- aov(health_outcomes ~ abortion_policies, data = permuted_data)
+  perm_F[i] <- summary(perm_anova)[[1]][["F value"]][1]
+}
+
+# Calculate p-value
+p_value <- mean(perm_F >= observed_F)
+
+cat("Observed F-statistic:", observed_F, "\n")
+cat("Permutation Test p-value:", p_value, "\n")
+```
+
+```{r}
+# Plot the permutation F-statistics
+hist(perm_F, 
+     breaks = 30, 
+     main = "Permutation Distribution of F-statistic", 
+     xlab = "F-statistic", 
+     col = "palegreen3",  
+     border = "white")    
+
+# F-statistic line 
+abline(v = observed_F, 
+       col = "red",       
+       lwd = 2, 
+       lty = 2)
+
+```
+
+A **permutation test** was performed on health outcomes by abortion policy to validate the findings from the Kruskal-Wallis test. The observed F-statistic was **5.608316**, and the permutation test yielded a **p-value of 0.0002**, which is statistically significant.
+
+This result supports the conclusion that health outcomes vary significantly across abortion policy levels. The visualization of the permutation distribution shows that the observed F-statistic lies far to the right of the simulated null distribution, providing strong evidence that these differences are unlikely to have arisen by chance. **These findings underscore the measurable impact of abortion policy restrictiveness on broader health outcomes, indicating systemic disparities in public health quality across states.**
+
+```{r}
+library(dplyr)
+library(ggplot2)
+
+# Calculate the overall average
+overall_avg <- mean(df$health_outcomes, na.rm = TRUE)
+
+# Filter and classify observations as Above or Below Average
+df <- df %>%
+  filter(!is.na(abortion_policies) & !is.na(health_outcomes)) %>% 
+  mutate(above_or_below = if_else(health_outcomes > overall_avg, 
+                                  "Above Average", "Below Average"))
+
+# Group and count observations
+df_count <- df %>%
+  group_by(abortion_policies, above_or_below) %>%
+  summarize(count = n(), .groups = "drop")
+
+# Convert counts to percentages
+df_count <- df_count %>%
+  group_by(abortion_policies) %>%
+  mutate(percentage = count / sum(count) * 100)
+
+# Create the stacked bar chart
+ggplot(df_count, aes(x = abortion_policies, y = percentage, fill = above_or_below)) +
+  geom_bar(stat = "identity", position = "stack", alpha = 0.7) +
+  theme_minimal() +
+  scale_fill_manual(values = c("Above Average" = "#ff0000", "Below Average" = "#1c7416")) +
+  labs(x = "Abortion Policies", 
+       y = "Percentage of Observations",
+       fill = "Comparison to Average",
+       title = "Percentage of Above/Below Average Health Outcomes by Abortion Policy") +
+  theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1),
+        plot.title = element_text(size = 10, hjust = 0.5),
+        axis.title.y = element_text(size = 10))
+
+```
+
+### OBGYN Ratios by Abortion Policy
+
+```{r}
+# Create the OB-GYN ratio per 100,000 women first
+df <- df %>%
+  filter(!is.na(number_of_obstetricians_and_gynecologists_employed_2023) &
+         !is.na(total_sumber_of_women_aged_15_44_2017)) %>%
+  mutate(obgyn_per_100k = (number_of_obstetricians_and_gynecologists_employed_2023 / 
+                          total_sumber_of_women_aged_15_44_2017) * 100000)
+
+# Create ordered factor levels for abortion policies
+policy_levels <- c(
+  "most protective",
+  "very protective", 
+  "protective",
+  "some restrictions/protections",
+  "restrictive",
+  "very restrictive",
+  "most restrictive"
+)
+
+# Convert abortion_policies to factor with ordered levels
+df$abortion_policies <- factor(df$abortion_policies, levels = policy_levels)
+
+# Create the plot
+ggplot(df, aes(x = abortion_policies, y = obgyn_per_100k, fill = abortion_policies)) +
+  geom_boxplot(width = 0.7) +
+  scale_fill_manual(
+    values = c(
+      "most protective" = "#1c7416",
+      "very protective" = "#68bb59",
+      "protective" = "#acdf87",
+      "some restrictions/protections" = "#fab733",
+      "restrictive" = "#ff6242",
+      "very restrictive" = "#ff0000",
+      "most restrictive" = "#c61a09"
+    )
+  ) +
+  labs(
+    x = "Abortion Policies",
+    y = "OB-GYNs per 100,000 Women Ages 15-44",
+    title = "Distribution of OB-GYN Access by State Abortion Policy (2023)",
+    fill = "Abortion Policy"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 12),
+    axis.title.x = element_text(size = 10, margin = margin(t = 10)),
+    axis.title.y = element_text(size = 10),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 8),
+    axis.text.y = element_text(size = 8),
+    legend.position = "none",
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor = element_blank(),
+    plot.background = element_rect(fill = "white", color = NA),
+    panel.background = element_rect(fill = "white", color = NA)
+  ) +
+  scale_y_continuous(
+    limits = c(0, max(df$obgyn_per_100k, na.rm = TRUE) * 1.1),
+    expand = expansion(mult = c(0, 0.1))
+  )
+
+```
+
+**Note:** It's critical to consider the mismatch in timeframes for the data (OB-GYN numbers from 2023 and population data from 2017), which could introduce inaccuracies. This table serves as a starting point for understanding disparities in healthcare access by abortion policy and underscores the need for more recent and comprehensive data to draw robust conclusions.
+
+This boxplot illustrates the ratio of OB-GYNs to women aged 15-44 across states with varying abortion policy classifications. States with more protective abortion policies tend to have higher ratios of OB-GYNs to women, as indicated by the greater median and interquartile ranges for these groups. Conversely, states with more restrictive abortion policies exhibit lower OB-GYN-to-women ratios, reflected in their comparatively lower medians and more compressed distributions.
+
+These findings suggest that states prioritizing access to abortion services may also allocate resources to ensure greater availability of OB-GYNs, enhancing access to comprehensive reproductive healthcare. On the other hand, states with restrictive abortion policies may not only limit reproductive healthcare access through policy but may also have fewer OB-GYNs available, compounding the barriers for women in accessing necessary medical care.
+
+```{r}
+# First, calculate the observed F-statistic
+observed_anova <- aov(obgyn_per_100k ~ abortion_policies, data = df)
+observed_F <- summary(observed_anova)[[1]][["F value"]][1]
+
+# Perform permutation test
+set.seed(1234) # For reproducibility
+N <- 100000 # Number of permutations
+perm_F <- numeric(N)
+
+for (i in 1:N) {
+  permuted_data <- df
+  permuted_data$obgyn_per_100k <- sample(permuted_data$obgyn_per_100k) # Fixed assignment
+  
+  perm_anova <- aov(obgyn_per_100k ~ abortion_policies, data = permuted_data)
+  perm_F[i] <- summary(perm_anova)[[1]][["F value"]][1]
+}
+
+# Calculate the p-value
+p_value <- mean(perm_F >= observed_F)
+
+# Print results
+cat("Observed F-statistic:", observed_F, "\n")
+cat("Permutation Test p-value:", p_value, "\n")
+
+```
+
+```{r}
+
+hist(perm_F, 
+     main = "Distribution of F-statistics under Null Hypothesis",
+     xlab = "F-statistic",
+     breaks = 50)
+abline(v = observed_F, col = "red", lwd = 2)
+
+```
+
+The **permutation test** for the ratio of OB-GYNs to women aged 15--44 yields an observed F-statistic of 5.608316 with a highly significant p-value of 0.0003. This result indicates that there is strong evidence to suggest that the distribution of OB-GYN ratios significantly varies across abortion policy categories. The significant result underscores that states with differing abortion policies also exhibit distinct disparities in OB-GYN accessibility, pointing to potential inequities in access to reproductive healthcare resources. - I think wrong u were looking at means of categories but idk bc the boxplot looks significant
+
+```{r}
+kruskal_test <- kruskal.test(obgyn_per_100k ~ abortion_policies, data = df)
+print(kruskal_test)
+
+# If Kruskal-Wallis is significant, run pairwise Wilcoxon tests 
+pairwise.wilcox.test(df$obgyn_per_100k,
+                     df$abortion_policies, p.adjust.method = "bonferroni")
+```
+
+p-val also high
+
+```{r}
+
+jt_test <- jonckheere.test(df$obgyn_per_100k, 
+                          as.numeric(df$abortion_policies), 
+                          alternative="decreasing",
+                          nperm = 10000)
+print(jt_test)
+```
+
+```{r}
+library(dplyr)
+library(ggplot2)
+
+# Calculate the overall average
+overall_avg <- mean(df$obgyn_per_100k, na.rm = TRUE)
+
+# Filter and classify observations as Above or Below Average
+df <- df %>%
+  filter(!is.na(abortion_policies) & !is.na(obgyn_per_100k)) %>% 
+  mutate(above_or_below = if_else(obgyn_per_100k > overall_avg, 
+                                  "Above Average", "Below Average"))
+
+# Group and count observations
+df_count <- df %>%
+  group_by(abortion_policies, above_or_below) %>%
+  summarize(count = n(), .groups = "drop")
+
+# Convert counts to percentages
+df_count <- df_count %>%
+  group_by(abortion_policies) %>%
+  mutate(percentage = count / sum(count) * 100)
+
+# Create the stacked bar chart
+ggplot(df_count, aes(x = abortion_policies, y = percentage, fill = above_or_below)) +
+  geom_bar(stat = "identity", position = "stack", alpha = 0.7) +
+  theme_minimal() +
+  scale_fill_manual(values = c("Above Average" = "#1c7416", "Below Average" = "#ff0000")) +
+  labs(x = "Abortion Policies", 
+       y = "Percentage of Observations",
+       fill = "Comparison to Average",
+       title = "Percentage of Above/Below Average OBGYN Ratio by Abortion Policy") +
+  theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1),
+        plot.title = element_text(size = 10, hjust = 0.5),
+        axis.title.y = element_text(size = 10))
+
+```
+
+# Conclusions
+
+The findings across these analyses underscore the significant relationships between abortion policies and various dimensions of overall public health. States with more restrictive abortion policies tend to exhibit poorer rankings across critical health indicators, including overall health, healthcare quality and prevention, and health outcomes. This pattern is consistently supported by the results of Kruskal-Wallis tests, permutation tests, and visualization methods, suggesting systemic disparities in healthcare infrastructure and access.
+
+The **overall health rankings** demonstrate a strong association with abortion policy restrictiveness, with protective policies aligning with better overall health rankings. This trend emphasizes the interconnectedness between reproductive rights and broader healthcare systems. Similarly, **healthcare quality and prevention rankings** highlight that states with restrictive abortion policies are not only less supportive of reproductive rights but also lag in preventative care and healthcare quality, key elements of robust public health systems.
+
+The analysis of **coverage access and affordability** further reinforces this disparity. States with restrictive abortion policies exhibit poorer affordability and accessibility of healthcare services. This lack of investment in ensuring accessible care disproportionately impacts vulnerable populations, deepening systemic inequities. The trend is similarly evident in **Medicaid expansion status**, where states with restrictive abortion policies are less likely to have expanded Medicaid, limiting coverage for low-income individuals and exacerbating barriers to essential care.
+
+The analysis of **state-mandated prescription contraceptive coverage** further reveals inconsistencies in the priorities of restrictive states. Despite framing their policies as "pro-life," many fail to ensure access to affordable contraception, which is critical for preventing unintended pregnancies and managing health conditions like endometriosis or hormonal imbalances. This contradiction reflects a lack of investment in holistic healthcare strategies that would support individuals' health and well-being.
+
+Finally, the findings around **health outcomes rankings** reinforce these patterns. Restrictive abortion policies are linked to poorer health outcomes, suggesting that these states may deprioritize comprehensive health infrastructure, exacerbating disparities in access to essential services.
+
+### Broader Implications:
+
+These results collectively demonstrate that restrictive abortion policies are not isolated to reproductive rights but are indicative of broader systemic issues in public health. States with protective abortion policies tend to foster more equitable healthcare systems, ensuring access to both reproductive and general healthcare services. In contrast, restrictive states appear to perpetuate inequities, undermining both individual health and community well-being. These findings call for policymakers to consider the downstream effects of restrictive reproductive policies on broader healthcare access, outcomes, and equity.
