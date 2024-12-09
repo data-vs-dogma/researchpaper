@@ -632,5 +632,5 @@ plot_usmap(data = abortion_map_data, values = "change") +
     plot.title = element_text(size = 14, hjust = 0.5)
   ) +
   labs(title = "Change in Clinician-Provided Abortions Since 2020 by State",
-       caption = "* Stars indicate states with significant changes”)”
+       caption = "*Stars indicate states with significant changes* ")
 ```

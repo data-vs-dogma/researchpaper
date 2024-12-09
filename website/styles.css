@@ -3,3 +3,14 @@
 body {
     zoom: 0.9; /* Adjust zoom level (e.g., 1.2 = 120%, 0.8 = 80%) */
   }
+
+  .navbar .dropdown-menu a {
+    color: #767676; 
+    background-color: #f8f9fa; 
+}
+
+
+.navbar .dropdown-menu a:hover {
+  color: #fff; 
+  background-color: #158cba; 
+}

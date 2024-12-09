@@ -4740,7 +4740,7 @@ vertical-align: -.125em;
 }</script>
 
 
-<style type="text/css">body {zoom: 0.9; }</style>
+<style type="text/css">body {zoom: 0.9; }.navbar .dropdown-menu a {color: #767676; background-color: #f8f9fa; }.navbar .dropdown-menu a:hover {color: #fff; background-color: #158cba; }</style>
 </head>
 
 <body class="floating nav-fixed">
@@ -4868,7 +4868,7 @@ vertical-align: -.125em;
 <pre><code>package &#39;tidyverse&#39; successfully unpacked and MD5 sums checked
 
 The downloaded binary packages are in
-    C:\Users\court\AppData\Local\Temp\RtmpI3DMu2\downloaded_packages</code></pre>
+    C:\Users\court\AppData\Local\Temp\RtmpwDGYgL\downloaded_packages</code></pre>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
@@ -5022,25 +5022,39 @@ P value adjustment method: bonferroni </code></pre>
 (as &#39;lib&#39; is unspecified)</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>package &#39;clinfun&#39; successfully unpacked and MD5 sums checked
-
+<pre><code>package &#39;clinfun&#39; successfully unpacked and MD5 sums checked</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: cannot remove prior installation of package &#39;clinfun&#39;</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in file.copy(savedcopy, lib, recursive = TRUE): problem copying
+C:\Users\court\AppData\Local\R\win-library\4.4\00LOCK\clinfun\libs\x64\clinfun.dll
+to C:\Users\court\AppData\Local\R\win-library\4.4\clinfun\libs\x64\clinfun.dll:
+Permission denied</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: restored &#39;clinfun&#39;</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
 The downloaded binary packages are in
-    C:\Users\court\AppData\Local\Temp\RtmpI3DMu2\downloaded_packages</code></pre>
+    C:\Users\court\AppData\Local\Temp\RtmpwDGYgL\downloaded_packages</code></pre>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(clinfun)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(clinfun)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: package &#39;clinfun&#39; was built under R version 4.4.2</code></pre>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>jt_test <span class="ot">&lt;-</span> <span class="fu">jonckheere.test</span>(df<span class="sc">$</span>infant_mortality_2021, </span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>                          <span class="fu">as.numeric</span>(df<span class="sc">$</span>abortion_policies), </span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>                          <span class="at">alternative=</span><span class="st">&quot;increasing&quot;</span>,</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>                          <span class="at">nperm =</span> <span class="dv">10000</span>)</span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(jt_test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>jt_test <span class="ot">&lt;-</span> <span class="fu">jonckheere.test</span>(df<span class="sc">$</span>infant_mortality_2021, </span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>                          <span class="fu">as.numeric</span>(df<span class="sc">$</span>abortion_policies), </span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>                          <span class="at">alternative=</span><span class="st">&quot;increasing&quot;</span>,</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>                          <span class="at">nperm =</span> <span class="dv">10000</span>)</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(jt_test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -5055,57 +5069,57 @@ alternative hypothesis: increasing</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Permutation Test</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">10000</span> </span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Observed ANOVA F-statistic</span></span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>observed_anova <span class="ot">&lt;-</span> <span class="fu">aov</span>(infant_mortality_2021 <span class="sc">~</span> abortion_policies, <span class="at">data =</span> df)</span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>observed_F <span class="ot">&lt;-</span> <span class="fu">summary</span>(observed_anova)[[<span class="dv">1</span>]][[<span class="st">&quot;F value&quot;</span>]][<span class="dv">1</span>]</span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Permutation loop</span></span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>) </span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>perm_F <span class="ot">&lt;-</span> <span class="fu">numeric</span>(N)</span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>N) {</span>
-<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Permute the response variable</span></span>
-<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>  permuted_data <span class="ot">&lt;-</span> df</span>
-<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a>  permuted_data<span class="sc">$</span>infant_mortality_2021 <span class="ot">&lt;-</span> <span class="fu">sample</span>(permuted_data<span class="sc">$</span>infant_mortality_2021)</span>
-<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Perform ANOVA on permuted data</span></span>
-<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>  perm_anova <span class="ot">&lt;-</span> <span class="fu">aov</span>(infant_mortality_2021 <span class="sc">~</span> abortion_policies, <span class="at">data =</span> permuted_data)</span>
-<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>  perm_F[i] <span class="ot">&lt;-</span> <span class="fu">summary</span>(perm_anova)[[<span class="dv">1</span>]][[<span class="st">&quot;F value&quot;</span>]][<span class="dv">1</span>]</span>
-<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate p-value</span></span>
-<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a>p_value <span class="ot">&lt;-</span> <span class="fu">mean</span>(perm_F <span class="sc">&gt;=</span> observed_F)</span>
-<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Observed F-statistic:&quot;</span>, observed_F, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Permutation Test</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">10000</span> </span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Observed ANOVA F-statistic</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>observed_anova <span class="ot">&lt;-</span> <span class="fu">aov</span>(infant_mortality_2021 <span class="sc">~</span> abortion_policies, <span class="at">data =</span> df)</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>observed_F <span class="ot">&lt;-</span> <span class="fu">summary</span>(observed_anova)[[<span class="dv">1</span>]][[<span class="st">&quot;F value&quot;</span>]][<span class="dv">1</span>]</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Permutation loop</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>) </span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>perm_F <span class="ot">&lt;-</span> <span class="fu">numeric</span>(N)</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>N) {</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Permute the response variable</span></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>  permuted_data <span class="ot">&lt;-</span> df</span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>  permuted_data<span class="sc">$</span>infant_mortality_2021 <span class="ot">&lt;-</span> <span class="fu">sample</span>(permuted_data<span class="sc">$</span>infant_mortality_2021)</span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Perform ANOVA on permuted data</span></span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>  perm_anova <span class="ot">&lt;-</span> <span class="fu">aov</span>(infant_mortality_2021 <span class="sc">~</span> abortion_policies, <span class="at">data =</span> permuted_data)</span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>  perm_F[i] <span class="ot">&lt;-</span> <span class="fu">summary</span>(perm_anova)[[<span class="dv">1</span>]][[<span class="st">&quot;F value&quot;</span>]][<span class="dv">1</span>]</span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate p-value</span></span>
+<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a>p_value <span class="ot">&lt;-</span> <span class="fu">mean</span>(perm_F <span class="sc">&gt;=</span> observed_F)</span>
+<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Observed F-statistic:&quot;</span>, observed_F, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Observed F-statistic: 3.827105 </code></pre>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Permutation Test p-value:&quot;</span>, p_value, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Permutation Test p-value:&quot;</span>, p_value, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Permutation Test p-value: 0.0048 </code></pre>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the permutation F-statistics</span></span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(perm_F, </span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">breaks =</span> <span class="dv">30</span>, </span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">&quot;Permutation Distribution of F-statistic&quot;</span>, </span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;F-statistic&quot;</span>, </span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">&quot;palegreen4&quot;</span>,  </span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">border =</span> <span class="st">&quot;white&quot;</span>)    </span>
-<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a><span class="co"># F-statistic line </span></span>
-<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> observed_F, </span>
-<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="st">&quot;red&quot;</span>,       </span>
-<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">lwd =</span> <span class="dv">2</span>, </span>
-<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">lty =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the permutation F-statistics</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(perm_F, </span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">breaks =</span> <span class="dv">30</span>, </span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">&quot;Permutation Distribution of F-statistic&quot;</span>, </span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;F-statistic&quot;</span>, </span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">&quot;palegreen4&quot;</span>,  </span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">border =</span> <span class="st">&quot;white&quot;</span>)    </span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a><span class="co"># F-statistic line </span></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> observed_F, </span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="st">&quot;red&quot;</span>,       </span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">lwd =</span> <span class="dv">2</span>, </span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">lty =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -5119,71 +5133,71 @@ alternative hypothesis: increasing</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>df_filtered <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(<span class="st">`</span><span class="at">infant_mortality_2021</span><span class="st">`</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_rows</span>(<span class="fu">tibble</span>(</span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">State =</span> <span class="st">&quot;US Average&quot;</span>,  <span class="co"># Removed c() since only adding one value</span></span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">infant_mortality_2021</span><span class="st">`</span> <span class="ot">=</span> <span class="fl">5.4</span>,</span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">abortion_policies =</span> <span class="st">&quot;US Average&quot;</span>  <span class="co"># Removed &quot;most restrictive&quot; since only adding US Average</span></span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  ))</span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>policy_levels <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;most protective&quot;</span>,</span>
-<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;very protective&quot;</span>, </span>
-<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;protective&quot;</span>,</span>
-<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;some restrictions/protections&quot;</span>,</span>
-<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;restrictive&quot;</span>,</span>
-<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;very restrictive&quot;</span>,</span>
-<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;most restrictive&quot;</span>,</span>
-<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;US Average&quot;</span></span>
-<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>df_filtered<span class="sc">$</span>abortion_policies <span class="ot">&lt;-</span> <span class="fu">factor</span>(df_filtered<span class="sc">$</span>abortion_policies, </span>
-<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">levels =</span> policy_levels)</span>
-<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df_filtered, </span>
-<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">reorder</span>(State, <span class="st">`</span><span class="at">infant_mortality_2021</span><span class="st">`</span>),</span>
-<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a>           <span class="at">x =</span> <span class="st">`</span><span class="at">infant_mortality_2021</span><span class="st">`</span>,</span>
-<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a>           <span class="at">fill =</span> abortion_policies)) <span class="sc">+</span></span>
-<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">&quot;identity&quot;</span>, <span class="at">width =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
-<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(</span>
-<span id="cb24-29"><a href="#cb24-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(</span>
-<span id="cb24-30"><a href="#cb24-30" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;most protective&quot;</span> <span class="ot">=</span> <span class="st">&quot;#1c7416&quot;</span>,</span>
-<span id="cb24-31"><a href="#cb24-31" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;very protective&quot;</span> <span class="ot">=</span> <span class="st">&quot;#68bb59&quot;</span>,</span>
-<span id="cb24-32"><a href="#cb24-32" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;protective&quot;</span> <span class="ot">=</span> <span class="st">&quot;#acdf87&quot;</span>,</span>
-<span id="cb24-33"><a href="#cb24-33" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;some restrictions/protections&quot;</span> <span class="ot">=</span> <span class="st">&quot;#fab733&quot;</span>,</span>
-<span id="cb24-34"><a href="#cb24-34" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;restrictive&quot;</span> <span class="ot">=</span> <span class="st">&quot;#ff6242&quot;</span>,</span>
-<span id="cb24-35"><a href="#cb24-35" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;very restrictive&quot;</span> <span class="ot">=</span> <span class="st">&quot;#ff0000&quot;</span>,</span>
-<span id="cb24-36"><a href="#cb24-36" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;most restrictive&quot;</span> <span class="ot">=</span> <span class="st">&quot;#c61a09&quot;</span>,</span>
-<span id="cb24-37"><a href="#cb24-37" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;US Average&quot;</span> <span class="ot">=</span> <span class="st">&quot;#006eff&quot;</span></span>
-<span id="cb24-38"><a href="#cb24-38" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb24-39"><a href="#cb24-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">breaks =</span> policy_levels</span>
-<span id="cb24-40"><a href="#cb24-40" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb24-41"><a href="#cb24-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb24-42"><a href="#cb24-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb24-43"><a href="#cb24-43" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Infant Mortality Rate by State (2021)&quot;</span>,  <span class="co"># Made title more concise</span></span>
-<span id="cb24-44"><a href="#cb24-44" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">&quot;Deaths per 1,000 Live Births&quot;</span>,  <span class="co"># Corrected units</span></span>
-<span id="cb24-45"><a href="#cb24-45" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">&quot;&quot;</span>,</span>
-<span id="cb24-46"><a href="#cb24-46" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">&quot;Abortion Policy&quot;</span></span>
-<span id="cb24-47"><a href="#cb24-47" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb24-48"><a href="#cb24-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb24-49"><a href="#cb24-49" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">12</span>),</span>
-<span id="cb24-50"><a href="#cb24-50" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>),</span>
-<span id="cb24-51"><a href="#cb24-51" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>),</span>
-<span id="cb24-52"><a href="#cb24-52" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>),</span>
-<span id="cb24-53"><a href="#cb24-53" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">&quot;right&quot;</span>,</span>
-<span id="cb24-54"><a href="#cb24-54" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">9</span>),</span>
-<span id="cb24-55"><a href="#cb24-55" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>),</span>
-<span id="cb24-56"><a href="#cb24-56" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.major.y =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb24-57"><a href="#cb24-57" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb24-58"><a href="#cb24-58" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;white&quot;</span>, <span class="at">color =</span> <span class="cn">NA</span>),</span>
-<span id="cb24-59"><a href="#cb24-59" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;white&quot;</span>, <span class="at">color =</span> <span class="cn">NA</span>)</span>
-<span id="cb24-60"><a href="#cb24-60" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb24-61"><a href="#cb24-61" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(</span>
-<span id="cb24-62"><a href="#cb24-62" aria-hidden="true" tabindex="-1"></a>    <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">15</span>),</span>
-<span id="cb24-63"><a href="#cb24-63" aria-hidden="true" tabindex="-1"></a>    <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">15</span>, <span class="at">by =</span> <span class="dv">5</span>),  <span class="co"># Changed to increments of 5 for better readability</span></span>
-<span id="cb24-64"><a href="#cb24-64" aria-hidden="true" tabindex="-1"></a>    <span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.1</span>))</span>
-<span id="cb24-65"><a href="#cb24-65" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>df_filtered <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(<span class="st">`</span><span class="at">infant_mortality_2021</span><span class="st">`</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind_rows</span>(<span class="fu">tibble</span>(</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">State =</span> <span class="st">&quot;US Average&quot;</span>,  <span class="co"># Removed c() since only adding one value</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">infant_mortality_2021</span><span class="st">`</span> <span class="ot">=</span> <span class="fl">5.4</span>,</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">abortion_policies =</span> <span class="st">&quot;US Average&quot;</span>  <span class="co"># Removed &quot;most restrictive&quot; since only adding US Average</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  ))</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>policy_levels <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;most protective&quot;</span>,</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;very protective&quot;</span>, </span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;protective&quot;</span>,</span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;some restrictions/protections&quot;</span>,</span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;restrictive&quot;</span>,</span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;very restrictive&quot;</span>,</span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;most restrictive&quot;</span>,</span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a>  <span class="st">&quot;US Average&quot;</span></span>
+<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-20"><a href="#cb28-20" aria-hidden="true" tabindex="-1"></a>df_filtered<span class="sc">$</span>abortion_policies <span class="ot">&lt;-</span> <span class="fu">factor</span>(df_filtered<span class="sc">$</span>abortion_policies, </span>
+<span id="cb28-21"><a href="#cb28-21" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">levels =</span> policy_levels)</span>
+<span id="cb28-22"><a href="#cb28-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-23"><a href="#cb28-23" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df_filtered, </span>
+<span id="cb28-24"><a href="#cb28-24" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">reorder</span>(State, <span class="st">`</span><span class="at">infant_mortality_2021</span><span class="st">`</span>),</span>
+<span id="cb28-25"><a href="#cb28-25" aria-hidden="true" tabindex="-1"></a>           <span class="at">x =</span> <span class="st">`</span><span class="at">infant_mortality_2021</span><span class="st">`</span>,</span>
+<span id="cb28-26"><a href="#cb28-26" aria-hidden="true" tabindex="-1"></a>           <span class="at">fill =</span> abortion_policies)) <span class="sc">+</span></span>
+<span id="cb28-27"><a href="#cb28-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">&quot;identity&quot;</span>, <span class="at">width =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb28-28"><a href="#cb28-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(</span>
+<span id="cb28-29"><a href="#cb28-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(</span>
+<span id="cb28-30"><a href="#cb28-30" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;most protective&quot;</span> <span class="ot">=</span> <span class="st">&quot;#1c7416&quot;</span>,</span>
+<span id="cb28-31"><a href="#cb28-31" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;very protective&quot;</span> <span class="ot">=</span> <span class="st">&quot;#68bb59&quot;</span>,</span>
+<span id="cb28-32"><a href="#cb28-32" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;protective&quot;</span> <span class="ot">=</span> <span class="st">&quot;#acdf87&quot;</span>,</span>
+<span id="cb28-33"><a href="#cb28-33" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;some restrictions/protections&quot;</span> <span class="ot">=</span> <span class="st">&quot;#fab733&quot;</span>,</span>
+<span id="cb28-34"><a href="#cb28-34" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;restrictive&quot;</span> <span class="ot">=</span> <span class="st">&quot;#ff6242&quot;</span>,</span>
+<span id="cb28-35"><a href="#cb28-35" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;very restrictive&quot;</span> <span class="ot">=</span> <span class="st">&quot;#ff0000&quot;</span>,</span>
+<span id="cb28-36"><a href="#cb28-36" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;most restrictive&quot;</span> <span class="ot">=</span> <span class="st">&quot;#c61a09&quot;</span>,</span>
+<span id="cb28-37"><a href="#cb28-37" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;US Average&quot;</span> <span class="ot">=</span> <span class="st">&quot;#006eff&quot;</span></span>
+<span id="cb28-38"><a href="#cb28-38" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb28-39"><a href="#cb28-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">breaks =</span> policy_levels</span>
+<span id="cb28-40"><a href="#cb28-40" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb28-41"><a href="#cb28-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb28-42"><a href="#cb28-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb28-43"><a href="#cb28-43" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Infant Mortality Rate by State (2021)&quot;</span>,  <span class="co"># Made title more concise</span></span>
+<span id="cb28-44"><a href="#cb28-44" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">&quot;Deaths per 1,000 Live Births&quot;</span>,  <span class="co"># Corrected units</span></span>
+<span id="cb28-45"><a href="#cb28-45" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb28-46"><a href="#cb28-46" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">&quot;Abortion Policy&quot;</span></span>
+<span id="cb28-47"><a href="#cb28-47" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb28-48"><a href="#cb28-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb28-49"><a href="#cb28-49" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">12</span>),</span>
+<span id="cb28-50"><a href="#cb28-50" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>),</span>
+<span id="cb28-51"><a href="#cb28-51" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>),</span>
+<span id="cb28-52"><a href="#cb28-52" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>),</span>
+<span id="cb28-53"><a href="#cb28-53" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">&quot;right&quot;</span>,</span>
+<span id="cb28-54"><a href="#cb28-54" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">9</span>),</span>
+<span id="cb28-55"><a href="#cb28-55" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>),</span>
+<span id="cb28-56"><a href="#cb28-56" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.major.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb28-57"><a href="#cb28-57" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb28-58"><a href="#cb28-58" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;white&quot;</span>, <span class="at">color =</span> <span class="cn">NA</span>),</span>
+<span id="cb28-59"><a href="#cb28-59" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.background =</span> <span class="fu">element_rect</span>(<span class="at">fill =</span> <span class="st">&quot;white&quot;</span>, <span class="at">color =</span> <span class="cn">NA</span>)</span>
+<span id="cb28-60"><a href="#cb28-60" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb28-61"><a href="#cb28-61" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(</span>
+<span id="cb28-62"><a href="#cb28-62" aria-hidden="true" tabindex="-1"></a>    <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">15</span>),</span>
+<span id="cb28-63"><a href="#cb28-63" aria-hidden="true" tabindex="-1"></a>    <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">15</span>, <span class="at">by =</span> <span class="dv">5</span>),  <span class="co"># Changed to increments of 5 for better readability</span></span>
+<span id="cb28-64"><a href="#cb28-64" aria-hidden="true" tabindex="-1"></a>    <span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.1</span>))</span>
+<span id="cb28-65"><a href="#cb28-65" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
