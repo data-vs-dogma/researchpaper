@@ -5,6 +5,7 @@ website:
   title: "Abortion Policy, Health, & Wellness"
   favicon: "images/gu-logo.png"
   navbar:
+    search: true
     left:
       - href: index.qmd
         text: Home
@@ -30,6 +31,9 @@ website:
         text: Bibliography
       - href: appendix.qmd
         text: Appendix
+    right:
+      - icon: github
+        href: "https://github.com/EB-Sam/5100_project.git"
 
 format:
   html:
