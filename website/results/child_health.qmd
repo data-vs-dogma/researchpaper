@@ -9,38 +9,22 @@ editor: visual
 
 ## Infant Mortality by Abortion Policy
 
+### Hypotheses
+
+**Null Hypothesis (H*o* ):** The mean infant mortality rate is the same across all abortion policy levels.
+
+**Alternative Hypothesis (H*a*)**: The mean infant mortality rate is different in at least one of the abortion policy levels
+
 ```{r, warning=FALSE, message=FALSE}
-options(repos = c(CRAN = "https://cloud.r-project.org"))
-install.packages("tidyverse")
 library(tidyverse)
 df <- read_csv("../data/clean_data/merged_data.csv", show_col_types = FALSE)
 df <- df[!is.na(df$abortion_policies), ]
 df_test <- df[df$State != "US", ]
 df$abortion_policies <- factor(df$abortion_policies, 
                               levels = c("most protective", "very protective", 
-                                         "protective", "some restrictions/protections", 
-                                         "restrictive", "very restrictive", "most restrictive"))
-```
+                                         "protective", "some restriction /protections", "restrictive", "very restrictive", "most restrictive"))
 
-Null hypothesis: the mean infant mortality rate is the same across all abortion policy levels
-
-Alternative hypothesis: the mean infant mortality rate is different in at least one of the abortion policy levels
-
-```{r}
-df$infant_mortality_2021
-```
-
-```{r}
-# Kruskal-Wallis test
-kruskal.test(infant_mortality_2021 ~ abortion_policies, data = df)
-
-# If Kruskal-Wallis is significant, run pairwise Wilcoxon tests
-pairwise.wilcox.test(df$infant_mortality_2021, 
-                     df$abortion_policies,
-                     p.adjust.method = "bonferroni")
-
-# accompanying boxplot visualization
-# accompanying boxplot visualization
+# Box plot for Infant Mortality Rate
 ggplot(df, aes(x = abortion_policies, y = infant_mortality_2021, fill=abortion_policies)) +
   geom_boxplot() +
   theme_minimal() +
@@ -53,67 +37,7 @@ ggplot(df, aes(x = abortion_policies, y = infant_mortality_2021, fill=abortion_p
   theme(plot.title = element_text(size = 20, hjust = 0.5))
 ```
 
-The Kruskal-Wallis test yields a statistically significant p-value of 0.009246, which provides strong evidence to suggest that we can reject the null hypothesis in favor of the alternative and speculate that the true mean infant mortality rate is different in at least one of the policy groups--- in other words, we have evidence to suggest that there is a relationship between abortion policy and infant mortality in U.S. states.
-
-```{r}
-
-options(repos = c(CRAN = "https://cloud.r-project.org"))
-install.packages("clinfun")
-library(clinfun)
-
-jt_test <- jonckheere.test(df$infant_mortality_2021, 
-                          as.numeric(df$abortion_policies), 
-                          alternative="increasing",
-                          nperm = 10000)
-print(jt_test)
-```
-
-To further confirm these results, we will perform an ANOVA permutation test:
-
-```{r}
-# Permutation Test
-N <- 10000 
-
-# Observed ANOVA F-statistic
-observed_anova <- aov(infant_mortality_2021 ~ abortion_policies, data = df)
-observed_F <- summary(observed_anova)[[1]][["F value"]][1]
-
-# Permutation loop
-set.seed(1234) 
-perm_F <- numeric(N)
-
-for (i in 1:N) {
-  # Permute the response variable
-  permuted_data <- df
-  permuted_data$infant_mortality_2021 <- sample(permuted_data$infant_mortality_2021)
-  
-  # Perform ANOVA on permuted data
-  perm_anova <- aov(infant_mortality_2021 ~ abortion_policies, data = permuted_data)
-  perm_F[i] <- summary(perm_anova)[[1]][["F value"]][1]
-}
-
-# Calculate p-value
-p_value <- mean(perm_F >= observed_F)
-
-cat("Observed F-statistic:", observed_F, "\n")
-cat("Permutation Test p-value:", p_value, "\n")
-
-# Plot the permutation F-statistics
-hist(perm_F, 
-     breaks = 30, 
-     main = "Permutation Distribution of F-statistic", 
-     xlab = "F-statistic", 
-     col = "palegreen4",  
-     border = "white")    
-
-# F-statistic line 
-abline(v = observed_F, 
-       col = "red",       
-       lwd = 2, 
-       lty = 2)
-```
-
-The ANOVA permutation test yields a p-value of 0.0048, which further supports our rejection of the null hypothesis in favor of the alternative under the Kruskal-Wallis test. Therefore, we have additional evidence to suggest that there is a difference in infant mortality rates in states with different abortion policies.
+The boxplot shows the distribution of infant mortality rates across different abortion policy categories. **States with the most protective policies tend to have the lowest infant mortality rates, while states with the most restrictive policies display higher rates, with a wider range and some extreme outliers.** The median values for the intermediate categories (e.g., "protective" or "restrictive") suggest a gradual increase in infant mortality rates as abortion policies become more restrictive.
 
 ```{r}
 
@@ -182,4 +106,82 @@ ggplot(df_filtered,
     breaks = seq(0, 15, by = 5),  # Changed to increments of 5 for better readability
     expand = expansion(mult = c(0, 0.1))
   )
+
 ```
+
+In the boxplot, notable outliers were observed, particularly for states categorized under the most restrictive abortion policies, and these patterns become even more apparent in this bar plot highlighting state-level infant mortality rates. For instance, Mississippi, stands out as an extreme case, with an infant mortality rate significantly exceeding the national average (represented in blue). Similarly, states like Alabama and West Virginia, also under more restrictive policy categories, show elevated rates compared to states with the most protective policies, like Vermont and Oregon. This visualization provides a clearer breakdown of observed trends, allowing us to pinpoint specific states driving the differences seen in the earlier boxplot.
+
+While this visual suggests a potential relationship between abortion policy restrictiveness and infant mortality rates, to confirm whether this observed trend is statistically significant, we need to perform formal hypothesis tests.
+
+### Kruskal-Wallis Test
+
+```{r, warning = FALSE}
+# Kruskal-Wallis test
+kruskal.test(infant_mortality_2021 ~ abortion_policies, data = df)
+
+# If Kruskal-Wallis is significant, run pairwise Wilcoxon tests
+pairwise.wilcox.test(df$infant_mortality_2021, 
+                     df$abortion_policies,
+                     p.adjust.method = "bonferroni")
+```
+
+The **Kruskal-Wallis test yielded a statistically significant p-value of 0.009246, indicating strong evidence to reject the null hypothesis**, suggesting that there is a significant difference in the median infant mortality rates among at least one of the abortion policy groups. In other words, the data supports the presence of a relationship between abortion policy strictness and infant mortality rates across U.S. states.
+
+To further explore these differences, pairwise comparisons using the Wilcoxon rank-sum test with Bonferroni correction were conducted to assess which specific groups differ significantly. The results indicate that no significant differences were observed between adjacent policy groups (e.g., "most protective" vs. "very protective" or "restrictive" vs. "very restrictive"), with all p-values ≥ 1.00 in these cases. However, the following comparisons involving the **"most restrictive"** category stand out: 1) the comparison between **"most restrictive" and "most protective"** yielded a p-value of 0.61 and the comparison between **"most restrictive" and "very protective"** produced a p-value of 0.17. While not statistically significant, these comparisons suggest a potential trend given its smaller value compared to others
+
+To further confirm the results and assess group differences using a parametric approach, we performed a one-way ANOVA and these findings will help solidify whether these differences are consistent across statistical methods
+
+### ANOVA Permutation Test
+
+```{r}
+# Permutation Test
+N <- 10000 
+
+# Observed ANOVA F-statistic
+observed_anova <- aov(infant_mortality_2021 ~ abortion_policies, data = df)
+observed_F <- summary(observed_anova)[[1]][["F value"]][1]
+
+# Permutation loop
+set.seed(1234) 
+perm_F <- numeric(N)
+
+for (i in 1:N) {
+  # Permute the response variable
+  permuted_data <- df
+  permuted_data$infant_mortality_2021 <- sample(permuted_data$infant_mortality_2021)
+  
+  # Perform ANOVA on permuted data
+  perm_anova <- aov(infant_mortality_2021 ~ abortion_policies, data = permuted_data)
+  perm_F[i] <- summary(perm_anova)[[1]][["F value"]][1]
+}
+
+# Calculate p-value
+p_value <- mean(perm_F >= observed_F)
+
+cat("Observed F-statistic:", observed_F, "\n")
+cat("Permutation Test p-value:", p_value, "\n")
+
+# Plot the permutation F-statistics
+hist(perm_F, 
+     breaks = 30, 
+     main = "Permutation Distribution of F-statistic", 
+     xlab = "F-statistic", 
+     col = "palegreen4",  
+     border = "white")    
+
+# F-statistic line 
+abline(v = observed_F, 
+       col = "red",       
+       lwd = 2, 
+       lty = 2)
+```
+
+The **ANOVA permutation test resulted in a p-value of 0.0048,** which further supports rejecting the null hypothesis. This indicates strong evidence that at least one of the groups defined by abortion policy categories has a significantly different mean infant mortality rate. The observed F-statistic (3.827105), marked by the red dashed line, lies in the extreme tail of the distribution, reinforcing the statistical significance of the results. These findings align with the results of the Kruskal-Wallis test and provide additional evidence that differences in infant mortality rates are associated with abortion policy categories. **Together, these results suggest that the relationship between abortion policies and infant mortality rates is consistent across both parametric and non-parametric methods.**
+
+While both the Kruskal-Wallis test and the ANOVA permutation test provide strong evidence of group-level differences, the Wilcoxon pairwise comparisons with Bonferroni correction failed to identify statistically significant differences between specific pairs of groups. This discrepancy can be explained by:
+
+1.  **Conservativeness of the Bonferroni Adjustment**: The correction for multiple comparisons increases the threshold for significance, making it harder to detect differences, particularly with smaller sample sizes or subtle effects.
+
+2.  **Nature of Global Tests vs. Pairwise Comparisons**: The Kruskal-Wallis and ANOVA tests evaluate differences across all groups simultaneously, providing a broader perspective, while Wilcoxon pairwise tests focus on localized differences between two specific groups.
+
+Together, these findings indicate that while overall differences exist among the abortion policy groups, some of the specific pairwise differences may not be strong enough to reach statistical significance under the stringent Bonferroni adjustment. This highlights the complementary nature of the statistical tests and underscores the importance of analyzing results from multiple methods to draw robust conclusions.

@@ -9,11 +9,12 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     font-size: 0.9rem; 
     background-color: #0E1D42 !important;
-    color: #fdfefe; 
+    color: #fdfefe !important; 
     border-bottom: none; 
   } 
 
   .navbar .dropdown-menu a {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     color: #767676; 
     background-color: #f8f9fa; 
 }
@@ -21,6 +22,6 @@ body {
 
   .navbar .dropdown-menu a:hover {
     color: #767676; 
-    background-color: #cad1d8; 
+    background-color: #e3e6e9; 
   }
 

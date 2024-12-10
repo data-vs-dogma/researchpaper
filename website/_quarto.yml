@@ -23,16 +23,19 @@ website:
             text: Child Health
           - href: results/child_wellness.qmd
             text: Child Wellness
-      - href: findings.qmd
-        text: Conclusions
-      - href: results/travel.qmd
-        text: Travel
-      - href: complications.qmd
-        text: Complications & Unsafe Abortion
+      - text: Conclusions
+        menu:
+          - href: results/travel.qmd
+            text: Travel Implications
+          - href: complications.qmd
+            text: Complications & Unsafe Abortion
+          - href: findings.qmd
+            text: Conclusion
       - href: bibliography.qmd
         text: Bibliography
       - href: appendix.qmd
         text: Appendix
+
     right:
       - icon: github
         href: "https://github.com/EB-Sam/5100_project.git"
@@ -44,8 +47,6 @@ format:
     page-layout: full
     toc: true
     toc-location: left
-    toc-depth: 2
-
+    toc-depth: 3
 
 editor: visual
-
