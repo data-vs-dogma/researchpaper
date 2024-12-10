@@ -110,7 +110,7 @@ While these visuals suggests a potential relationship between states with restri
 
 ### Kruskal-Wallis Test
 
-**Null Hypothesis (H*o* ):** The medians of infant mortality rates among states are the same across all abortion policy categories.
+**Null Hypothesis (H*o*):** The medians of infant mortality rates among states are the same across all abortion policy categories.
 
 **Alternative Hypothesis (H*a*)**: At least one abortion policy category among states is associated with a significantly different median infant mortality rate.
 
@@ -126,7 +126,7 @@ To further confirm the results and assess group differences using a parametric a
 
 ### ANOVA Permutation Test
 
-**Null Hypothesis (H*o* ):** The mean infant mortality rate is the same across all abortion policy levels.
+**Null Hypothesis (H*o*):** The mean infant mortality rate is the same across all abortion policy levels.
 
 **Alternative Hypothesis (H*a*)**: The mean infant mortality rate is different in at least one of the abortion policy levels.
 

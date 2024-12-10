@@ -77,7 +77,7 @@ To evaluate whether these observed differences in school system rankings are sta
 
 ### Kruskal-Wallis Test
 
-**Null Hypothesis (H*o* ):** The medians of school rankings are the same across all abortion policy categories.
+**Null Hypothesis (H*o*):** The medians of school rankings are the same across all abortion policy categories.
 
 **Alternative Hypothesis (H*a*)** At least one abortion policy category is associated with a significantly different median school ranking.
 

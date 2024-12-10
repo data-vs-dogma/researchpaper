@@ -13,7 +13,7 @@ editor: visual
 
 #### Fisher's Exact Test
 
-**Null Hypothesis (H*o* ):** There is no association between parental leave policies and abortion policy level.
+**Null Hypothesis (H*o*):** There is no association between parental leave policies and abortion policy level.
 
 **Alternative Hypothesis (H*a*)**: There is a significant association between parental leave policies and abortion policy categories.
 
@@ -61,7 +61,7 @@ Next, we will perform logistic regression to explore the direction and strength 
 
 #### Exact Logistic Regression
 
-**Null Hypothesis (H*o* ):** The abortion policy has no effect on the probability of mandatory parental leave policy.
+**Null Hypothesis (H*o*):** The abortion policy has no effect on the probability of mandatory parental leave policy.
 
 **Alternative Hypothesis (H*a*)**: At least one abortion policy category significantly affects the probability of mandatory parental leave policy.
 
@@ -120,7 +120,7 @@ The **exact logistic regression model yields a p-value of 0.0010263, providing s
 
 #### Fisher's Exact Test
 
-**Null Hypothesis (H*o* ):** There is no association between abortion policy levels and the presence of parental leave job protection.
+**Null Hypothesis (H*o*):** There is no association between abortion policy levels and the presence of parental leave job protection.
 
 **Alternative Hypothesis (H*a*)**: There is an association between abortion policy levels and the presence of parental leave job protection.
 
@@ -162,7 +162,7 @@ Before performing logistic regression, we first need to ensure that the data mee
 
 #### Exact Logistic Regression
 
-**Null Hypothesis (H*o* ):** Abortion policy levels have no effect on the probability of job protection for parental leave.
+**Null Hypothesis (H*o*):** Abortion policy levels have no effect on the probability of job protection for parental leave.
 
 **Alternative Hypothesis (H*a*)**: At least one abortion policy level significantly affects the probability of job protection for parental leave.
 
@@ -220,7 +220,7 @@ Coefficients and visualization support this finding, showing a positive associat
 
 #### Kruskal-Wallis Test
 
-**Null Hypothesis (H*o* ):** The medians of women's employment percentages are the same across all abortion policy levels.
+**Null Hypothesis (H*o*):** The medians of women's employment percentages are the same across all abortion policy levels.
 
 **Alternative Hypothesis (H*a*)**: At least one abortion policy level is associated with a significantly different median percentage of women's employment.
 
@@ -257,7 +257,7 @@ kruskal.test(percent_women_working ~ abortion_policies, data = df)
 
 #### ANOVA Permutation Test
 
-**Null Hypothesis (H*o* ):** The means of women's employment percentages are the same across all abortion policy categories.
+**Null Hypothesis (H*o*):** The means of women's employment percentages are the same across all abortion policy categories.
 
 **Alternative Hypothesis (H*a*)**: At least one abortion policy category is associated with a significantly different mean percentage of women's employment.
 
@@ -314,9 +314,9 @@ The results from the Economic Wellness hypothesis testing indicate that abortion
 
 #### Kruskal-Wallis Test
 
-**Null Hypothesis (H*o* ):**
+**Null Hypothesis (H*o*):** The medians of the percentage of women with a Bachelor's degree or higher are the same across all abortion policy categories.
 
-**Alternative Hypothesis (H*a*)**:
+**Alternative Hypothesis (H*a*)**: At least one abortion policy category has a significantly different median percentage of women with a Bachelor's degree or higher.
 
 ```{r, warning=FALSE, message=FALSE}
 #Box Plot
@@ -347,7 +347,7 @@ kruskal.test(percentage_women_BA_or_higher ~ abortion_policies, data = df)
 
 #### ANOVA Permutation Test
 
-**Null Hypothesis (H*o* ):** The mean percentage of women with a college degree (BA) or higher is the same across all abortion policy categories.
+**Null Hypothesis (H*o*):** The mean percentage of women with a college degree (BA) or higher is the same across all abortion policy categories.
 
 **Alternative Hypothesis (H*a*)**: At least one abortion policy category has a significantly different mean percentage of women with a college degree (BA) or higher.
 
@@ -405,7 +405,7 @@ The results from the Education Wellness analysis suggest that abortion policies 
 
 #### Kruskal-Wallis Test
 
-**Null Hypothesis (H*o* ):** The medians of postpartum depression rates across states are the same across all abortion policy categories.
+**Null Hypothesis (H*o*):** The medians of postpartum depression rates across states are the same across all abortion policy categories.
 
 **Alternative Hypothesis (H*a*)**: At least one abortion policy category is associated with a significantly different median postpartum depression rate.
 
@@ -480,7 +480,7 @@ ggplot(df_count, aes(x = abortion_policies, y = percentage, fill = above_or_belo
 
 #### Kruskal-Wallis Test
 
-**Null Hypothesis (H*o* ):** The medians of the percentage of women with depression before or during pregnancy are the same across all abortion policy categories.
+**Null Hypothesis (H*o*):** The medians of the percentage of women with depression before or during pregnancy are the same across all abortion policy categories.
 
 **Alternative Hypothesis (H*a*)**: At least one abortion policy category has a significantly different median percentage of women with depression before or during pregnancy.
 
@@ -519,7 +519,7 @@ ggplot(df, aes(x = abortion_policies, y = women_with_depression_before_or_during
 
 #### Kruskal-Wallis Test
 
-**Null Hypothesis (H*o* ):** The medians of the percentage of women receiving postpartum depression screening are the same across all abortion policy categories.
+**Null Hypothesis (H*o*):** The medians of the percentage of women receiving postpartum depression screening are the same across all abortion policy categories.
 
 **Alternative Hypothesis (H*a*)**: At least one abortion policy category is associated with a significantly different median percentage of women receiving postpartum depression screening.
 
@@ -550,7 +550,7 @@ To complement the Kruskal-Wallis test and confirm the findings, a permutation-ba
 
 #### ANOVA Permutation Test
 
-**Null Hypothesis (H*o* ):** The mean percentage of women who received postpartum depression screening is the same across all abortion policy categories.
+**Null Hypothesis (H*o*):** The mean percentage of women who received postpartum depression screening is the same across all abortion policy categories.
 
 **Alternative Hypothesis (H*a*)**: At least one abortion policy category has a significantly different mean percentage of women who received postpartum depression screening.
 
@@ -599,7 +599,7 @@ The permutation test yielded an observed F-statistic of 4.212749 and a p-value o
 
 #### Kruskal-Wallis Test
 
-**Null Hypothesis (H*o* ):** The medians of the percentage of women experiencing intimate partner violence are the same across all abortion policy categories.
+**Null Hypothesis (H*o*):** The medians of the percentage of women experiencing intimate partner violence are the same across all abortion policy categories.
 
 **Alternative Hypothesis (H*a*)**: At least one abortion policy category is associated with a significantly different median percentage of women experiencing intimate partner violence.
 
