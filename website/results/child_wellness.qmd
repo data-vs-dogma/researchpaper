@@ -44,6 +44,7 @@ ggplot(df, aes(x = abortion_policies, y = foster_children_per_capita, fill=abort
 ```{r}
 # Kruskal-Wallis test
 kruskal.test(foster_children_per_capita ~ abortion_policies, data = df)
+
 ```
 
 ## Overall School System Ranking by Abortion Policy

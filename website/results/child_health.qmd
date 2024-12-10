@@ -119,7 +119,7 @@ kruskal.test(infant_mortality_2021 ~ abortion_policies, data = df)
 
 ```
 
-The **Kruskal-Wallis test yielded a statistically significant p-value of 0.009246, indicating strong evidence to reject the null hypothesis**, suggesting that there is a significant difference in the median infant mortality rates among at least one of the abortion policy groups. In other words, the data supports the presence of a relationship between abortion policy strictness and infant mortality rates across U.S. states.
+The **Kruskal-Wallis test yielded a statistically significant p-value of 0.009246,** indicating strong evidence to reject the null hypothesis, suggesting that there are significant differences in infant mortality rates among at least one of the abortion policy groups. In other words, the data supports the presence of a relationship between abortion policy strictness and infant mortality rates across U.S. states.
 
 To further confirm the results and assess group differences using a parametric approach, we performed a one-way ANOVA and these findings will help solidify whether these differences are consistent across statistical methods
 
