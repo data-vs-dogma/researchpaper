@@ -39,7 +39,7 @@ ggplot(df, aes(x = as.factor(parental_leave_mandatory), fill = abortion_policies
   labs(x = "Parental leave policy", 
        y = "Proportion", 
        fill = "State Abortion Policy Level",
-       title = "State Abortion Policies by Parental Leave Requirements") +
+       title = "Parental Leave Requirements by State Abortion Policy") +
   scale_x_discrete(labels = c("0" = "Not Mandated", "1" = "Mandated")) +
   scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) +
   theme_classic()
@@ -109,7 +109,7 @@ ggplot(df, aes(x = abortion_policies, y = predicted_prob)) +
   stat_summary(fun = mean, geom = "point", color = "red", size = 3) +
   labs(x = "Abortion Policies", 
        y = "Predicted Probability",
-       title = "Mandatory Parental Leave Policy \nPredicted Probabilities by Abortion Policy") +
+       title = "Mandatory Parental Leave Policy \nPredicted Probabilities by State Abortion Policy") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
@@ -137,7 +137,7 @@ ggplot(df, aes(x = as.factor(parental_leave_job_protection), fill = abortion_pol
   labs(x = "Parental Leave Job Protection Policy", 
        y = "Proportion", 
        fill = "State Abortion Policy Level",
-       title = "State Abortion Policies by Job Protection Requirements") +
+       title = "Job Protection Requirements by State Abortion Policy") +
   scale_x_discrete(labels = c("0" = "No Job Protection", "1" = "Job Protection")) +
   scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) +
   theme_classic() +
@@ -151,7 +151,6 @@ To explore this relationship further, Fisher's Exact Test is performed.
 ```{r}
 # Fisher's exact test
 contingency_table <- table(df$parental_leave_job_protection, df$abortion_policies)
-
 fisher_test_result <- fisher.test(contingency_table)
 print(fisher_test_result)
 ```
@@ -207,7 +206,7 @@ ggplot(df, aes(x = abortion_policies, y = predicted_prob)) +
   stat_summary(fun = mean, geom = "point", color = "red", size = 3) +
   labs(x = "Abortion Policies", 
        y = "Predicted Probability",
-       title = "Parental Leave Job Protection \nPredicted Probabilities by Abortion Policy") +
+       title = "Parental Leave Job Protection \nPredicted Probabilities by State Abortion Policy") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
@@ -216,7 +215,7 @@ The **exact logistic regression analysis yielded a p-value of 0.03880713, indica
 
 Coefficients and visualization support this finding, showing a positive association between protective abortion policies and the likelihood of job protection policies. Alternatively, states with restrictive abortion policies often lack similar protections. **These results emphasize another systemic contradiction: states that limit abortion access and force women to carry pregnancies to term often fail to establish policies that support parents, such as guaranteeing job protection during parental leave.** This lack of support exacerbates the financial and social challenges for parents, particularly women, creating an environment where having children is marked economic and professional insecurity.
 
-### Percentage of Employed Women per State by Abortion Policy
+### Women Employed per State by Abortion Policy
 
 #### Kruskal-Wallis Test
 
@@ -239,7 +238,7 @@ ggplot(df, aes(x = abortion_policies, y = percent_women_working, fill=abortion_p
   labs(x = "Abortion Policies", 
        y = "% Women Employed",
        fill = "State Abortion Policy Level",
-       title = "Percentage of Women Employed by Abortion Policy") +
+       title = "Percentage of Women Employed by State Abortion Policy") +
   theme(plot.title = element_text(size = 10, hjust = 0.5))
 ```
 
@@ -264,7 +263,7 @@ kruskal.test(percent_women_working ~ abortion_policies, data = df)
 ```{r}
 df$abortion_policies <- factor(df$abortion_policies, levels = c("most protective", "very protective", "protective", "some restrictions/protections", "restrictive", "very restrictive", "most restrictive"))
 
-ggplot(df, aes(x = abortion_policies, y = percent_women_working, fill = abortion_policies)) + stat_summary(fun = mean, geom = "bar", position = "dodge") + theme_minimal() + scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) + theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1), plot.title = element_text(size = 10, hjust = 0.5)) + labs(x = "Abortion Policies", y = "Mean % Women Working", fill = "State Abortion Policy Level", title = "Mean Percentage of Women Working by Abortion Policy")
+ggplot(df, aes(x = abortion_policies, y = percent_women_working, fill = abortion_policies)) + stat_summary(fun = mean, geom = "bar", position = "dodge") + theme_minimal() + scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) + theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1), plot.title = element_text(size = 10, hjust = 0.5)) + labs(x = "Abortion Policies", y = "Mean % Women Working", fill = "State Abortion Policy Level", title = "Mean Percentage of Women Working by State Abortion Policy")
 
 ```
 
@@ -329,7 +328,7 @@ ggplot(df, aes(x = abortion_policies, y = percentage_women_BA_or_higher, fill=ab
   labs(x = "Abortion Policies", 
        y = "% Women with a Bachelors degree or higher",
        fill = "State Abortion Policy Level",
-       title = "Percentage of Women with a Bachelors Degree or Higher by Abortion Policy") +
+       title = "Percentage of Women with a Bachelors Degree or Higher by State Abortion Policy") +
   theme(plot.title = element_text(size = 10, hjust = 0.5)) 
   
 ```
@@ -354,10 +353,10 @@ kruskal.test(percentage_women_BA_or_higher ~ abortion_policies, data = df)
 ```{r}
 df$abortion_policies <- factor(df$abortion_policies, levels = c("most protective", "very protective", "protective", "some restrictions/protections", "restrictive", "very restrictive", "most restrictive"))
 
-ggplot(df, aes(x = abortion_policies, y = percentage_women_BA_or_higher, fill = abortion_policies)) + stat_summary(fun = mean, geom = "bar", position = "dodge") + theme_minimal() + scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) + theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1), plot.title = element_text(size = 10, hjust = 0.5)) + labs(x = "Abortion Policies", y = "Mean % Women with a BA or Higher", fill = "State Abortion Policy Level", title = "Mean Percentage of Women with a BA or Higher by Abortion Policy")
+ggplot(df, aes(x = abortion_policies, y = percentage_women_BA_or_higher, fill = abortion_policies)) + stat_summary(fun = mean, geom = "bar", position = "dodge") + theme_minimal() + scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) + theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1), plot.title = element_text(size = 10, hjust = 0.5)) + labs(x = "Abortion Policies", y = "Mean % Women with a BA or Higher", fill = "State Abortion Policy Level", title = "Mean Percentage of Women with a BA or Higher by State Abortion Policy")
 ```
 
-The bar chart illustrates that states with more protective abortion policies ("most protective" and "very protective") show the highest mean percentages of women with a BA or higher, while states with more restrictive policies ("very restrictive" and "most restrictive") exhibit the lowest mean percentages. This suggests a potential relationship between more protective abortion policies and higher levels of educational attainment among women.
+The bar chart illustrates that states with more protective abortion policies show the highest mean percentages of women with a BA or higher, while states with more restrictive policies exhibit the lowest mean percentages. This suggests a potential relationship between more protective abortion policies and higher levels of educational attainment among women.
 
 To complement the Kruskal-Wallis Test and evaluate whether these observed differences in means are statistically significant, an ANOVA Permutation Test was performed.
 
@@ -420,7 +419,7 @@ ggplot(df, aes(x = abortion_policies, y = percent_women_with_postpartum_depressi
   labs(x = "Abortion Policies", 
        y = "% Women with Postpartum Depression",
        fill = "State Abortion Policy Level",
-       title = "Percentage of Women with Postpartum Depression by Abortion Policy") +
+       title = "Percentage of Women with Postpartum Depression in 2021 by State Abortion Policy ") +
   theme(plot.title = element_text(size = 10, hjust = 0.5))
 ```
 
@@ -436,7 +435,7 @@ kruskal.test(percent_women_with_postpartum_depression_2021 ~ abortion_policies, 
 **The Kruskal-Wallis test yields a p-value of 0.4995, which is not statistically significant and indicates that there is insufficient evidence to conclude that the median postpartum depression rates among women differ across the abortion policy categories.** However, the accompanying visualization highlights that the highest rates of postpartum depression are observed in states with the most restrictive abortion policies. This suggests potential patterns that warrant further investigation, despite the lack of statistical significance in this test.
 
 ```{r}
-ggplot(df, aes(x = abortion_policies, y = percent_women_with_postpartum_depression_2021, fill = abortion_policies)) + stat_summary(fun = mean, geom = "bar", position = "dodge") + theme_minimal() + scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) + theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1), plot.title = element_text(size = 10, hjust = 0.5)) + labs(x = "Abortion Policies", y = "%", fill = "State Abortion Policy Level", title = "Mean Percentage of Women With Postpartum Depression")
+ggplot(df, aes(x = abortion_policies, y = percent_women_with_postpartum_depression_2021, fill = abortion_policies)) + stat_summary(fun = mean, geom = "bar", position = "dodge") + theme_minimal() + scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) + theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1), plot.title = element_text(size = 10, hjust = 0.4)) + labs(x = "Abortion Policies", y = "%", fill = "State Abortion Policy Level", title = "Mean Percentage of Women With Postpartum Depression in 2021 by State Abortion Policy")
 ```
 
 ```{r}
@@ -470,7 +469,7 @@ ggplot(df_count, aes(x = abortion_policies, y = percentage, fill = above_or_belo
   labs(x = "Abortion Policies", 
        y = "Percentage of Observations",
        fill = "Comparison to Average",
-       title = "Percentage of Above/Below Average Postpartum Depression by Abortion Policy") +
+       title = "Percentage of Above/Below Average Postpartum Depression in 2021 by State Abortion Policy") +
   theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1),
         plot.title = element_text(size = 10, hjust = 0.5),
         axis.title.y = element_text(size = 10))
@@ -495,7 +494,7 @@ ggplot(df, aes(x = abortion_policies, y = women_with_depression_before_or_during
   labs(x = "Abortion Policies", 
        y = "% Women with Depression Before or During Pregnancy",
        fill = "State Abortion Policy Level",
-       title = "Percentage of Women with Depression Before or During Pregnancy by Abortion Policy") +
+       title = "Percentage of Women with Depression Before or During Pregnancy in 2021 by Abortion Policy") +
   theme(plot.title = element_text(size = 13, hjust = 0.5))
 ```
 
@@ -512,10 +511,10 @@ kruskal.test(women_with_depression_before_or_during_pregnancy_2021 ~ abortion_po
 **The Kruskal-Wallis test does not yield a statistically significant p-value (p = 0.1105), indicating that we do not have sufficient evidence to conclude that there is an association between the percentage of women experiencing depression before or during pregnancy and the levels of abortion policy strictness across states.** While the test fails to detect statistically significant differences among the groups, this does not rule out the possibility of subtle trends or other influencing factors that may warrant further exploration.
 
 ```{r, fig.width=10, fig.height=5, warning=FALSE, message=FALSE}
-ggplot(df, aes(x = abortion_policies, y = women_with_depression_before_or_during_pregnancy_2021, fill = abortion_policies)) + stat_summary(fun = mean, geom = "bar", position = "dodge") + theme_minimal() + scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) + theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1), plot.title = element_text(size = 13, hjust = 0.5)) + labs(x = "Abortion Policies", y = "%", fill = "State Abortion Policy Level", title = "Mean Percentage of Women With Depression Before or During Pregnancy by Abortion Policy")
+ggplot(df, aes(x = abortion_policies, y = women_with_depression_before_or_during_pregnancy_2021, fill = abortion_policies)) + stat_summary(fun = mean, geom = "bar", position = "dodge") + theme_minimal() + scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) + theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1), plot.title = element_text(size = 13, hjust = 0)) + labs(x = "Abortion Policies", y = "%", fill = "State Abortion Policy Level", title = "Mean Percentage of Women With Depression Before or During Pregnancy in 2021 by State Abortion Policy")
 ```
 
-### Percentage of Women Who Received a Postpartum Depression Screening in 2021, by Abortion Policy
+### Women who Received a Postpartum Depression Screening by Abortion Policy
 
 #### Kruskal-Wallis Test
 
@@ -534,8 +533,8 @@ ggplot(df, aes(x = abortion_policies, y = percent_women_who_received_a_postpartu
   labs(x = "Abortion Policies", 
        y = "% Women Receiving Postpartum Depression Screening",
        fill = "State Abortion Policy Level",
-       title = "Percentage of Women who Received Postpartum Depression Screening by Abortion Policy") +
-  theme(plot.title = element_text(size = 13, hjust = 0.5))
+       title = "Percentage of Women who Received Postpartum Depression Screening in 2021 by State Abortion Policy") +
+  theme(plot.title = element_text(size = 12, hjust = 0))
 ```
 
 ```{r, warning=FALSE, message=FALSE}
@@ -554,8 +553,8 @@ To complement the Kruskal-Wallis test and confirm the findings, a permutation-ba
 
 **Alternative Hypothesis (H*a*)**: At least one abortion policy category has a significantly different mean percentage of women who received postpartum depression screening.
 
-```{r}
-ggplot(df, aes(x = abortion_policies, y = percent_women_who_received_a_postpartum_depression_screening_2021, fill = abortion_policies)) + stat_summary(fun = mean, geom = "bar", position = "dodge") + theme_minimal() + scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) + theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1), plot.title = element_text(size = 10, hjust = 0.5)) + labs(x = "Abortion Policies", y = "%", fill = "State Abortion Policy Level", title = "Mean Percentage of Women Recieved Postpartum Depression Screening")
+```{r, fig.width=10, fig.height=5}
+ggplot(df, aes(x = abortion_policies, y = percent_women_who_received_a_postpartum_depression_screening_2021, fill = abortion_policies)) + stat_summary(fun = mean, geom = "bar", position = "dodge") + theme_minimal() + scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) + theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1), plot.title = element_text(size = 12, hjust = 0)) + labs(x = "Abortion Policies", y = "%", fill = "State Abortion Policy Level", title = "Mean Percentage of Women Recieved Postpartum Depression Screening in 2021 by State Abortion Policy")
 ```
 
 The bar plot shows that the mean percentage of women who received postpartum depression screening is relatively high across all abortion policy categories, with minimal variation. States with the most protective abortion policies tend to have slightly higher mean percentages compared to states with more restrictive policies, but the differences are not substantial.
@@ -595,7 +594,7 @@ abline(v = observed_F, col = "red", lwd = 2, lty = 2)
 
 The permutation test yielded an observed F-statistic of 4.212749 and a p-value of 0.0091 which is statistically significant at the standard suggesting strong evidence that the mean percentage of women who received postpartum depression screening differs across at least one level of abortion policy. The visualization of the permutation distribution supports this conclusion, as the observed F-statistic lies well beyond the bulk of the null distribution, indicating a meaningful difference among the policy categories.
 
-### Percentage of Women Experiencing Intimate Partner Violence by Abortion Policy
+### Women Experiencing Intimate Partner Violence by Abortion Policy
 
 #### Kruskal-Wallis Test
 
@@ -614,8 +613,8 @@ ggplot(df, aes(x = abortion_policies, y = percent_women_experiencing_intimate_pa
   labs(x = "Abortion Policies", 
        y = "% Women Experiencing Domestic Violence",
        fill = "State Abortion Policy Level",
-       title = "Percentage of Women Experiencing Intimate Partner Violence by Abortion Policy") +
-  theme(plot.title = element_text(size = 10, hjust = 0.5))
+       title = "Percentage of Women Experiencing Intimate Partner Violence in 2021 by State Abortion Policy") +
+  theme(plot.title = element_text(size = 10, hjust = 0.3))
 ```
 
 ```{r, warning=FALSE, message=FALSE}
@@ -628,7 +627,7 @@ kruskal.test(percent_women_experiencing_intimate_partner_violence_2021 ~ abortio
 Further, the boxplot visualization supports this finding, showing variability within and across the abortion policy levels. While the mean percentages, displayed below, indicate slightly higher rates of intimate partner violence in states with more restrictive abortion policies, this pattern is not statistically significant based on the Kruskal-Wallis test results.
 
 ```{r}
-ggplot(df, aes(x = abortion_policies, y = percent_women_experiencing_intimate_partner_violence_2021, fill = abortion_policies)) + stat_summary(fun = mean, geom = "bar", position = "dodge") + theme_minimal() + scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) + theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1), plot.title = element_text(size = 10, hjust = 0.5)) + labs(x = "Abortion Policies", y = "%", fill = "State Abortion Policy Level", title = "Mean Percentage of Women Experiencing Intimate Partner Violence")
+ggplot(df, aes(x = abortion_policies, y = percent_women_experiencing_intimate_partner_violence_2021, fill = abortion_policies)) + stat_summary(fun = mean, geom = "bar", position = "dodge") + theme_minimal() + scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) + theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1), plot.title = element_text(size = 10, hjust = 0.5)) + labs(x = "Abortion Policies", y = "%", fill = "State Abortion Policy Level", title = "Mean Percentage of Women Experiencing Intimate Partner Violence in 2021 by State Abortion Policy")
 ```
 
 #### Implications
