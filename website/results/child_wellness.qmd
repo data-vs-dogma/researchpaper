@@ -1,6 +1,5 @@
 ---
-title: "Child Wellness EDA"
-author: "Viviana Luccioli"
+title: "Child Wellness"
 format: 
   html:
     embed-resources: true
@@ -8,52 +7,22 @@ format:
 editor: visual
 ---
 
-```{r, warning=FALSE, message=FALSE}
+## Children in Foster Care by Abortion Policy
 
+```{r, warning=FALSE, message=FALSE}
 library(tidyverse)
 library(readr)
-```
-
-```{r}
 df <- read_csv("../data/clean_data/merged_data.csv", show_col_types = FALSE)
 df <- df[!is.na(df$abortion_policies), ]
-```
 
-```{r}
-table(df$abortion_policies)
-```
 
-## Number of Children in Foster Care per 100,000 Children, by Abortion Policy
-
-```{r}
-# Kruskal-Wallis test
-kruskal.test(foster_children_per_capita ~ abortion_policies, data = df)
-
-# If Kruskal-Wallis is significant, run pairwise Wilcoxon tests
-pairwise.wilcox.test(df$foster_children_per_capita, 
-                     df$abortion_policies,
-                     p.adjust.method = "bonferroni")
-
-# For visualization
-# First reorder the factor levels
-df$abortion_policies <- factor(df$abortion_policies, 
-                             levels = c("most restrictive", 
-                                      "very restrictive", 
-                                      "restrictive",
-                                      "some restrictions/protections",
-                                      "protective",
-                                      "very protective",
-                                      "most protective"))
-
-# Then create the plot
-# For visualization
-# First reorder the factor levels
+# Reorder the factor levels
 df$abortion_policies <- factor(df$abortion_policies, 
                               levels = c("most protective", "very protective", 
                                          "protective", "some restrictions/protections", 
                                          "restrictive", "very restrictive", "most restrictive"))
 
-# Then create the plot
+# Boxplot for Foster Care Rates by Abortion Policy
 ggplot(df, aes(x = abortion_policies, y = foster_children_per_capita, fill=abortion_policies)) +
   geom_boxplot() +
   theme_minimal() +
@@ -66,18 +35,20 @@ ggplot(df, aes(x = abortion_policies, y = foster_children_per_capita, fill=abort
   theme(plot.title = element_text(size = 20, hjust = 0.5))
 ```
 
-## Overall School System Ranking by Abortion Policy
+### Kruskal-Wallis Test
+
+**Null Hypothesis (H*o* ):** The distribution of foster care rates per capita is the same across all abortion policy categories.
+
+**Alternative Hypothesis (H*a*)**: At least one abortion policy category has a significantly different distribution of foster care rates per capita.
 
 ```{r}
 # Kruskal-Wallis test
-kruskal.test(overall_school_rank ~ abortion_policies, data = df)
+kruskal.test(foster_children_per_capita ~ abortion_policies, data = df)
+```
 
-# If Kruskal-Wallis is significant, run pairwise Wilcoxon tests
-pairwise.wilcox.test(df$overall_school_rank, 
-                     df$abortion_policies,
-                     p.adjust.method = "bonferroni")
+## Overall School System Ranking by Abortion Policy
 
-# For visualization
+```{r}
 ggplot(df, aes(x = abortion_policies, y = overall_school_rank, fill=abortion_policies)) +
   geom_boxplot() +
   theme_minimal() +
@@ -88,4 +59,16 @@ ggplot(df, aes(x = abortion_policies, y = overall_school_rank, fill=abortion_pol
        y = "Overall School Ranking",
        title = "Public School System Rankings by Abortion Policy") +
   theme(plot.title = element_text(size = 20, hjust = 0.5))
+```
+
+### Kruskal-Wallis Test
+
+**Null Hypothesis (H*o* ):** The distribution of school rankings is the same for states across all abortion policy categories.
+
+**Alternative Hypothesis (H*a*)** At least one abortion policy category is associated with a significantly different distribution of school rankings.
+
+```{r}
+# Kruskal-Wallis test
+kruskal.test(overall_school_rank ~ abortion_policies, data = df)
+
 ```

@@ -8,7 +8,7 @@
 
 <meta name="author" content="Viviana Luccioli">
 
-<title>Child Wellness EDA – DSAN 5100</title>
+<title>Child Wellness – DSAN 5100</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -4846,8 +4846,14 @@ vertical-align: -.125em;
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#number-of-children-in-foster-care-per-100000-children-by-abortion-policy" id="toc-number-of-children-in-foster-care-per-100000-children-by-abortion-policy" class="nav-link active" data-scroll-target="#number-of-children-in-foster-care-per-100000-children-by-abortion-policy">Number of Children in Foster Care per 100,000 Children, by Abortion Policy</a></li>
-  <li><a href="#overall-school-system-ranking-by-abortion-policy" id="toc-overall-school-system-ranking-by-abortion-policy" class="nav-link" data-scroll-target="#overall-school-system-ranking-by-abortion-policy">Overall School System Ranking by Abortion Policy</a></li>
+  <li><a href="#children-in-foster-care-by-abortion-policy" id="toc-children-in-foster-care-by-abortion-policy" class="nav-link active" data-scroll-target="#children-in-foster-care-by-abortion-policy">Children in Foster Care by Abortion Policy</a>
+  <ul class="collapse">
+  <li><a href="#kruskal-wallis-test" id="toc-kruskal-wallis-test" class="nav-link" data-scroll-target="#kruskal-wallis-test">Kruskal-Wallis Test</a></li>
+  </ul></li>
+  <li><a href="#overall-school-system-ranking-by-abortion-policy" id="toc-overall-school-system-ranking-by-abortion-policy" class="nav-link" data-scroll-target="#overall-school-system-ranking-by-abortion-policy">Overall School System Ranking by Abortion Policy</a>
+  <ul class="collapse">
+  <li><a href="#kruskal-wallis-test-1" id="toc-kruskal-wallis-test-1" class="nav-link" data-scroll-target="#kruskal-wallis-test-1">Kruskal-Wallis Test</a></li>
+  </ul></li>
   </ul>
 </nav>
 </nav>
@@ -4860,7 +4866,7 @@ vertical-align: -.125em;
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Child Wellness EDA</h1>
+<h1 class="title">Child Wellness</h1>
 </div>
 
 
@@ -4883,126 +4889,35 @@ vertical-align: -.125em;
 </header>
 
 
+<section id="children-in-foster-care-by-abortion-policy" class="level2">
+<h2 class="anchored" data-anchor-id="children-in-foster-care-by-abortion-policy">Children in Foster Care by Abortion Policy</h2>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;../data/clean_data/merged_data.csv&quot;</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df[<span class="sc">!</span><span class="fu">is.na</span>(df<span class="sc">$</span>abortion_policies), ]</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Reorder the factor levels</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>abortion_policies <span class="ot">&lt;-</span> <span class="fu">factor</span>(df<span class="sc">$</span>abortion_policies, </span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>                              <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;most protective&quot;</span>, <span class="st">&quot;very protective&quot;</span>, </span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>                                         <span class="st">&quot;protective&quot;</span>, <span class="st">&quot;some restrictions/protections&quot;</span>, </span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>                                         <span class="st">&quot;restrictive&quot;</span>, <span class="st">&quot;very restrictive&quot;</span>, <span class="st">&quot;most restrictive&quot;</span>))</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Boxplot for Foster Care Rates by Abortion Policy</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> abortion_policies, <span class="at">y =</span> foster_children_per_capita, <span class="at">fill=</span>abortion_policies)) <span class="sc">+</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>, <span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>),</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>)) <span class="sc">+</span> </span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;#1c7416&quot;</span>, <span class="st">&quot;#68bb59&quot;</span>, <span class="st">&quot;#acdf87&quot;</span>, <span class="st">&quot;#fab733&quot;</span>, <span class="st">&quot;#ff6242&quot;</span>, <span class="st">&quot;#ff0000&quot;</span>, <span class="st">&quot;#c61a09&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Abortion Policies&quot;</span>, </span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Foster Children per Capita&quot;</span>,</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">&quot;Foster Care Rates by Abortion Policy&quot;</span>) <span class="sc">+</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">20</span>, <span class="at">hjust =</span> <span class="fl">0.5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-</div>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;../data/clean_data/merged_data.csv&quot;</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df[<span class="sc">!</span><span class="fu">is.na</span>(df<span class="sc">$</span>abortion_policies), ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(df<span class="sc">$</span>abortion_policies)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-              most protective              most restrictive 
-                            2                            16 
-                   protective                   restrictive 
-                           10                             7 
-some restrictions/protections               very protective 
-                            5                             7 
-             very restrictive 
-                            4 </code></pre>
-</div>
-</div>
-<section id="number-of-children-in-foster-care-per-100000-children-by-abortion-policy" class="level2">
-<h2 class="anchored" data-anchor-id="number-of-children-in-foster-care-per-100000-children-by-abortion-policy">Number of Children in Foster Care per 100,000 Children, by Abortion Policy</h2>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Kruskal-Wallis test</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kruskal.test</span>(foster_children_per_capita <span class="sc">~</span> abortion_policies, <span class="at">data =</span> df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-    Kruskal-Wallis rank sum test
-
-data:  foster_children_per_capita by abortion_policies
-Kruskal-Wallis chi-squared = 8.5234, df = 6, p-value = 0.2022</code></pre>
-</div>
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># If Kruskal-Wallis is significant, run pairwise Wilcoxon tests</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pairwise.wilcox.test</span>(df<span class="sc">$</span>foster_children_per_capita, </span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>                     df<span class="sc">$</span>abortion_policies,</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">p.adjust.method =</span> <span class="st">&quot;bonferroni&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-    Pairwise comparisons using Wilcoxon rank sum exact test 
-
-data:  df$foster_children_per_capita and df$abortion_policies 
-
-                              most protective most restrictive protective
-most restrictive              1.00            -                -         
-protective                    1.00            1.00             -         
-restrictive                   1.00            1.00             1.00      
-some restrictions/protections 1.00            1.00             1.00      
-very protective               1.00            0.57             0.48      
-very restrictive              1.00            1.00             1.00      
-                              restrictive some restrictions/protections
-most restrictive              -           -                            
-protective                    -           -                            
-restrictive                   -           -                            
-some restrictions/protections 1.00        -                            
-very protective               0.80        1.00                         
-very restrictive              1.00        1.00                         
-                              very protective
-most restrictive              -              
-protective                    -              
-restrictive                   -              
-some restrictions/protections -              
-very protective               -              
-very restrictive              1.00           
-
-P value adjustment method: bonferroni </code></pre>
-</div>
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># For visualization</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co"># First reorder the factor levels</span></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>abortion_policies <span class="ot">&lt;-</span> <span class="fu">factor</span>(df<span class="sc">$</span>abortion_policies, </span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>                             <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;most restrictive&quot;</span>, </span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>                                      <span class="st">&quot;very restrictive&quot;</span>, </span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>                                      <span class="st">&quot;restrictive&quot;</span>,</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>                                      <span class="st">&quot;some restrictions/protections&quot;</span>,</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>                                      <span class="st">&quot;protective&quot;</span>,</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>                                      <span class="st">&quot;very protective&quot;</span>,</span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>                                      <span class="st">&quot;most protective&quot;</span>))</span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Then create the plot</span></span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="co"># For visualization</span></span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="co"># First reorder the factor levels</span></span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>df<span class="sc">$</span>abortion_policies <span class="ot">&lt;-</span> <span class="fu">factor</span>(df<span class="sc">$</span>abortion_policies, </span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>                              <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;most protective&quot;</span>, <span class="st">&quot;very protective&quot;</span>, </span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>                                         <span class="st">&quot;protective&quot;</span>, <span class="st">&quot;some restrictions/protections&quot;</span>, </span>
-<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>                                         <span class="st">&quot;restrictive&quot;</span>, <span class="st">&quot;very restrictive&quot;</span>, <span class="st">&quot;most restrictive&quot;</span>))</span>
-<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Then create the plot</span></span>
-<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> abortion_policies, <span class="at">y =</span> foster_children_per_capita, <span class="at">fill=</span>abortion_policies)) <span class="sc">+</span></span>
-<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
-<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>, <span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>),</span>
-<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>)) <span class="sc">+</span> </span>
-<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;#1c7416&quot;</span>, <span class="st">&quot;#68bb59&quot;</span>, <span class="st">&quot;#acdf87&quot;</span>, <span class="st">&quot;#fab733&quot;</span>, <span class="st">&quot;#ff6242&quot;</span>, <span class="st">&quot;#ff0000&quot;</span>, <span class="st">&quot;#c61a09&quot;</span>)) <span class="sc">+</span></span>
-<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Abortion Policies&quot;</span>, </span>
-<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Foster Children per Capita&quot;</span>,</span>
-<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">&quot;Foster Care Rates by Abortion Policy&quot;</span>) <span class="sc">+</span></span>
-<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">20</span>, <span class="at">hjust =</span> <span class="fl">0.5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: Removed 1 row containing non-finite outside the scale range
-(`stat_boxplot()`).</code></pre>
-</div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -5011,72 +4926,41 @@ P value adjustment method: bonferroni </code></pre>
 </div>
 </div>
 </div>
+<section id="kruskal-wallis-test" class="level3">
+<h3 class="anchored" data-anchor-id="kruskal-wallis-test">Kruskal-Wallis Test</h3>
+<p><strong>Null Hypothesis (H<em>o</em> ):</strong> The distribution of foster care rates per capita is the same across all abortion policy categories.</p>
+<p><strong>Alternative Hypothesis (H<em>a</em>)</strong>: At least one abortion policy category has a significantly different distribution of foster care rates per capita.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Kruskal-Wallis test</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kruskal.test</span>(foster_children_per_capita <span class="sc">~</span> abortion_policies, <span class="at">data =</span> df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Kruskal-Wallis rank sum test
+
+data:  foster_children_per_capita by abortion_policies
+Kruskal-Wallis chi-squared = 8.5234, df = 6, p-value = 0.2022</code></pre>
+</div>
+</div>
+</section>
 </section>
 <section id="overall-school-system-ranking-by-abortion-policy" class="level2">
 <h2 class="anchored" data-anchor-id="overall-school-system-ranking-by-abortion-policy">Overall School System Ranking by Abortion Policy</h2>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Kruskal-Wallis test</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kruskal.test</span>(overall_school_rank <span class="sc">~</span> abortion_policies, <span class="at">data =</span> df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-    Kruskal-Wallis rank sum test
-
-data:  overall_school_rank by abortion_policies
-Kruskal-Wallis chi-squared = 6.1441, df = 6, p-value = 0.4072</code></pre>
-</div>
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># If Kruskal-Wallis is significant, run pairwise Wilcoxon tests</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pairwise.wilcox.test</span>(df<span class="sc">$</span>overall_school_rank, </span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>                     df<span class="sc">$</span>abortion_policies,</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">p.adjust.method =</span> <span class="st">&quot;bonferroni&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-    Pairwise comparisons using Wilcoxon rank sum exact test 
-
-data:  df$overall_school_rank and df$abortion_policies 
-
-                              most protective very protective protective
-very protective               1.00            -               -         
-protective                    1.00            1.00            -         
-some restrictions/protections 1.00            1.00            1.00      
-restrictive                   1.00            1.00            1.00      
-very restrictive              1.00            1.00            1.00      
-most restrictive              1.00            1.00            1.00      
-                              some restrictions/protections restrictive
-very protective               -                             -          
-protective                    -                             -          
-some restrictions/protections -                             -          
-restrictive                   1.00                          -          
-very restrictive              1.00                          1.00       
-most restrictive              1.00                          0.98       
-                              very restrictive
-very protective               -               
-protective                    -               
-some restrictions/protections -               
-restrictive                   -               
-very restrictive              -               
-most restrictive              1.00            
-
-P value adjustment method: bonferroni </code></pre>
-</div>
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># For visualization</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> abortion_policies, <span class="at">y =</span> overall_school_rank, <span class="at">fill=</span>abortion_policies)) <span class="sc">+</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>, <span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>),</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>)) <span class="sc">+</span> </span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;#1c7416&quot;</span>, <span class="st">&quot;#68bb59&quot;</span>, <span class="st">&quot;#acdf87&quot;</span>, <span class="st">&quot;#fab733&quot;</span>, <span class="st">&quot;#ff6242&quot;</span>, <span class="st">&quot;#ff0000&quot;</span>, <span class="st">&quot;#c61a09&quot;</span>)) <span class="sc">+</span></span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Abortion Policies&quot;</span>, </span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Overall School Ranking&quot;</span>,</span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">&quot;Public School System Rankings by Abortion Policy&quot;</span>) <span class="sc">+</span></span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">20</span>, <span class="at">hjust =</span> <span class="fl">0.5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> abortion_policies, <span class="at">y =</span> overall_school_rank, <span class="at">fill=</span>abortion_policies)) <span class="sc">+</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>, <span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>),</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>)) <span class="sc">+</span> </span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">&quot;#1c7416&quot;</span>, <span class="st">&quot;#68bb59&quot;</span>, <span class="st">&quot;#acdf87&quot;</span>, <span class="st">&quot;#fab733&quot;</span>, <span class="st">&quot;#ff6242&quot;</span>, <span class="st">&quot;#ff0000&quot;</span>, <span class="st">&quot;#c61a09&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Abortion Policies&quot;</span>, </span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Overall School Ranking&quot;</span>,</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">&quot;Public School System Rankings by Abortion Policy&quot;</span>) <span class="sc">+</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">20</span>, <span class="at">hjust =</span> <span class="fl">0.5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -5086,8 +4970,27 @@ P value adjustment method: bonferroni </code></pre>
 </div>
 </div>
 </div>
+<section id="kruskal-wallis-test-1" class="level3">
+<h3 class="anchored" data-anchor-id="kruskal-wallis-test-1">Kruskal-Wallis Test</h3>
+<p><strong>Null Hypothesis (H<em>o</em> ):</strong> The distribution of school rankings is the same for states across all abortion policy categories.</p>
+<p><strong>Alternative Hypothesis (H<em>a</em>)</strong> At least one abortion policy category is associated with a significantly different distribution of school rankings.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Kruskal-Wallis test</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kruskal.test</span>(overall_school_rank <span class="sc">~</span> abortion_policies, <span class="at">data =</span> df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Kruskal-Wallis rank sum test
+
+data:  overall_school_rank by abortion_policies
+Kruskal-Wallis chi-squared = 6.1441, df = 6, p-value = 0.4072</code></pre>
+</div>
+</div>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

@@ -4847,9 +4847,9 @@ vertical-align: -.125em;
   <ul>
   <li><a href="#infant-mortality-by-abortion-policy" id="toc-infant-mortality-by-abortion-policy" class="nav-link active" data-scroll-target="#infant-mortality-by-abortion-policy">Infant Mortality by Abortion Policy</a>
   <ul class="collapse">
-  <li><a href="#hypotheses" id="toc-hypotheses" class="nav-link" data-scroll-target="#hypotheses">Hypotheses</a></li>
   <li><a href="#kruskal-wallis-test" id="toc-kruskal-wallis-test" class="nav-link" data-scroll-target="#kruskal-wallis-test">Kruskal-Wallis Test</a></li>
   <li><a href="#anova-permutation-test" id="toc-anova-permutation-test" class="nav-link" data-scroll-target="#anova-permutation-test">ANOVA Permutation Test</a></li>
+  <li><a href="#conclusions" id="toc-conclusions" class="nav-link" data-scroll-target="#conclusions">Conclusions</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -4882,10 +4882,6 @@ vertical-align: -.125em;
 
 <section id="infant-mortality-by-abortion-policy" class="level2">
 <h2 class="anchored" data-anchor-id="infant-mortality-by-abortion-policy">Infant Mortality by Abortion Policy</h2>
-<section id="hypotheses" class="level3">
-<h3 class="anchored" data-anchor-id="hypotheses">Hypotheses</h3>
-<p><strong>Null Hypothesis (H<em>o</em> ):</strong> The mean infant mortality rate is the same across all abortion policy levels.</p>
-<p><strong>Alternative Hypothesis (H<em>a</em>)</strong>: The mean infant mortality rate is different in at least one of the abortion policy levels</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -4996,10 +4992,11 @@ vertical-align: -.125em;
 </div>
 </div>
 <p>In the boxplot, notable outliers were observed, particularly for states categorized under the most restrictive abortion policies, and these patterns become even more apparent in this bar plot highlighting state-level infant mortality rates. For instance, Mississippi, stands out as an extreme case, with an infant mortality rate significantly exceeding the national average (represented in blue). Similarly, states like Alabama and West Virginia, also under more restrictive policy categories, show elevated rates compared to states with the most protective policies, like Vermont and Oregon. This visualization provides a clearer breakdown of observed trends, allowing us to pinpoint specific states driving the differences seen in the earlier boxplot.</p>
-<p>While this visual suggests a potential relationship between abortion policy restrictiveness and infant mortality rates, to confirm whether this observed trend is statistically significant, we need to perform formal hypothesis tests.</p>
-</section>
+<p>While these visuals suggests a potential relationship between states with restrictive abortion policy and infant mortality rates, to confirm whether this observed trend is statistically significant, formal hypothesis testing is necessary.</p>
 <section id="kruskal-wallis-test" class="level3">
 <h3 class="anchored" data-anchor-id="kruskal-wallis-test">Kruskal-Wallis Test</h3>
+<p><strong>Null Hypothesis (H<em>o</em> ):</strong> The distribution of infant mortality rates among states is the same across all abortion policy categories.</p>
+<p><strong>Alternative Hypothesis (H<em>a</em>)</strong>: At least one abortion policy category among states is associated with a significantly different distribution of infant mortality rates.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -5013,95 +5010,68 @@ vertical-align: -.125em;
 data:  infant_mortality_2021 by abortion_policies
 Kruskal-Wallis chi-squared = 16.266, df = 5, p-value = 0.006125</code></pre>
 </div>
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># If Kruskal-Wallis is significant, run pairwise Wilcoxon tests</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pairwise.wilcox.test</span>(df<span class="sc">$</span>infant_mortality_2021, </span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>                     df<span class="sc">$</span>abortion_policies,</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">p.adjust.method =</span> <span class="st">&quot;bonferroni&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-    Pairwise comparisons using Wilcoxon rank sum test with continuity correction 
-
-data:  df$infant_mortality_2021 and df$abortion_policies 
-
-                 most protective very protective protective restrictive
-very protective  1.00            -               -          -          
-protective       1.00            1.00            -          -          
-restrictive      1.00            1.00            1.00       -          
-very restrictive 1.00            1.00            1.00       1.00       
-most restrictive 0.44            0.12            0.16       0.57       
-                 very restrictive
-very protective  -               
-protective       -               
-restrictive      -               
-very restrictive -               
-most restrictive 1.00            
-
-P value adjustment method: bonferroni </code></pre>
-</div>
 </div>
 <p>The <strong>Kruskal-Wallis test yielded a statistically significant p-value of 0.009246, indicating strong evidence to reject the null hypothesis</strong>, suggesting that there is a significant difference in the median infant mortality rates among at least one of the abortion policy groups. In other words, the data supports the presence of a relationship between abortion policy strictness and infant mortality rates across U.S. states.</p>
-<p>To further explore these differences, pairwise comparisons using the Wilcoxon rank-sum test with Bonferroni correction were conducted to assess which specific groups differ significantly. The results indicate that no significant differences were observed between adjacent policy groups (e.g., “most protective” vs. “very protective” or “restrictive” vs. “very restrictive”), with all p-values ≥ 1.00 in these cases. However, the following comparisons involving the <strong>“most restrictive”</strong> category stand out: 1) the comparison between <strong>“most restrictive” and “most protective”</strong> yielded a p-value of 0.61 and the comparison between <strong>“most restrictive” and “very protective”</strong> produced a p-value of 0.17. While not statistically significant, these comparisons suggest a potential trend given its smaller value compared to others</p>
 <p>To further confirm the results and assess group differences using a parametric approach, we performed a one-way ANOVA and these findings will help solidify whether these differences are consistent across statistical methods</p>
 </section>
 <section id="anova-permutation-test" class="level3">
 <h3 class="anchored" data-anchor-id="anova-permutation-test">ANOVA Permutation Test</h3>
+<p><strong>Null Hypothesis (H<em>o</em> ):</strong> The mean infant mortality rate is the same across all abortion policy levels.</p>
+<p><strong>Alternative Hypothesis (H<em>a</em>)</strong>: The mean infant mortality rate is different in at least one of the abortion policy levels.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Permutation Test</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">10000</span> </span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Observed ANOVA F-statistic</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>observed_anova <span class="ot">&lt;-</span> <span class="fu">aov</span>(infant_mortality_2021 <span class="sc">~</span> abortion_policies, <span class="at">data =</span> df)</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>observed_F <span class="ot">&lt;-</span> <span class="fu">summary</span>(observed_anova)[[<span class="dv">1</span>]][[<span class="st">&quot;F value&quot;</span>]][<span class="dv">1</span>]</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Permutation loop</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>) </span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>perm_F <span class="ot">&lt;-</span> <span class="fu">numeric</span>(N)</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>N) {</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Permute the response variable</span></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  permuted_data <span class="ot">&lt;-</span> df</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  permuted_data<span class="sc">$</span>infant_mortality_2021 <span class="ot">&lt;-</span> <span class="fu">sample</span>(permuted_data<span class="sc">$</span>infant_mortality_2021)</span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Perform ANOVA on permuted data</span></span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>  perm_anova <span class="ot">&lt;-</span> <span class="fu">aov</span>(infant_mortality_2021 <span class="sc">~</span> abortion_policies, <span class="at">data =</span> permuted_data)</span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>  perm_F[i] <span class="ot">&lt;-</span> <span class="fu">summary</span>(perm_anova)[[<span class="dv">1</span>]][[<span class="st">&quot;F value&quot;</span>]][<span class="dv">1</span>]</span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate p-value</span></span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>p_value <span class="ot">&lt;-</span> <span class="fu">mean</span>(perm_F <span class="sc">&gt;=</span> observed_F)</span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Observed F-statistic:&quot;</span>, observed_F, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Permutation Test</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">10000</span> </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Observed ANOVA F-statistic</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>observed_anova <span class="ot">&lt;-</span> <span class="fu">aov</span>(infant_mortality_2021 <span class="sc">~</span> abortion_policies, <span class="at">data =</span> df)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>observed_F <span class="ot">&lt;-</span> <span class="fu">summary</span>(observed_anova)[[<span class="dv">1</span>]][[<span class="st">&quot;F value&quot;</span>]][<span class="dv">1</span>]</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Permutation loop</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>) </span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>perm_F <span class="ot">&lt;-</span> <span class="fu">numeric</span>(N)</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>N) {</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Permute the response variable</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  permuted_data <span class="ot">&lt;-</span> df</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>  permuted_data<span class="sc">$</span>infant_mortality_2021 <span class="ot">&lt;-</span> <span class="fu">sample</span>(permuted_data<span class="sc">$</span>infant_mortality_2021)</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Perform ANOVA on permuted data</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>  perm_anova <span class="ot">&lt;-</span> <span class="fu">aov</span>(infant_mortality_2021 <span class="sc">~</span> abortion_policies, <span class="at">data =</span> permuted_data)</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>  perm_F[i] <span class="ot">&lt;-</span> <span class="fu">summary</span>(perm_anova)[[<span class="dv">1</span>]][[<span class="st">&quot;F value&quot;</span>]][<span class="dv">1</span>]</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate p-value</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>p_value <span class="ot">&lt;-</span> <span class="fu">mean</span>(perm_F <span class="sc">&gt;=</span> observed_F)</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Observed F-statistic:&quot;</span>, observed_F, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Observed F-statistic: 4.560757 </code></pre>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Permutation Test p-value:&quot;</span>, p_value, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Permutation Test p-value:&quot;</span>, p_value, <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Permutation Test p-value: 0.0023 </code></pre>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the permutation F-statistics</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(perm_F, </span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">breaks =</span> <span class="dv">30</span>, </span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">&quot;Permutation Distribution of F-statistic&quot;</span>, </span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;F-statistic&quot;</span>, </span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">&quot;palegreen4&quot;</span>,  </span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">border =</span> <span class="st">&quot;white&quot;</span>)    </span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="co"># F-statistic line </span></span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> observed_F, </span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="st">&quot;red&quot;</span>,       </span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">lwd =</span> <span class="dv">2</span>, </span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">lty =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the permutation F-statistics</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">hist</span>(perm_F, </span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>     <span class="at">breaks =</span> <span class="dv">30</span>, </span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">&quot;Permutation Distribution of F-statistic&quot;</span>, </span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;F-statistic&quot;</span>, </span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>     <span class="at">col =</span> <span class="st">&quot;palegreen4&quot;</span>,  </span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>     <span class="at">border =</span> <span class="st">&quot;white&quot;</span>)    </span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="co"># F-statistic line </span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> observed_F, </span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="st">&quot;red&quot;</span>,       </span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">lwd =</span> <span class="dv">2</span>, </span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>       <span class="at">lty =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -5111,13 +5081,12 @@ P value adjustment method: bonferroni </code></pre>
 </div>
 </div>
 </div>
-<p>The <strong>ANOVA permutation test resulted in a p-value of 0.0048,</strong> which further supports rejecting the null hypothesis. This indicates strong evidence that at least one of the groups defined by abortion policy categories has a significantly different mean infant mortality rate. The observed F-statistic (3.827105), marked by the red dashed line, lies in the extreme tail of the distribution, reinforcing the statistical significance of the results. These findings align with the results of the Kruskal-Wallis test and provide additional evidence that differences in infant mortality rates are associated with abortion policy categories. <strong>Together, these results suggest that the relationship between abortion policies and infant mortality rates is consistent across both parametric and non-parametric methods.</strong></p>
-<p>While both the Kruskal-Wallis test and the ANOVA permutation test provide strong evidence of group-level differences, the Wilcoxon pairwise comparisons with Bonferroni correction failed to identify statistically significant differences between specific pairs of groups. This discrepancy can be explained by:</p>
-<ol type="1">
-<li><p><strong>Conservativeness of the Bonferroni Adjustment</strong>: The correction for multiple comparisons increases the threshold for significance, making it harder to detect differences, particularly with smaller sample sizes or subtle effects.</p></li>
-<li><p><strong>Nature of Global Tests vs. Pairwise Comparisons</strong>: The Kruskal-Wallis and ANOVA tests evaluate differences across all groups simultaneously, providing a broader perspective, while Wilcoxon pairwise tests focus on localized differences between two specific groups.</p></li>
-</ol>
-<p>Together, these findings indicate that while overall differences exist among the abortion policy groups, some of the specific pairwise differences may not be strong enough to reach statistical significance under the stringent Bonferroni adjustment. This highlights the complementary nature of the statistical tests and underscores the importance of analyzing results from multiple methods to draw robust conclusions.</p>
+<p>The <strong>ANOVA permutation test resulted in a p-value of 0.0048,</strong> which further supports rejecting the null hypothesis. This indicates strong evidence that at least one of the groups defined by abortion policy categories has a significantly different mean infant mortality rate. The observed F-statistic (3.827105), marked by the red dashed line, lies in the extreme tail of the distribution, reinforcing the statistical significance of the results. These findings align with the results of the Kruskal-Wallis test and provide additional evidence that differences in infant mortality rates are associated with abortion policy categories.</p>
+</section>
+<section id="conclusions" class="level3">
+<h3 class="anchored" data-anchor-id="conclusions">Conclusions</h3>
+<p>Both the Kruskal-Wallis test and the ANOVA permutation test confirm a statistically significant relationship between states with restrictive abortion policies and infant mortality rates, suggesting that policy differences may influence broader health outcomes. The consistency of these results across non-parametric (Kruskal-Wallis) and parametric (ANOVA) methods strengthens the validity of the findings, demonstrating that the relationship holds under different statistical assumptions.</p>
+<p>States with the most restrictive abortion policies already experience higher infant mortality rates compared to states with less restrictive policies, highlighting the potential for these disparities to worsen as more states adopt increasingly restrictive abortion policies following the Dobbs decision. These findings underscore how existing inequities in infant health outcomes are deeply tied to systemic challenges related to healthcare access, reflecting a broader trend of disadvantage in states with restrictive reproductive health environments.</p>
 
 
 </section>
