@@ -1,6 +1,5 @@
 ---
-title: "Overall Health - Statistical Modeling"
-author: "Courtney Green" 
+title: "Overall Health"
 format: 
   html:
     embed-resources: true
@@ -176,7 +175,7 @@ ggplot(df, aes(x = medicaid_expansion, fill = abortion_policies)) +
   labs(
     x = "Medicaid Expansion Status", 
     y = "Proportion", 
-    fill = "Abortion Policy",
+    fill = "State Abortion Policy Level",
     title = "Proportion of Abortion Policies by Medicaid Expansion Status"
   ) +
   scale_x_discrete(labels = c("0" = "Not Expanded", "1" = "Expanded")) +
@@ -252,7 +251,7 @@ ggplot(df, aes(x = abortion_policies, y = coverage_access_and_affordability, fil
   labs(
     x = "Abortion Policies", 
     y = "Coverage Access and Affordability", 
-    fill = "Abortion Policies",
+    fill = "State Abortion Policy Level",
     title = "Coverage Access and Affordability by Abortion Policies"
   ) +
   theme_minimal() +
@@ -345,7 +344,7 @@ ggplot(df, aes(x = requires_prescription, fill = abortion_policies)) +
   geom_bar(position = "fill") +
   labs(x = "Requires Prescription Coverage", 
        y = "Proportion", 
-       fill = "Abortion Policy",
+       fill = "State Abortion Policy Level",
        title = "Prescription Contraception Coverage Requirements by Abortion Policy") +
   scale_x_discrete(labels = c("0" = "Does Not Require", "1" = "Requires")) +
   scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) + 
@@ -419,7 +418,7 @@ ggplot(df, aes(x = abortion_policies, y = health_care_quality_and_prevention, fi
     title = "Health Care Quality and Prevention by Abortion Policies",
     x = "Abortion Policies",
     y = "Health Care Quality and Prevention",
-    fill = "Abortion Policies"
+    fill = "State Abortion Policy Level",
   ) +
   theme_minimal() +
   theme(
@@ -531,7 +530,7 @@ ggplot(df_count, aes(x = abortion_policies, y = percentage, fill = above_or_belo
   scale_fill_manual(values = c("Above Average" = "#ff0000", "Below Average" = "#1c7416")) +
   labs(x = "Abortion Policies", 
        y = "Percentage of Observations",
-       fill = "Comparison to Average",
+       fill = "State Abortion Policy Level",
        title = "Percentage of Above/Below Average Health Care Quality and Prevention\nby Abortion Policy") +
   theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1),
         plot.title = element_text(size = 10, hjust = 0.5),
@@ -549,7 +548,7 @@ ggplot(df, aes(x = abortion_policies, y = health_outcomes, fill = abortion_polic
     title = "Health Outcomes by Abortion Policies",
     x = "Abortion Policies",
     y = "Health Outcomes",
-    fill = "Abortion Policies"
+    fill = "State Abortion Policy Level",
   ) +
   theme_minimal() +
   theme(
@@ -716,7 +715,7 @@ ggplot(df, aes(x = abortion_policies, y = obgyn_per_100k, fill = abortion_polici
     x = "Abortion Policies",
     y = "OB-GYNs per 100,000 Women Ages 15-44",
     title = "Distribution of OB-GYN Access by State Abortion Policy (2023)",
-    fill = "Abortion Policy"
+    fill = "State Abortion Policy Level",
   ) +
   theme_minimal() +
   theme(
