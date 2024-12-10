@@ -8,12 +8,18 @@ format:
 editor: visual
 ---
 
+## Overall Health Ranking by Abortion Policy
+
+### Kruskal-Wallis Test
+
+**Null Hypothesis (H*o*):** 
+
+**Alternative Hypothesis (H*a*)**:  
+
 ```{r, warning=FALSE, message=FALSE}
 library(tidyverse)
 library(readr)
 df <- read_csv("../data/clean_data/merged_data.csv", show_col_types = FALSE)
-
-# Filter out rows with missing values in critical columns
 df <- df %>% 
   filter(!is.na(overall_health_ranking) & 
          !is.na(coverage_access_and_affordability) &
@@ -23,14 +29,6 @@ df <- df %>%
          !is.na(state_requires_coverage_of_prescription_contraception) 
          )
 
-#head(df)
-```
-
-## Overall Health
-
-### Overall Health Ranking by Abortion Policy
-
-```{r}
 
 # Reorder the levels of abortion policies
 df$abortion_policies <- factor(df$abortion_policies, 
@@ -68,13 +66,7 @@ Alternatively, **states with protective abortion policies appear to align with s
 
 ```{r,message = FALSE, warning=FALSE}
 # Kruskal-Wallis Test: captures difference in overall_healths numeric rankings
-
-kruskal_test <- kruskal.test(overall_health_ranking ~ abortion_policies, data = df)
-print(kruskal_test)
-
-# If Kruskal-Wallis is significant, run pairwise Wilcoxon tests 
-pairwise.wilcox.test(df$overall_health_ranking,
-                     df$abortion_policies, p.adjust.method = "bonferroni")
+kruskal.test(overall_health_ranking ~ abortion_policies, data = df)
 ```
 
 The **Kruskal-Wallis Test (χ² = 23.649, df = 6, p = 0.0006058)** reveals statistically significant differences in the numeric overall health rankings across the seven levels of abortion policy restrictiveness. This suggests that abortion policy restrictiveness correlates with variations in health outcomes. The low p-value (\< 0.05) indicates that these differences are unlikely to have occurred by chance. This result supports the observation from the stacked bar plot: more restrictive abortion policies tend to align with poorer health outcomes, while more protective policies are associated with better health outcomes.
@@ -164,7 +156,13 @@ With a p-value of 0.0006981, this linear regression model provides significant e
 
 MISSING PERMUTATION TEST
 
-### Medicaid Expansion Status by Abortion Policy
+## Medicaid Expansion Status by Abortion Policy
+
+### Kruskal-Wallis Test
+
+**Null Hypothesis (H*o*):** 
+
+**Alternative Hypothesis (H*a*)**:  
 
 ```{r}
 df$medicaid_expansion <- factor(df$medicaid_expansion_status, levels = c("0", "1"))
@@ -241,7 +239,13 @@ ggplot(df, aes(x = abortion_policies, y = predicted_prob)) +
 
 The **exact logistic regression model yields a p-value of 0.0483** from the Wald test, indicating that abortion policies are significantly associated with Medicaid expansion status. **The slope coefficients suggest that as abortion policies become more restrictive, the predicted probability of Medicaid expansion decreases.** The visualization reinforces this relationship, showing higher predicted probabilities of Medicaid expansion among states with protective abortion policies and sharply lower probabilities in states with restrictive abortion policies. **This pattern highlights a critical divide in policy decisions: states prioritizing broader reproductive rights are also more likely to expand healthcare access through Medicaid, whereas restrictive abortion policies align with reduced Medicaid expansion.** This underscores the broader policy implications of prioritizing access to healthcare and reproductive rights.
 
-### Coverage, Access, and Affordability by Abortion Policy
+## Coverage, Access, and Affordability by Abortion Policy
+
+### Kruskal-Wallis Test
+
+**Null Hypothesis (H*o*):** 
+
+**Alternative Hypothesis (H*a*)**:  
 
 ```{r}
 # Boxplot for coverage and abortion policies
@@ -334,7 +338,13 @@ abline(v = observed_F,
 
 **A permutation test** was performed on this data in addition to the Kruskal-Wallis test to ensure the robustness of the findings across different methods. The observed F-statistic of 6.089754 (indicated by the red dashed line) lies far to the right of the permutation distribution, representing F-statistics generated under the null hypothesis. The permutation test produced a statistically significant p-value of 1x10\^-4, providing strong evidence that the observed differences in coverage access and affordability across abortion policy levels are unlikely to be due to random chance. This result supports the conclusion that coverage access and affordability rankings vary significantly by abortion policy level.
 
-### Prescription Contraception Coverage Requirements by Abortion Policy
+## Prescription Contraception Coverage Requirements by Abortion Policy
+
+### Kruskal-Wallis Test
+
+**Null Hypothesis (H*o*):** 
+
+**Alternative Hypothesis (H*a*)**:  
 
 ```{r}
 df$requires_prescription <- factor(df$state_requires_coverage_of_prescription_contraception, levels = c("0", "1"))
@@ -408,7 +418,14 @@ The **exact logistic regression analysis** provides evidence of a significant re
 
 This trend highlights a potential disconnect in restrictive states, which often emphasize policies purportedly in favor of life but fail to mandate coverage for contraceptives that could prevent unintended pregnancies or support broader healthcare needs. On the other hand, states with protective abortion policies are more likely to require coverage, aligning with healthcare frameworks that prioritize both reproductive autonomy and overall well-being. These findings underscore how policy decisions around abortion can reflect broader approaches---or lack thereof---toward supporting individuals' health and autonomy.
 
-### Healthcare Quality and Prevention by Abortion Policy
+## Healthcare Quality and Prevention by Abortion Policy
+
+### Kruskal-Wallis Test
+
+**Null Hypothesis (H*o*):** 
+
+**Alternative Hypothesis (H*a*)**:  
+
 
 ```{r}
 ggplot(df, aes(x = abortion_policies, y = health_care_quality_and_prevention, fill = abortion_policies)) +
@@ -538,7 +555,13 @@ ggplot(df_count, aes(x = abortion_policies, y = percentage, fill = above_or_belo
 
 ```
 
-### Health Outcomes by Abortion Policy
+## Health Outcomes by Abortion Policy
+
+### Kruskal-Wallis Test
+
+**Null Hypothesis (H*o*):** 
+
+**Alternative Hypothesis (H*a*)**:  
 
 ```{r}
 ggplot(df, aes(x = abortion_policies, y = health_outcomes, fill = abortion_policies)) +
@@ -673,7 +696,13 @@ ggplot(df_count, aes(x = abortion_policies, y = percentage, fill = above_or_belo
 
 ```
 
-### OBGYN Ratios by Abortion Policy
+## OBGYN Ratios by Abortion Policy
+
+### Kruskal-Wallis Test
+
+**Null Hypothesis (H*o*):** 
+
+**Alternative Hypothesis (H*a*)**:  
 
 ```{r}
 # Create the OB-GYN ratio per 100,000 women first
@@ -840,7 +869,7 @@ ggplot(df_count, aes(x = abortion_policies, y = percentage, fill = above_or_belo
 
 ```
 
-# Conclusions
+## Conclusions
 
 The findings across these analyses underscore the significant relationships between abortion policies and various dimensions of overall public health. States with more restrictive abortion policies tend to exhibit poorer rankings across critical health indicators, including overall health, healthcare quality and prevention, and health outcomes. This pattern is consistently supported by the results of Kruskal-Wallis tests, permutation tests, and visualization methods, suggesting systemic disparities in healthcare infrastructure and access.
 
