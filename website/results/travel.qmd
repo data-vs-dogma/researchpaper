@@ -11,7 +11,7 @@ library(tidyverse)
 library(ggplot2)
 library(maps)
 library(networkD3)
-library(ggalluvial)
+#library(ggalluvial)
 library(htmltools)
 ```
 
@@ -21,7 +21,6 @@ policy_travel$X <- NULL
 
 unique(policy_travel$abortion_policies)
 ```
-
 
 ```{r}
 
