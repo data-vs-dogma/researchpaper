@@ -6,7 +6,7 @@ format:
     embed-resources: true
 ---
 
-```{r}
+```{r, warning = FALSE}
 library(tidyverse)
 library(ggplot2)
 library(maps)

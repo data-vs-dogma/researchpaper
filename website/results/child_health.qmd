@@ -27,11 +27,12 @@ ggplot(df, aes(x = abortion_policies, y = infant_mortality_2021, fill=abortion_p
   scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) +
   labs(x = "Abortion Policies", 
        y = "Infant Morality rate per 1,000",
+       fill = "State Abortion Policy Level",
        title = "Infant Mortality Rate by Abortion Policy") +
   theme(plot.title = element_text(size = 20, hjust = 0.5))
 ```
 
-The boxplot shows the distribution of infant mortality rates across different abortion policy categories. **States with the most protective policies tend to have the lowest infant mortality rates, while states with the most restrictive policies display higher rates, with a wider range and some extreme outliers.** The median values for the intermediate categories (e.g., "protective" or "restrictive") suggest a gradual increase in infant mortality rates as abortion policies become more restrictive.
+The box plot shows the distribution of infant mortality rates across different abortion policy categories. **States with the most protective policies tend to have the lowest infant mortality rates, while states with the most restrictive policies display higher rates, with a wider range and some extreme outliers.** The median values for the intermediate categories (e.g., "protective" or "restrictive") suggest a gradual increase in infant mortality rates as abortion policies become more restrictive.
 
 ```{r}
 
@@ -80,7 +81,7 @@ ggplot(df_filtered,
     title = "Infant Mortality Rate by State (2021)",  # Made title more concise
     x = "Deaths per 1,000 Live Births",  # Corrected units
     y = "",
-    fill = "Abortion Policy"
+    fill = "State Abortion Policy Level",
   ) +
   theme(
     plot.title = element_text(hjust = 0.5, size = 12),
@@ -103,7 +104,7 @@ ggplot(df_filtered,
 
 ```
 
-In the boxplot, notable outliers were observed, particularly for states categorized under the most restrictive abortion policies, and these patterns become even more apparent in this bar plot highlighting state-level infant mortality rates. For instance, Mississippi, stands out as an extreme case, with an infant mortality rate significantly exceeding the national average (represented in blue). Similarly, states like Alabama and West Virginia, also under more restrictive policy categories, show elevated rates compared to states with the most protective policies, like Vermont and Oregon. This visualization provides a clearer breakdown of observed trends, allowing us to pinpoint specific states driving the differences seen in the earlier boxplot.
+In the box plot, notable outliers were observed, particularly for states categorized under the most restrictive abortion policies, and these patterns become even more apparent in this bar plot highlighting state-level infant mortality rates. For instance, Mississippi, stands out as an extreme case, with an infant mortality rate significantly exceeding the national average (represented in blue). Similarly, states like Alabama and West Virginia, also under more restrictive policy categories, show elevated rates compared to states with the most protective policies, like Vermont and Oregon. This visualization provides a clearer breakdown of observed trends, allowing us to pinpoint specific states driving the differences seen in the earlier boxplot.
 
 While these visuals suggests a potential relationship between states with restrictive abortion policy and infant mortality rates, to confirm whether this observed trend is statistically significant, formal hypothesis testing is necessary.
 

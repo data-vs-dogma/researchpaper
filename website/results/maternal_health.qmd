@@ -300,10 +300,6 @@ The permutation test yields a p-value of 0.0252, which is statistically stronger
 ## Teen Birth Rate by Abortion Policy
 
 ```{r}
-colnames(df)
-```
-
-```{r}
 df$abortion_policies <- factor(df$abortion_policies, 
                               levels = c("most protective", "very protective", 
                                          "protective", "some restrictions/protections", 
@@ -563,3 +559,36 @@ ggplot(df_filtered,
   )
 
 ```
+
+## Change in Clinician-Provided Abortions Since 2020 by Sate
+
+```{r}
+
+library(usmap)
+
+library()
+abortion_map_data <- df %>%
+  select(State, `percent_increase_in_clinician_provided_abortions_since_2020`) %>%
+  filter(!is.na(`percent_increase_in_clinician_provided_abortions_since_2020`)) %>%
+  mutate(
+    state = State,
+    change = `percent_increase_in_clinician_provided_abortions_since_2020`
+  ) 
+
+plot_usmap(data = abortion_map_data, values = "change") +
+  scale_fill_gradient2(
+    name = "% Change",
+    low = "#ff6b6b",   
+    mid = "#ffffff",    
+    high = "#4dbd00",  
+    midpoint = 0,
+    na.value = "gray80"  
+  ) +
+  theme(
+    legend.position = "right",
+    plot.title = element_text(size = 14, hjust = 0.5)
+  ) +
+  labs(title = "Change in Clinician-Provided Abortions Since 2020 by State")
+
+```
+
