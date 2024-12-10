@@ -1,1 +1,11 @@
-\[Download Slides\](slides.pdf)
+---
+title: "Appendix"
+format: html
+editor: visual
+---
+
+<iframe src="images/presentation_slides.pdf" width="100%" height="500px" style="border: none;">
+</iframe>
+
+
+[Project Presentation Download](images/presentation_slides.pdf)
