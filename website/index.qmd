@@ -17,11 +17,11 @@ Abortion policy now varies significantly across states, reflecting the political
 
 ![](images/policy_map.png)
 
-Traditionally, debates around abortion have been framed in moral and ethical terms, which often overshadow empirical evidence and data. While ethical considerations are important, this perspective tends to neglect the measurable impact of abortion policy on health and well-being. In this research project, we aim to take a data-driven approach to objectively examine how abortion policy affects maternal wellness across the United States.
+Traditionally, debates around abortion have been framed in moral and ethical terms, which often overshadow empirical evidence and data. While ethical considerations are important, this perspective tends to neglect the measurable impact of abortion policy on health and well-being. This research project aims to take a data-driven approach to objectively examine how abortion policy affects maternal wellness across the United States.
 
-Our central research question is: *How do state-level abortion policies impact maternal well-being, and what broader factors contribute to state-to-state variation in these outcomes?*
+Central research question: *How do state-level abortion policies impact maternal well-being, and what broader factors contribute to state-to-state variation in these outcomes?*
 
-To answer this question, we will analyze public health data at the state level, using abortion policy as a key variable. By doing so, we hope to provide a more concrete, evidence-based understanding of the relationship between abortion policy and maternal health. Ultimately, this research seeks to contribute to the broader policy discourse by grounding it in the lived experiences and health outcomes of women.
+To answer this question, public health data will be analyzed at the state level using abortion policy as a key variable. The aim is to provide a more concrete, evidence-based understanding of the relationship between abortion policy and maternal health. Ultimately, this research seeks to contribute to the broader policy discourse by grounding it in the lived experiences and health outcomes of women.
 
 ## Context & Case Studies
 
@@ -87,7 +87,3 @@ flowchart TD
   A --> F(Child Wellness)
   F --> U(Foster Care)
 ```
-
-## 
-
-## Statistical Methods & Models
