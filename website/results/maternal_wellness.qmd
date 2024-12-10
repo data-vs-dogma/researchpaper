@@ -15,7 +15,7 @@ editor: visual
 
 **Null Hypothesis (H*o*):** There is no association between parental leave policies and abortion policy level.
 
-**Alternative Hypothesis (H*a*)**: There is a significant association between parental leave policies and abortion policy categories.
+**Alternative Hypothesis (H*a*)**: There is an association between parental leave policies and abortion policy levels.
 
 ```{r, warning=FALSE, message=FALSE}
 library(tidyverse)
@@ -45,19 +45,18 @@ ggplot(df, aes(x = as.factor(parental_leave_mandatory), fill = abortion_policies
   theme_classic()
 ```
 
-This plot highlights that the majority of states without mandatory parental leave policies tend to have more restrictive abortion policies. Conversely, states that mandate parental leave predominantly have more protective abortion policies. This suggests that states that impose restrictions on women's access to reproductive healthcare often also fail to provide adequate protections for women in the workforce, leaving them in an unfavorable and unsupported employment environment when they have a child.
+This plot highlights that the majority of states without mandatory parental leave policies tend to have more restrictive abortion policies. By contrast, states that mandate parental leave predominantly have more protective abortion policies suggesting that states that impose restrictions on women's access to reproductive healthcare often also fail to provide adequate protections for women in the workforce, leaving them in an unfavorable and unsupported employment environment when they have a child.
 
 ```{r}
 # Fisher's exact test
 contingency_table <- table(df$parental_leave_mandatory, df$abortion_policies)
 fisher_test_result <- fisher.test(contingency_table)
 print(fisher_test_result)
-
 ```
 
-**The p-value, 6.816e-05, from Fisher's Exact Test indicates strong evidence that abortion policy levels and mandatory parental leave policies are not independent.** This suggests a significant relationship between the restrictiveness of abortion policies and whether parental leave is mandated.
+**The p-value, 6.816e-05, from Fisher's Exact Test indicates strong evidence that rejects the null hypothesis, demonstrating that parental leave requirements are not independent of abortion policy level.** Ultimately, this suggests a statistically significant relationship between the restrictiveness of abortion policies and whether parental leave is mandated.
 
-Next, we will perform logistic regression to explore the direction and strength of this relationship further.
+To explore the direction and strength of this relationship, a logistic regression is attempted. 
 
 #### Exact Logistic Regression
 
@@ -65,13 +64,12 @@ Next, we will perform logistic regression to explore the direction and strength 
 
 **Alternative Hypothesis (H*a*)**: At least one abortion policy category significantly affects the probability of mandatory parental leave policy.
 
-Before performing logistic regression, we first need to ensure that the data meets the necessary assumptions.
+Before performing logistic regression, it is necessary to confirm that the data meets the required assumptions:
 
 ```{r}
 # Tabulate categories to see if sample sizes are sufficient
 table(df$parental_leave_mandatory, df$abortion_policies)
 ```
-
 The sample sizes are too small for standard logistic regression, particularly for categories like "very restrictive" and "most restrictive," which lack representation in one of the outcome groups. To address this, we use exact logistic regression, which is suitable for small sample sizes and sparse data.
 
 ```{r, warning=FALSE}
@@ -114,7 +112,7 @@ ggplot(df, aes(x = abortion_policies, y = predicted_prob)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-The **exact logistic regression model yields a p-value of 0.0010263, providing strong evidence of a significant relationship between whether a state mandates parental leave and the degree of its abortion policy restrictiveness or protectiveness.** The slope coefficients and corresponding visualization indicate that the likelihood of having a mandatory parental leave policy (y=1) increases as abortion policies become more protective. This means that states with abortion policies that are more protective of women’s rights are significantly more likely to mandate parental leave compared to states with restrictive abortion policies. **These findings are significant as they underscore a critical contradiction: states that impose restrictive abortion policies, effectively limiting access to abortion and forcing women to carry pregnancies to term, are often the same states that fail to provide supportive measures, such as mandatory parental leave.** This creates an environment that not only restricts reproductive autonomy but also neglects the financial stability and overall wellbeing of mothers. This highlights the systemic challenges faced by women in states with restrictive abortion rights, emphasizing the disparity in care and support provided to mothers.
+The **exact logistic regression model yields a p-value of 0.0010263, providing strong evidence of a statistically significant relationship between whether a state mandates parental leave and the degree of its abortion policy restrictiveness or protectiveness.** The slope coefficients and corresponding visualization indicate that the likelihood of having a mandatory parental leave policy (y=1) increases as abortion policies become more protective. This means that states with abortion policies that are more protective of reproductive rights are significantly more likely to mandate parental leave compared to states with restrictive abortion policies. **These findings are significant as they underscore a critical contradiction: states that impose restrictive abortion policies, effectively limiting access to abortion and forcing women to carry pregnancies to term, are often the same states that fail to provide supportive measures, such as mandatory parental leave.** This creates an environment that not only restricts reproductive autonomy but also neglects the financial stability and overall well-being of mothers, highlighting the systemic challenges faced by women in states with restrictive abortion rights, emphasizing the disparity in care and support provided to mothers.
 
 ### Parental Leave Job Protection by Abortion Policy
 
@@ -144,7 +142,7 @@ ggplot(df, aes(x = as.factor(parental_leave_job_protection), fill = abortion_pol
   theme(plot.title = element_text(hjust = 0.5))
 ```
 
-The stacked bar plot suggests that states that provide job protection for parental leave are predominantly associated with protective abortion policies, while states without job protection are more likely to have restrictive abortion policies. This visualization highlights a potential correlation, suggesting that states fostering better protections for parental leave are also those that support more protective abortion policies.
+The stacked bar plot suggests that states that provide job protection for parental leave are predominantly associated with protective abortion policies, while states without job protection are more likely to have restrictive abortion policies. This visualization accentuates a potential correlation, suggesting that states fostering better protections for parental leave are also those that support more protective abortion policies.
 
 To explore this relationship further, Fisher's Exact Test is performed.
 
@@ -157,7 +155,7 @@ print(fisher_test_result)
 
 **Fisher's Exact Test yields a p-value of 0.006869, providing sufficient evidence to suggest a statistically significant association between state abortion policy levels and the presence of job protection for parental leave.** This result indicates that abortion policy restrictiveness or protectiveness is strongly related to whether states have policies safeguarding job security for individuals taking parental leave.
 
-Before performing logistic regression, we first need to ensure that the data meets the necessary assumptions.
+Before performing logistic regression, it is necessary to confirm that the data meets the required assumptions:
 
 #### Exact Logistic Regression
 
@@ -211,9 +209,9 @@ ggplot(df, aes(x = abortion_policies, y = predicted_prob)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-The **exact logistic regression analysis yielded a p-value of 0.03880713, indicating significant evidence of a linear relationship** between job protection policy and the degree of restrictiveness or protectiveness of a state's abortion policy. This result suggests that states with more protective abortion policies are more likely to have legislation guaranteeing job protection for parents taking parental leave to care for their children.
+The **exact logistic regression analysis yielded a p-value of 0.03880713, indicating significant evidence of a relationship between job protection policy and the degree of restrictiveness or protectiveness of a state's abortion policy.** These findings suggests that states with more protective abortion policies are more likely to have legislation guaranteeing job protection for parents taking parental leave to care for their children.
 
-Coefficients and visualization support this finding, showing a positive association between protective abortion policies and the likelihood of job protection policies. Alternatively, states with restrictive abortion policies often lack similar protections. **These results emphasize another systemic contradiction: states that limit abortion access and force women to carry pregnancies to term often fail to establish policies that support parents, such as guaranteeing job protection during parental leave.** This lack of support exacerbates the financial and social challenges for parents, particularly women, creating an environment where having children is marked economic and professional insecurity.
+Coefficients and visualization support this finding, showing a positive association between protective abortion policies and the likelihood of job protection policies. Alternatively, states with restrictive abortion policies often lack similar protections. **These results emphasize another systemic contradiction: states that limit abortion access and force women to carry pregnancies to term often fail to establish policies that support parents, such as guaranteeing job protection during parental leave.** This lack of support exacerbates the financial and social challenges for parents, notably women, creating an environment where having children is marked by financial insecurity and career uncertainty.
 
 ### Women Employed per State by Abortion Policy
 
@@ -242,7 +240,7 @@ ggplot(df, aes(x = abortion_policies, y = percent_women_working, fill=abortion_p
   theme(plot.title = element_text(size = 10, hjust = 0.5))
 ```
 
-The box plot shows that states with the most protective abortion policies may tend to have a higher median percentage of women employed compared to states with more restrictive policies. Further, there is greater variability in the employment percentages in states with restrictive policies, and notable outliers are present in several categories.
+The box plots illustrates that states with the most protective abortion policies tend to have a higher median percentage of women employed compared to states with more restrictive policies. Further, there is greater variability in the employment percentages in states with restrictive policies, and notable outliers are present in several categories.
 
 To evaluate the statistical significance, a Kruskal-Wallis Test is performed.
 
@@ -252,7 +250,7 @@ kruskal.test(percent_women_working ~ abortion_policies, data = df)
 
 ```
 
-**The Kruskal-Wallis test yields a significant p-value of 0.0309, allowing us to conclude that there is a statistically significant difference in the median percentage of women employed across at least one level of abortion policy.** However, examining the above boxplot visualization, it is evident that the relationship is not straightforward. For example, states with "very protective" abortion policies exhibit a surprisingly low median employment percentage—the second lowest across all groups, after states with the most restrictive policies. This deviation highlights an outlier among the protective policy groups and suggests that other factors beyond abortion policy restrictiveness may be influencing female employment rates in these states. *This observation warrants further investigation into state-specific socioeconomic conditions or other contextual variables that could explain these discrepancies.*
+**The Kruskal-Wallis test yields a significant p-value of 0.0309, allowing us to conclude that there is a statistically significant difference in the median percentage of women employed across at least one level of abortion policy.** However, examining the above box plot visualization, it is evident that the relationship is not straightforward. For example, states with "very protective" abortion policies exhibit a surprisingly low median employment percentage—the second lowest across all groups, after states with the most restrictive policies. This deviation highlights an outlier among the protective policy groups and suggests that other factors beyond abortion policy restrictiveness may be influencing female employment rates in these states. *This observation warrants further investigation into state-specific socioeconomic conditions or other contextual variables that could explain these discrepancies.*
 
 #### ANOVA Permutation Test
 
@@ -267,7 +265,7 @@ ggplot(df, aes(x = abortion_policies, y = percent_women_working, fill = abortion
 
 ```
 
-The bar plot reveals a consistent trend: states with the most protective abortion policies have the highest mean percentage of women employed, while those with more restrictive policies exhibit lower averages. This decline in employment rates is most evident in states with the most restrictive policies.
+The bar plots suggests a modest pattern: states with the most protective abortion policies tend to have somewhat higher mean percentages of working women, while those with increasingly restrictive policies show slightly lower averages. However, these differences appear small, indicating that if there is a trend, it may not be pronounced or other factors could be influencing women’s employment levels.
 
 ```{r}
 # Permutation test
@@ -333,7 +331,7 @@ ggplot(df, aes(x = abortion_policies, y = percentage_women_BA_or_higher, fill=ab
   
 ```
 
-The box plot suggests that states with more protective abortion policies generally seem to exhibit higher percentages of educated women, with narrower interquartile ranges, indicating less variation. In contrast, states with more restrictive abortion policies tend to have lower median education levels and wider ranges, suggesting greater variability in educational attainment.
+The box plots suggests that states with more protective abortion policies generally seem to exhibit higher percentages of educated women, with narrower interquartile ranges, indicating less variation. Contrastingly, states with more restrictive abortion policies tend to have lower median education levels and wider ranges, suggesting greater variability in educational attainment.
 
 To test for statistical significance in these observed patterns, a Kruskal-Wallis test was performed.
 
@@ -350,13 +348,13 @@ kruskal.test(percentage_women_BA_or_higher ~ abortion_policies, data = df)
 
 **Alternative Hypothesis (H*a*)**: At least one abortion policy category has a significantly different mean percentage of women with a college degree (BA) or higher.
 
-```{r}
+```{r, warning=FALSE, message=FALSE}
 df$abortion_policies <- factor(df$abortion_policies, levels = c("most protective", "very protective", "protective", "some restrictions/protections", "restrictive", "very restrictive", "most restrictive"))
 
 ggplot(df, aes(x = abortion_policies, y = percentage_women_BA_or_higher, fill = abortion_policies)) + stat_summary(fun = mean, geom = "bar", position = "dodge") + theme_minimal() + scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) + theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1), plot.title = element_text(size = 10, hjust = 0.5)) + labs(x = "Abortion Policies", y = "Mean % Women with a BA or Higher", fill = "State Abortion Policy Level", title = "Mean Percentage of Women with a BA or Higher by State Abortion Policy")
 ```
 
-The bar chart illustrates that states with more protective abortion policies show the highest mean percentages of women with a BA or higher, while states with more restrictive policies exhibit the lowest mean percentages. This suggests a potential relationship between more protective abortion policies and higher levels of educational attainment among women.
+The bar chart illustrates that states with more protective abortion policies show the highest mean percentages of women with a BA or higher, while states with more restrictive policies exhibit slightly lower mean percentages, suggesting a potential relationship between more protective abortion policies and higher levels of educational attainment among women.
 
 To complement the Kruskal-Wallis Test and evaluate whether these observed differences in means are statistically significant, an ANOVA Permutation Test was performed.
 
@@ -396,7 +394,7 @@ abline(v = observed_F, col = "red", lwd = 2, lty = 2)
 
 #### Implications
 
-The results from the Education Wellness analysis suggest that abortion policies are closely tied to broader societal contexts that influence women's educational attainment. States with more protective abortion policies are consistently associated with higher levels of education among women, suggesting that these states may prioritize investments in policies and resources that support both reproductive autonomy and access to education. In contrast, states with restrictive abortion policies are linked to lower levels of educational attainment, potentially reflecting systemic underinvestment in women's educational opportunities and broader socioeconomic support. \*\*This connection underscores the dual challenge faced by women in states with restrictive abortion policies: not only are their reproductive rights diminished, but these states also fail to create conditions that enable women to pursue and attain higher education. Such disparities highlight the need for comprehensive policy reform that addresses both reproductive rights and access to education, ensuring that women in all states, regardless of abortion policy, have equal opportunities to achieve higher educational attainment.
+The results from the Education Wellness analysis suggest that abortion policies are closely tied to broader societal contexts that influence women's educational attainment. States with more protective abortion policies are consistently associated with higher levels of education among women, suggesting that these states may prioritize investments in policies and resources that support both reproductive autonomy and access to education. In contrast, states with restrictive abortion policies are linked to lower levels of educational attainment, potentially reflecting systemic under investment in women's educational opportunities and broader socioeconomic support. **This connection underscores the dual challenge faced by women in states with restrictive abortion policies: not only are their reproductive rights diminished, but these states also fail to create conditions that enable women to pursue and attain higher education.** Such disparities highlight the need for comprehensive policy reform that addresses both reproductive rights and access to education, ensuring that women in all states, regardless of abortion policy, have equal opportunities to achieve higher educational attainment.
 
 ## Mental Wellness
 
@@ -423,7 +421,7 @@ ggplot(df, aes(x = abortion_policies, y = percent_women_with_postpartum_depressi
   theme(plot.title = element_text(size = 10, hjust = 0.5))
 ```
 
-The box plot demonstrates that states with more protective abortion policies exhibit lower postpartum depression rates and narrower ranges, indicating more consistent outcomes. Conversely, states with more restrictive policies have higher median postpartum depression rates and wider ranges, reflecting greater variability and higher rates of postpartum depression. States in the "most restrictive" category particularly stand out with the highest observed rates and variability, suggesting these policies may correlate with worsened mental health outcomes for postpartum women.
+The box plots demonstrates that states with more protective abortion policies exhibit lower postpartum depression rates and narrower ranges, indicating more consistent outcomes. Alternatively, states with more restrictive policies have higher median postpartum depression rates and wider ranges, reflecting greater variability and higher rates of postpartum depression. States in the "most restrictive" category particularly stand out with the highest observed rates and variability, suggesting these policies may correlate with worsened mental health outcomes for postpartum women.
 
 To test for statistical significance in these observed patterns, a Kruskal-Wallis test was performed.
 
@@ -432,7 +430,7 @@ To test for statistical significance in these observed patterns, a Kruskal-Walli
 kruskal.test(percent_women_with_postpartum_depression_2021 ~ abortion_policies, data = df)
 ```
 
-**The Kruskal-Wallis test yields a p-value of 0.4995, which is not statistically significant and indicates that there is insufficient evidence to conclude that the median postpartum depression rates among women differ across the abortion policy categories.** However, the accompanying visualization highlights that the highest rates of postpartum depression are observed in states with the most restrictive abortion policies. This suggests potential patterns that warrant further investigation, despite the lack of statistical significance in this test.
+**The Kruskal-Wallis test yields a p-value of 0.4995, which is not statistically significant and indicates that there is insufficient evidence to conclude that the median postpartum depression rates among women differ across the abortion policy categories.** However, the accompanying visualizations highlight that the highest rates of postpartum depression are observed in states with the most restrictive abortion policies. This suggests potential patterns that warrant further investigation, despite the lack of statistical significance in this test.
 
 ```{r}
 ggplot(df, aes(x = abortion_policies, y = percent_women_with_postpartum_depression_2021, fill = abortion_policies)) + stat_summary(fun = mean, geom = "bar", position = "dodge") + theme_minimal() + scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) + theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1), plot.title = element_text(size = 10, hjust = 0.4)) + labs(x = "Abortion Policies", y = "%", fill = "State Abortion Policy Level", title = "Mean Percentage of Women With Postpartum Depression in 2021 by State Abortion Policy")
@@ -513,7 +511,6 @@ kruskal.test(women_with_depression_before_or_during_pregnancy_2021 ~ abortion_po
 ```{r, fig.width=10, fig.height=5, warning=FALSE, message=FALSE}
 ggplot(df, aes(x = abortion_policies, y = women_with_depression_before_or_during_pregnancy_2021, fill = abortion_policies)) + stat_summary(fun = mean, geom = "bar", position = "dodge") + theme_minimal() + scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) + theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1), plot.title = element_text(size = 13, hjust = 0)) + labs(x = "Abortion Policies", y = "%", fill = "State Abortion Policy Level", title = "Mean Percentage of Women With Depression Before or During Pregnancy in 2021 by State Abortion Policy")
 ```
-
 ### Women who Received a Postpartum Depression Screening by Abortion Policy
 
 #### Kruskal-Wallis Test
@@ -537,15 +534,18 @@ ggplot(df, aes(x = abortion_policies, y = percent_women_who_received_a_postpartu
   theme(plot.title = element_text(size = 12, hjust = 0))
 ```
 
+These box plots suggest that states with more protective abortion policies generally have higher and more consistent rates of postpartum depression screening. The "most protective" and "very protective" categories cluster near the top end of the scale with relatively narrow ranges, indicating that these states tend to provide postpartum screening at high and fairly uniform levels. As policies become more restrictive, both the median screening rates and the consistency tend to decline. In the most restrictive categories, the median is noticeably lower, and the spread is wider, suggesting greater variability and generally reduced access to postpartum depression screening. Overall, these patterns hint that more restrictive abortion environments may align with fewer or less consistent postpartum mental health services.
+
+
 ```{r, warning=FALSE, message=FALSE}
 # Kruskal-Wallis test
 kruskal.test(percent_women_who_received_a_postpartum_depression_screening_2021 ~ abortion_policies, data = df)
 
 ```
 
-**The Kruskal-Wallis test indicates that we have significant evidence at a p-value of 0.01733 that there is an association between the percentage of women screened for postpartum depression in a state and the state's abortion policy.** The accompanying box plot visualization reveals that postpartum depression screening is the highest in states with the most protective abortion policies, where approximately 94% of women are screened. The lowest percentage of women screened for postpartum depression is in the states that are the most restrictive. This suggests that states that prioritize screening for mothers' mental health are also the most protective of abortion rights, whereas states that chose to implement more restrictive abortion policies already do not prioritize widespread screening for mothers' postpartum depression.
+**The Kruskal-Wallis test indicates that we have significant evidence at a p-value of 0.01733 that there is an association between the percentage of women screened for postpartum depression in a state and the state's abortion policy.** This suggests that states that prioritize screening for mothers' mental health are also the most protective of abortion rights, whereas states that chose to implement more restrictive abortion policies already do not prioritize widespread screening for mothers' postpartum depression.
 
-To complement the Kruskal-Wallis test and confirm the findings, a permutation-based ANOVA test was conducted to assess differences in means across abortion policy categories.
+To complement the Kruskal-Wallis test and confirm the statistical significane of the findings, a permutation-based ANOVA test was conducted to assess differences in means across abortion policy categories.
 
 #### ANOVA Permutation Test
 
@@ -592,7 +592,7 @@ hist(perm_F, breaks = 30, main = "Permutation Distribution of F-statistic", xlab
 abline(v = observed_F, col = "red", lwd = 2, lty = 2)
 ```
 
-The permutation test yielded an observed F-statistic of 4.212749 and a p-value of 0.0091 which is statistically significant at the standard suggesting strong evidence that the mean percentage of women who received postpartum depression screening differs across at least one level of abortion policy. The visualization of the permutation distribution supports this conclusion, as the observed F-statistic lies well beyond the bulk of the null distribution, indicating a meaningful difference among the policy categories.
+**The permutation test yielded an observed F-statistic of 4.212749 and a p-value of 0.0091 which is statistically significant at the standard suggesting strong evidence that the mean percentage of women who received postpartum depression screening differs across at least one level of abortion policy.** The visualization of the permutation distribution supports this conclusion, as the observed F-statistic lies well beyond the bulk of the null distribution, indicating a meaningful difference among the policy categories.
 
 ### Women Experiencing Intimate Partner Violence by Abortion Policy
 
@@ -624,7 +624,7 @@ kruskal.test(percent_women_experiencing_intimate_partner_violence_2021 ~ abortio
 
 **The Kruskal-Wallis test resulted in a p-value of 0.09215, which does not provide sufficient evidence to reject the null hypothesis.** This suggests no statistically significant relationship between the prevalence of intimate partner violence among women and the strictness of a state’s abortion policy.
 
-Further, the boxplot visualization supports this finding, showing variability within and across the abortion policy levels. While the mean percentages, displayed below, indicate slightly higher rates of intimate partner violence in states with more restrictive abortion policies, this pattern is not statistically significant based on the Kruskal-Wallis test results.
+Further, the box plot visualization supports this finding, showing variability within and across the abortion policy levels. While the mean percentages, displayed below, indicate slightly higher rates of intimate partner violence in states with more restrictive abortion policies, this pattern is not statistically significant based on the Kruskal-Wallis test results.
 
 ```{r}
 ggplot(df, aes(x = abortion_policies, y = percent_women_experiencing_intimate_partner_violence_2021, fill = abortion_policies)) + stat_summary(fun = mean, geom = "bar", position = "dodge") + theme_minimal() + scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) + theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1), plot.title = element_text(size = 10, hjust = 0.5)) + labs(x = "Abortion Policies", y = "%", fill = "State Abortion Policy Level", title = "Mean Percentage of Women Experiencing Intimate Partner Violence in 2021 by State Abortion Policy")
