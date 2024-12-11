@@ -56,7 +56,7 @@ print(fisher_test_result)
 
 **The p-value, 6.816e-05, from Fisher's Exact Test indicates strong evidence that rejects the null hypothesis, demonstrating that parental leave requirements are not independent of abortion policy level.** Ultimately, this suggests a statistically significant relationship between the restrictiveness of abortion policies and whether parental leave is mandated.
 
-To explore the direction and strength of this relationship, a logistic regression is attempted. 
+To explore the direction and strength of this relationship, a logistic regression is attempted.
 
 #### Exact Logistic Regression
 
@@ -70,6 +70,7 @@ Before performing logistic regression, it is necessary to confirm that the data 
 # Tabulate categories to see if sample sizes are sufficient
 table(df$parental_leave_mandatory, df$abortion_policies)
 ```
+
 The sample sizes are too small for standard logistic regression, particularly for categories like "very restrictive" and "most restrictive," which lack representation in one of the outcome groups. To address this, we use exact logistic regression, which is suitable for small sample sizes and sparse data.
 
 ```{r, warning=FALSE}
@@ -264,8 +265,9 @@ df$abortion_policies <- factor(df$abortion_policies, levels = c("most protective
 ggplot(df, aes(x = abortion_policies, y = percent_women_working, fill = abortion_policies)) + stat_summary(fun = mean, geom = "bar", position = "dodge") + theme_minimal() + scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) + theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1), plot.title = element_text(size = 10, hjust = 0.5)) + labs(x = "Abortion Policies", y = "Mean % Women Working", fill = "State Abortion Policy Level", title = "Mean Percentage of Women Working by State Abortion Policy")
 
 ```
-
 The bar plots suggests a modest pattern: states with the most protective abortion policies tend to have somewhat higher mean percentages of working women, while those with increasingly restrictive policies show slightly lower averages. However, these differences appear small, indicating that if there is a trend, it may not be pronounced or other factors could be influencing women’s employment levels.
+
+To complement the Kruskal-Wallis Test and evaluate whether these observed differences in means are statistically significant, an ANOVA Permutation Test was performed.
 
 ```{r}
 # Permutation test
@@ -511,6 +513,7 @@ kruskal.test(women_with_depression_before_or_during_pregnancy_2021 ~ abortion_po
 ```{r, fig.width=10, fig.height=5, warning=FALSE, message=FALSE}
 ggplot(df, aes(x = abortion_policies, y = women_with_depression_before_or_during_pregnancy_2021, fill = abortion_policies)) + stat_summary(fun = mean, geom = "bar", position = "dodge") + theme_minimal() + scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) + theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1), plot.title = element_text(size = 13, hjust = 0)) + labs(x = "Abortion Policies", y = "%", fill = "State Abortion Policy Level", title = "Mean Percentage of Women With Depression Before or During Pregnancy in 2021 by State Abortion Policy")
 ```
+
 ### Women who Received a Postpartum Depression Screening by Abortion Policy
 
 #### Kruskal-Wallis Test
@@ -536,7 +539,6 @@ ggplot(df, aes(x = abortion_policies, y = percent_women_who_received_a_postpartu
 
 These box plots suggest that states with more protective abortion policies generally have higher and more consistent rates of postpartum depression screening. The "most protective" and "very protective" categories cluster near the top end of the scale with relatively narrow ranges, indicating that these states tend to provide postpartum screening at high and fairly uniform levels. As policies become more restrictive, both the median screening rates and the consistency tend to decline. In the most restrictive categories, the median is noticeably lower, and the spread is wider, suggesting greater variability and generally reduced access to postpartum depression screening. Overall, these patterns hint that more restrictive abortion environments may align with fewer or less consistent postpartum mental health services.
 
-
 ```{r, warning=FALSE, message=FALSE}
 # Kruskal-Wallis test
 kruskal.test(percent_women_who_received_a_postpartum_depression_screening_2021 ~ abortion_policies, data = df)
@@ -554,7 +556,7 @@ To complement the Kruskal-Wallis test and confirm the statistical significane of
 **Alternative Hypothesis (H*a*)**: At least one abortion policy category has a significantly different mean percentage of women who received postpartum depression screening.
 
 ```{r, fig.width=10, fig.height=5}
-ggplot(df, aes(x = abortion_policies, y = percent_women_who_received_a_postpartum_depression_screening_2021, fill = abortion_policies)) + stat_summary(fun = mean, geom = "bar", position = "dodge") + theme_minimal() + scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) + theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1), plot.title = element_text(size = 12, hjust = 0)) + labs(x = "Abortion Policies", y = "%", fill = "State Abortion Policy Level", title = "Mean Percentage of Women Recieved Postpartum Depression Screening in 2021 by State Abortion Policy")
+ggplot(df, aes(x = abortion_policies, y = percent_women_who_received_a_postpartum_depression_screening_2021, fill = abortion_policies)) + stat_summary(fun = mean, geom = "bar", position = "dodge") + theme_minimal() + scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) + theme(axis.text.x = element_text(size = 8, angle = 45, hjust = 1), plot.title = element_text(size = 12, hjust = 0)) + labs(x = "Abortion Policies", y = "% Women Recieving Postpartum Screening", fill = "State Abortion Policy Level", title = "Mean Percentage of Women Recieved Postpartum Depression Screening in 2021 by State Abortion Policy")
 ```
 
 The bar plot shows that the mean percentage of women who received postpartum depression screening is relatively high across all abortion policy categories, with minimal variation. States with the most protective abortion policies tend to have slightly higher mean percentages compared to states with more restrictive policies, but the differences are not substantial.

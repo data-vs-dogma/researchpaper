@@ -10,7 +10,7 @@ website:
       - href: index.qmd
         text: Introduction
       - href: statistical_analysis.qmd
-        text: Statistical Analysis
+        text: Statistical Methods
       - text: Results
         menu: 
           - href: results/overall_health.qmd
@@ -47,6 +47,6 @@ format:
     page-layout: full
     toc: true
     toc-location: left
-    toc-depth: 3
+    toc-depth: 4
 
 editor: visual
