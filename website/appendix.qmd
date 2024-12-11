@@ -4,8 +4,49 @@ format: html
 editor: visual
 ---
 
+
+## Visualizations and Supplementary Figures
+
+
+### 1. Abortion Ban Types by State
+![Abortion Ban Types by State](images/abortion_ban_type_by_state.png)
+
+**Figure Description**: This map categorizes states based on the type of abortion ban implemented, such as gestational limits or total bans.
+
+
+---
+
+### 2. State Restrictiveness Based on Abortion Policies
+![State Restrictiveness Based on Abortion Policies](images/restrictive_map.png)
+
+**Figure Description**: This map illustrates the restrictiveness scores for abortion policies across the United States, with darker shades representing higher restrictiveness.
+
+---
+
+### 3. State Protectiveness Based on Abortion Protection Laws
+![State Protectiveness Based on Abortion Protection Laws](images/protective_map.png)
+
+**Figure Description**: This map depicts the protectiveness scores for abortion policies, highlighting states with higher protections for abortion access in darker shades of purple.
+
+---
+
+### 4. Infant Mortality Rates in Most Restrictive States (2017–2022)
+![Infant Mortality Rates in Most Restrictive States](images/infant_mortality_in_most_restrictive_states.png)
+
+**Figure Description**: This line graph shows the trends in infant mortality rates (per 1,000 live births) across states with the most restrictive abortion policies from 2017 to 2022.
+
+
+## Presentation Slides 
+
 <iframe src="images/presentation_slides.pdf" width="100%" height="500px" style="border: none;">
+
 </iframe>
 
-
 [Project Presentation Download](images/presentation_slides.pdf)
+
+
+## Data Download
+
+The data used for this analysis is available for download in CSV format. Click the links below to access the dataset.
+
+- [Merged Dataset](data/clean_data/merged_data.csv)

@@ -28,6 +28,8 @@ To answer this question, public health data will be analyzed at the state level 
 **\
 **Since the reversal of Roe v. Wade in 2022, numerous stories have emerged illustrating the devastating impact of abortion bans on women and children’s health. For example, a study by Stevenson (2021) projected a 7% increase in maternal mortality in the first year following widespread abortion bans, with the rate rising to 23% in the subsequent year [@Stevenson2021]. These findings highlight the immediate and severe health risks associated with restrictive abortion policies. Notably, vulnerable populations, including racial minorities and those with low socioeconomic status, are disproportionately affected.
 
+The effects of the Dobbs decision have also had less direct negative impacts on women. Adkins et. al found an 11% increase in children placed in the foster care system in states that instituted TRAP (Targeted Regulation of Abortion Providers) laws [@adkins2024association]. Wallace et. al. find a 3.4% increase in the likelihood that women fall victim to domestic partner violence with each additional implementation of a TRAP law [@wallace2024states]. These findings illustrate how abortion policy has ripple associations beyond immediate impacts on women's health.
+
 While maternal mortality is one critical measure, it is only one piece of the larger picture. Well-being encompasses a wide range of factors, including access to prenatal care, economic stability, and the mental health of mothers and families. These indicators often vary widely across states, driven by differences in healthcare infrastructure, economic resources, and social support.
 
 ## Research Questions

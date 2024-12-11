@@ -4,6 +4,9 @@ body {
     zoom: 0.9; /* Adjust zoom level (e.g., 1.2 = 120%, 0.8 = 80%) */
   }
 
+  h4 {
+    font-weight: bold; /* Makes Header 4 thicker/bolder */
+}
 
   .navbar {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -33,4 +36,3 @@ body {
     padding: 10px; /* Optional: Add some padding for readability */
     background-color: #f9f9f9; /* Optional: Light background for contrast */
   }
-
