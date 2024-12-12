@@ -21,8 +21,8 @@ This research project aims to take a data-driven approach to objectively examine
 7. Do states with stricter maternal condition policies have worse healthcare?
 
 ## Contact Info
-Kristin Lloyd: [kml301@georgetown.edu](kml301@georgetown.edu)
-Viviana Luccioli: [vcl16@georgetown.edu](vcl16@georgetown.edu)
-Courtney Green: [crg123@georgetown.edu](crg123@georgetown.edu)
-Joshua Lin: [jl3205@georgetown.edu](jl3205@georgetown.edu)
-Sam Sofman: [sbs106@georgetown.edu](sbs106@georgetown.edu)
+- Kristin Lloyd: [kml301@georgetown.edu](kml301@georgetown.edu) 
+- Viviana Luccioli: [vcl16@georgetown.edu](vcl16@georgetown.edu)
+- Courtney Green: [crg123@georgetown.edu](crg123@georgetown.edu)
+- Joshua Lin: [jl3205@georgetown.edu](jl3205@georgetown.edu)
+- Sam Sofman: [sbs106@georgetown.edu](sbs106@georgetown.edu)
