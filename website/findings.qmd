@@ -3,14 +3,13 @@ title: "Conclusion"
 format:
   html:
     embed-resources: true
+    code-fold: true
 bibliography: references.bib
 ---
 
-# Conclusion
-
 According to the National Conference of State Legislatures (NCSL), “using the best available research and data to guide decisions is the key to evidence-informed policymaking.”[@goodwin] This project examines pre-Dobbs data collected from official, reliable sources and evaluates it in the context of current abortion policies across U.S. states.
 
-Our analysis reveals a troubling trend: *states that implemented abortion bans, and restrictions were already linked to poor outcomes in overall health, maternal health and wellness, and child health— even before post-Dobbs abortion policies took effect.* Despite these alarming findings, a handful of states still opted to enact policies that restrict reproductive freedom and maternal health— policies that extensive research predicts will further exacerbate these already dire outcomes.[@Lantz_Michelmore_Moniz_Mmeje_Axinn_Spector-Bagdady , @Madden_Trawick_Yee, @Kheyfets2023]
+Our analysis reveals a troubling trend: *states that implemented abortion bans, and restrictions were already linked to poor outcomes in overall health, maternal health and wellness, and child health— even before post-Dobbs abortion policies took effect.* Despite these alarming findings, a handful of states still opted to enact policies that restrict reproductive freedom and maternal health— policies that extensive research predicts will further exacerbate these already dire outcomes. [@Lantz_Michelmore_Moniz_Mmeje_Axinn_Spector-Bagdady], [@Madden_Trawick_Yee], [@Kheyfets2023]
 
 This project highlights the glaring absence of data-driven policymaking in many states when it comes to the topic of abortion. Furthermore, it challenges the anti-abortion movement’s fundamental notion of being "pro-life.” Based on these findings, states that uphold reproductive rights demonstrate significantly lower infant and maternal mortality rates, suggesting that they are, in fact, more aligned with the true essence of being "pro-life." This project’s results call for further research into these policies' repercussions, more transparent data, and heightened awareness surrounding the objective consequences of reproductive policy regardless of moral and ethical debate.
 
@@ -40,7 +39,93 @@ In sum, restrictive abortion policies do far more than limit access to medical c
 
 ### Travel
 
-The negative impacts of restrictive abortion policy are reflected via the analysis of travel data. States with neighbors that have enacted abortion bans in the years since the Dobbs decision often experienced surges in the number of clinician-provided abortions since 2020. This suggests that in states with restrictive abortion policies, women with the means to do so travel to obtain abortions. While it is certainly positive that these women are able to obtain the care they need, the unfortunate reality of the situation is that this exacerbates underlying inequalities. Women without the means to travel for an abortion face forced births. As this project’s analysis has found, states with abortion bans in place frequently have less support systems and care in place for women in this position. The result is a twisted inequity: those with the least means are given the least support. This has the potential to initiate a malicious negative cycle, as women and children are negatively impacted in a ripple effect, from financial means to mental health. Ultimately, while it is not within the scope of this paper, it is not unlikely that this has negative impacts on the state as a whole.
+The negative impacts of restrictive abortion policy post the Dobbs decision are reflected via the analysis of travel data.
+
+```{r, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(readr)
+library(ggplot2)
+library(networkD3)
+library(htmltools)
+library(usmap)
+library(sf)
+
+df <- read_csv("data/clean_data/merged_data.csv")
+# head(df)
+
+abortion_map_data <- df %>%
+  select(State, `percent_increase_in_clinician_provided_abortions_since_2020`) %>%
+  filter(!is.na(`percent_increase_in_clinician_provided_abortions_since_2020`)) %>%
+  mutate(
+    state = State,
+    change = `percent_increase_in_clinician_provided_abortions_since_2020`
+  )
+
+capitals_df <- data.frame(
+    city = c(
+        "Boise", "Pierre", "Des Moines", "Jefferson City", "Little Rock",
+        "Baton Rouge", "Austin", "Oklahoma City", "Jackson", "Montgomery",
+        "Tallahassee", "Nashville", "Frankfort", "Indianapolis", "Charleston"
+    ),
+    lon = c(
+        -116.200, -100.346, -93.603, -92.189, -92.289,
+        -91.187, -97.743, -97.503, -90.182, -86.279,
+        -84.280, -86.781, -84.878, -86.162, -81.633
+    ),
+    lat = c(
+        43.617, 44.367, 41.591, 38.579, 34.746,
+        30.457, 30.266, 35.482, 32.298, 32.377,
+        30.438, 36.162, 38.186, 39.768, 38.336
+    ),
+    state = c(
+        "Idaho", "South Dakota", "Iowa", "Missouri", "Arkansas",
+        "Louisiana", "Texas", "Oklahoma", "Mississippi", "Alabama",
+        "Florida", "Tennessee", "Kentucky", "Indiana", "West Virginia"
+    )
+)
+
+capitals_mapped <- usmap_transform(capitals_df, input_names = c("lon", "lat"))
+
+capitals_mapped <- capitals_mapped %>%
+    mutate(
+        x = st_coordinates(.)[, 1], # Extract x coordinates
+        y = st_coordinates(.)[, 2] # Extract y coordinates
+    )
+
+plot_usmap(data = abortion_map_data, values = "change") +
+    geom_point(
+        data = capitals_mapped,
+        aes(x = x, y = y),
+        shape = 8, 
+        size = 2, 
+        color = "red", 
+        stroke = 1
+    ) + 
+    scale_fill_gradient2(
+        name = "% Change",
+        low = "#ff6b6b",
+        mid = "#ffffff",
+        high = "#4dbd00",
+        midpoint = 0,
+        na.value = "gray80"
+    ) +
+    theme(
+        legend.position = "right",
+        plot.title = element_text(size = 14, hjust = 0.5),
+        plot.caption = element_text(size = 12, hjust = 0.5)
+    ) +
+    labs(title = "Change in Clinician-Provided Abortions Since 2020 by State", caption = "* indicate 'Most Restrictive' states")
+```
+
+This map shows the variation of clinician-provided abortions since 2020 across U.S. states. **States such as Wyoming and New Mexico have seen about a 300% increase in clinician-provided abortions.** Additionally, there appears to be a geographic pattern, where the most restrictive states (\*) are often adjacent to states showing increases in clinician-provided abortions, implying an increase in demand in neighboring states with more protective policies.
+
+We were also able to gather data on the flow of travel to access an abortion between each pairwise combination of states for the year 2023, and the plot below visualizations the magnitude and avenues of these travel trends.
+
+![](images/travel_sankey.png)
+
+The Sankey diagram depicts a complex web of interstate travel for abortion services, with lines connecting home states (left) to destination states (right). Texas appears to have the highest number of people traveling out of state for abortion-related services, as shown by the multiple thick lines flowing from Texas to various destinations. One interesting finding is that even though Florida is considered a restrictive state, there seems to be an abundance of people traveling there for services.
+
+These visualizations show that states with neighbors that have enacted abortion bans in the years since the Dobbs decision often experienced surges in the number of clinician-provided abortions since 2020. This suggests that in states with restrictive abortion policies, women with the means to do so travel to obtain abortions. While it is certainly positive that these women are able to obtain the care they need, the unfortunate reality of the situation is that this exacerbates underlying inequalities. Women without the means to travel for an abortion face forced births. As this project’s analysis has found, states with abortion bans in place frequently have less support systems and care in place for women in this position. The result is a twisted inequity: those with the least means are given the least support. This has the potential to initiate a malicious negative cycle, as women and children are negatively impacted in a ripple effect, from financial means to mental health. Ultimately, while it is not within the scope of this paper, it is not unlikely that this has negative impacts on the state as a whole.
 
 ## Limitations
 
