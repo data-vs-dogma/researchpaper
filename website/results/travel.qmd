@@ -30,7 +30,7 @@ policy_distribution <- policy_travel %>%
   ungroup() %>%
   mutate(abortion_policies = factor(abortion_policies, levels = c("most protective", "very protective", "protective", "some restrictions/protections", "restrictive", "very restrictive", "most restrictive")))
 
-# Plot the bar chart with labels next to the bars
+# Plot abortion policies across US states
 ggplot(policy_distribution, aes(x = abortion_policies, y = State_Count, fill = abortion_policies)) +
     geom_bar(stat = "identity", color = "black", width = 0.7) +
     geom_text(
@@ -77,14 +77,13 @@ ggplot(policy_distribution, aes(x = abortion_policies, y = State_Count, fill = a
 The bar chart shows the distribution of abortion policies (most restrictive to most protective) across U.S. states in 2023. **The plot implies there are significantly more restrictive states than protective states, with a total of 27 states having restrictive policies compared to 18 states with protective policies.** This imbalance is particularly evident in the 'most restrictive' category, which alone accounts for 16 states.
 
 ```{r}
-# Standardize the state names (convert to lowercase for matching)
+# Converting to lowercase for matching 
 policy_travel <- policy_travel %>%
     mutate(State = tolower(State))
 
 policy_travel <- policy_travel %>%
     mutate(State = tolower(State))
 
-# Create a numerical mapping for all the policy levels
 policy_levels <- c(
     "most protective",
     "very protective",
@@ -100,13 +99,13 @@ policy_travel <- policy_travel %>%
     mutate(policy_score = factor(abortion_policies, levels = policy_levels, labels = 1:length(policy_levels))) %>%
     mutate(policy_score = as.numeric(as.character(policy_score)))
 
-# Load map data for the United States
 states_map <- map_data("state")
 
 # Merge the dataset with the map data
 map_data <- states_map %>%
     left_join(policy_travel, by = c("region" = "State"))
 
+# Plot for Abortion Policies by State
 ggplot(map_data, aes(long, lat, group = group, fill = policy_score)) +
     geom_polygon(color = "black", linewidth = 0.3) +
     coord_fixed(1.3) +
@@ -132,7 +131,7 @@ ggplot(map_data, aes(long, lat, group = group, fill = policy_score)) +
         plot.title = element_text(size = 14, hjust = 0.5),
         plot.subtitle = element_text(size = 12, hjust = 0.5),
         legend.title = element_text(size = 12, hjust = 0.5),
-        legend.text = element_text(size = 10, angle = 45, vjust = 1, hjust = 1), # Rotate labels to reduce clutter
+        legend.text = element_text(size = 10, angle = 45, vjust = 1, hjust = 1),
         legend.position = "bottom",
         axis.title = element_blank(),
         axis.text = element_blank(),
@@ -214,8 +213,6 @@ plot_usmap(data = abortion_map_data, values = "change") +
 This map shows the variation of clinician-provided abortions since 2020 across U.S. states. **States such as Wyoming and New Mexico have seen about a 300% increase in clinician-provided abortions.** Additionally, there appears to be a geographic pattern, where the most restrictive states (\*) are often adjacent to states showing increases in clinician-provided abortions, implying an increase in demand in neighboring states with more protective policies.
 
 ```{r, message = FALSE}
-# Select relevant columns: State and destinations for abortion travel
-# Create a lookup table for state abbreviations and full names
 state_abbreviations <- tibble(
     abbr = c(
         "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS",
@@ -236,29 +233,28 @@ state_abbreviations <- tibble(
 travel_data <- policy_travel %>%
     select(State, ends_with("_residence_travelled_to_for_abortion")) %>%
     rename_with(
-        ~ sub("_residence_travelled_to_for_abortion", "", .), # Remove the suffix
+        ~ sub("_residence_travelled_to_for_abortion", "", .), 
         ends_with("_residence_travelled_to_for_abortion")
     ) %>%
     rename_with(
         ~ ifelse(
-            !is.na(state_abbreviations$full[match(., state_abbreviations$abbr)]), # Check if a match is found
-            state_abbreviations$full[match(., state_abbreviations$abbr)], # Replace with full name
-            . # Otherwise, retain the original abbreviation
+            !is.na(state_abbreviations$full[match(., state_abbreviations$abbr)]), 
+            state_abbreviations$full[match(., state_abbreviations$abbr)], 
+            .
         ),
         everything()
     )
 
 # Convert wide format to long format and flip Source and Target
 flow_data <- travel_data %>%
-    pivot_longer(-State, names_to = "Source", values_to = "Flow") %>% # Treat "State" as Target initially
-    filter(Flow > 0) %>% # Remove zero flows
+    pivot_longer(-State, names_to = "Source", values_to = "Flow") %>%
+    filter(Flow > 0) %>% 
     rename(Target = State) # Flip Source and Target
 
 # Remove rows where the Source and Target are the same
 flow_data <- flow_data %>%
     filter(Source != Target)
 
-# Ensure all unique states (sources and targets) are represented as nodes
 unique_states <- unique(c(flow_data$Source, flow_data$Target))
 nodes <- data.frame(name = unique_states)
 
@@ -269,7 +265,6 @@ flow_data <- flow_data %>%
         TargetID = match(Target, nodes$name) - 1
     )
 
-# Create an interactive Sankey diagram using sankeyNetwork
 sankey_plot <- sankeyNetwork(
     Links = flow_data,
     Nodes = nodes,
@@ -287,7 +282,6 @@ sankey_plot <- sankeyNetwork(
 
 # sankey_plot
 
-# Title for the plot
 title <- tags$h2("Visualization of Abortion Travel Flows Across States (2023)",
     style = "text-align: center; font-family: Arial; margin-bottom: 20px; font-size:17px;"
 )
