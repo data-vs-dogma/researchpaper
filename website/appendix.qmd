@@ -1,8 +1,9 @@
 ---
 title: "Appendix"
-format: html
-    embed-resources: true
-editor: visual
+format: 
+    html:
+      embed-resources: true
+
 ---
 
 ## Visualizations and Supplementary Figures

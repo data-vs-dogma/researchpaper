@@ -1,5 +1,5 @@
 ---
-title: "Conditions Impacting Maternal Wellness by US State"
+title: "Data Vs. Dogma: Maternal Wellness Conditions and Abortion Policy per State"
 subtitle: "Introduction"
 format:
   html:
