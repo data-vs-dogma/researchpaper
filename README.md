@@ -1,4 +1,4 @@
 # 5100_project
-5100 project - abortion policy
+![]("../../website/images/stock_photo.png")
 
-josh's change
+## Introduction 
