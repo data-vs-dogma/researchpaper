@@ -1,6 +1,6 @@
 # TITLE (NEED TO CHANGE!!)
 
-![](../../website/images/stock_photo.png)
+![](website/images/stock_photo.png)
 
 ## Introduction 
 Abortion is a highly contentious and polarizing political issue in the United States. The 1973 Supreme Court decision in Roe v. Wade established a constitutional right to abortion at the federal level, but this ruling was overturned in 2022, making abortion regulation a state-level matter. Despite the polarized political landscape, public opinion surveys consistently show that a majority of Americans support the right to abortion, with a 2022 Pew Research study highlighting widespread support for abortion access across various demographics.
