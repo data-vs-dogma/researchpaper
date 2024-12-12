@@ -4,21 +4,21 @@ format: html
 editor: visual
 ---
 
-
 ## Visualizations and Supplementary Figures
 
-
 ### 1. Gestational Abortion Ban Types by State
+
 ![](images/gestational_ban_type.png)
 
 **Figure Description**: This map categorizes states based on their abortion policy's gestational limits.
 
----
+------------------------------------------------------------------------
 
 ### 2. State Restrictiveness Based on Abortion Policies
+
 ![](images/restrictive_map.png)
 
-**Figure Description**: This map illustrates the restrictiveness scores for abortion policies across the United States, with darker shades representing higher restrictiveness. The restrictiveness score was based on the following variables in our dataset: 
+**Figure Description**: This map illustrates the restrictiveness scores for abortion policies across the United States, with darker shades representing higher restrictiveness. The restrictiveness score was based on the following variables in our dataset:
 
 ```{r}
 restrictive_policy_columns <- c("total_abortion_ban", "6_week_ban", "12_week_ban", "15_week_ban", 
@@ -30,12 +30,15 @@ restrictive_policy_columns <- c("total_abortion_ban", "6_week_ban", "12_week_ban
                     "medically_unnecessary_clinic_regulations", "parental_consent_required_for_minors_abortion", 
                     "parental_notice_required_for_a_minors_abortion", "only_physicians_can_provide_abortions")
 ```
----
+
+------------------------------------------------------------------------
 
 ### 3. State Protectiveness Based on Abortion Protection Laws
+
 ![](images/protective_map.png)
 
-**Figure Description**: This map depicts the protectiveness scores for abortion policies, highlighting states with higher protections for abortion access in darker shades of purple. The protectiveness score was based on the following variables in our dataset: 
+**Figure Description**: This map depicts the protectiveness scores for abortion policies, highlighting states with higher protections for abortion access in darker shades of purple. The protectiveness score was based on the following variables in our dataset:
+
 ```{r}
 protection_policy_columns <- c("protections_to_enter_a_clinic", "shield_law_protecting_providers", 
                                "patient_reproductive_health_data_privacy","state_constitution_protects_abortion_rights",
@@ -44,15 +47,21 @@ protection_policy_columns <- c("protections_to_enter_a_clinic", "shield_law_prot
                                "state_requires_coverage_of_prescription_contraception")
 ```
 
----
+------------------------------------------------------------------------
 
 ### 4. Infant Mortality Rates in Most Restrictive States (2017–2022)
-![Infant Mortality Rates in Most Restrictive States](images/infant_mortality_in_most_restrictive_states.png)
+
+![](images/infant_mortality_in_most_restrictive_states.png)
 
 **Figure Description**: This line graph shows the trends in infant mortality rates (per 1,000 live births) across states with the most restrictive abortion policies from 2017 to 2022.
 
+### 5. Inbound Abortion Travel by State (2023)
 
-## Presentation Slides 
+![](images/inbound_travel.png)
+
+**Figure Description**: The map visualizes the number of individuals traveling into each state for abortion services in 2023, with California, New York, Florida, and Illinois showing notably higher inbound travel compared to other states.
+
+## Presentation Slides
 
 <iframe src="images/presentation_slides.pdf" width="100%" height="500px" style="border: none;">
 
@@ -60,9 +69,8 @@ protection_policy_columns <- c("protections_to_enter_a_clinic", "shield_law_prot
 
 [Project Presentation Download](images/presentation_slides.pdf)
 
-
 ## Data Download
 
 The data used for this analysis is available for download in CSV format. Click the link below to access the dataset.
 
-- [Merged Dataset](data/clean_data/merged_data.csv)
+-   [Merged Dataset](data/clean_data/merged_data.csv)
