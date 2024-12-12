@@ -1,6 +1,7 @@
 ---
 title: "Appendix"
 format: html
+    embed-resources: true
 editor: visual
 ---
 
@@ -49,7 +50,7 @@ protection_policy_columns <- c("protections_to_enter_a_clinic", "shield_law_prot
 
 ------------------------------------------------------------------------
 
-### 4. Infant Mortality Rates in Most Restrictive States (2017–2022)
+### 4. Infant Mortality Rates in Most Restrictive States (2017--2022)
 
 ![](images/infant_mortality_in_most_restrictive_states.png)
 

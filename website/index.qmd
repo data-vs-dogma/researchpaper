@@ -3,6 +3,7 @@ title: "Conditions Impacting Maternal Wellness by US State"
 subtitle: "Introduction"
 format:
   html:
+    embed-resources: true
     mermaid:
       theme: dark
 bibliography: references.bib

@@ -3,6 +3,7 @@ title: "Complications & Unsafe Abortion"
 subtitle: "A Missing Dataset"
 format:
   html:
+    embed-resources: true
     mermaid:
       theme: dark
 bibliography: references.bib
