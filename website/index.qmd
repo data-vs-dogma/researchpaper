@@ -1,6 +1,5 @@
 ---
-title: "Data Vs. Dogma: Maternal Wellness Conditions and Abortion Policy per State"
-subtitle: "Introduction"
+title: "Data vs. Dogma: Maternal Wellness Conditions and Abortion Policy per State"
 format:
   html:
     embed-resources: true
@@ -55,38 +54,4 @@ Data science question: what conditions cause variation in maternal wellness by s
 
 7.  Do states with stricter maternal condition policies have worse healthcare?
 
-```{mermaid}
-
-flowchart TD
-
-  A(Association Between Abortion Policy and Health Outcomes):::main
-
-  A --> B(Maternal Health)
-  B --> X(Maternal Mortality)
-  B --> V(Cost Barriers)
-  B --> H(Uninsured Women During Pregnancy)
-
-  A --> C(Maternal Wellness)
-  C --> G(Economic Wellness)
-  G --> W(Parental Leave)
-  G --> I(Women in the Workforce)
-  G --> J(Teen Birth Rate)
-  C --> K(Education Wellness)
-  K --> L(Higher Education)
-  C --> M(Mental Health)
-  M --> N(Postpartum Depression)
-  M --> O(Intimate Partner Violence)
-  
-  
-  A --> D(Overall Health)
-  D --> P(Ratio of OBGYN)
-  D --> Q(Health Coverage)
-  D --> R(Medicaid Expansion)
-  D --> S(Contraception Coverage)
-
-  A --> E(Child Health )
-  E --> T(Infant Mortality)
-  
-  A --> F(Child Wellness)
-  F --> U(Foster Care)
-```
+![](images/diagram.png)
