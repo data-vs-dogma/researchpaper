@@ -24,14 +24,8 @@ website:
             text: Child Health
           - href: results/child_wellness.qmd
             text: Child Wellness
-      - text: Conclusions
-        menu:
-          - href: results/travel.qmd
-            text: Travel Implications
-          - href: complications.qmd
-            text: Complications & Unsafe Abortion
-          - href: findings.qmd
-            text: Conclusion
+      - href: findings.qmd
+        text: Conclusion
       - href: bibliography.qmd
         text: Bibliography
       - href: appendix.qmd

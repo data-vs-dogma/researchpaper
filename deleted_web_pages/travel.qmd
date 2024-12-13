@@ -1,0 +1,307 @@
+---
+title: "Travel Data"
+format: 
+  html:
+    embed-resources: true
+    code-fold: true
+    toc: true
+editor: visual
+---
+
+## Travel Data by Abortion Policy
+
+```{r, warning = FALSE, message = FALSE}
+library(tidyverse)
+library(readr)
+library(ggplot2)
+library(networkD3)
+library(htmltools)
+library(usmap)
+library(sf)
+
+policy_travel <- read.csv("../data/clean_data/policy_travel_jlin.csv")
+policy_travel$X <- NULL
+# unique(policy_travel$abortion_policies)
+
+# Create policy_distribution by grouping and counting states by abortion_policies
+policy_distribution <- policy_travel %>%
+  group_by(abortion_policies) %>%
+  summarise(State_Count = n()) %>%
+  ungroup() %>%
+  mutate(abortion_policies = factor(abortion_policies, levels = c("most protective", "very protective", "protective", "some restrictions/protections", "restrictive", "very restrictive", "most restrictive")))
+
+# Plot abortion policies across US states
+ggplot(policy_distribution, aes(x = abortion_policies, y = State_Count, fill = abortion_policies)) +
+    geom_bar(stat = "identity", color = "black", width = 0.7) +
+    geom_text(
+        aes(label = State_Count),
+        hjust = 1.1,
+        size = 6,
+        color = "black"
+    ) +
+    scale_fill_manual(
+        values = c(
+            "most restrictive" = "#c61a09",
+            "very restrictive" = "#ff0000",
+            "restrictive" = "#ff6242",
+            "some restrictions/protections" = "#fab733",
+            "protective" = "#acdf87",
+            "very protective" = "#68bb59",
+            "most protective" = "#1c7416"
+        )
+    ) +
+    labs(
+        title = "Abortion Policies Across U.S. States (2023)",
+        subtitle = "States categorized by level of policy restrictiveness",
+        x = NULL, 
+        y = NULL, 
+        fill = "Policy Level"
+    ) +
+    theme_minimal() +
+    theme(
+        plot.title = element_text(size = 14, hjust = 0.5),
+        plot.subtitle = element_text(size = 12, hjust = 0.5),
+        axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.title.y = element_text(size = 12),
+        axis.text.y = element_text(size = 12),
+        legend.title = element_text(size = 12),
+        legend.text = element_text(size = 10),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank()
+    ) +
+    coord_flip()
+```
+
+The bar chart shows the distribution of abortion policies (most restrictive to most protective) across U.S. states in 2023. **The plot implies there are significantly more restrictive states than protective states, with a total of 27 states having restrictive policies compared to 18 states with protective policies.** This imbalance is particularly evident in the 'most restrictive' category, which alone accounts for 16 states.
+
+```{r}
+# Converting to lowercase for matching 
+policy_travel <- policy_travel %>%
+    mutate(State = tolower(State))
+
+policy_travel <- policy_travel %>%
+    mutate(State = tolower(State))
+
+policy_levels <- c(
+    "most protective",
+    "very protective",
+    "protective",
+    "some restrictions/protections",
+    "restrictive",
+    "very restrictive",
+    "most restrictive"
+)
+
+# Map policy levels to a numeric scale
+policy_travel <- policy_travel %>%
+    mutate(policy_score = factor(abortion_policies, levels = policy_levels, labels = 1:length(policy_levels))) %>%
+    mutate(policy_score = as.numeric(as.character(policy_score)))
+
+states_map <- map_data("state")
+
+# Merge the dataset with the map data
+map_data <- states_map %>%
+    left_join(policy_travel, by = c("region" = "State"))
+
+# Plot for Abortion Policies by State
+ggplot(map_data, aes(long, lat, group = group, fill = policy_score)) +
+    geom_polygon(color = "black", linewidth = 0.3) +
+    coord_fixed(1.3) +
+    theme_minimal() +
+    scale_fill_gradientn(
+        colors = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09"),
+        breaks = c(1, 4, 7),
+        labels = c("Most (+)", "Some (+/-)", "Most (-)"),
+        na.value = "gray80",
+        guide = guide_colorbar(
+            barwidth = 15,
+            barheight = 1,
+            title.position = "top",
+            title.hjust = 0.5
+        )
+    ) +
+    labs(
+        title = "Abortion Policies by State (USA) 2023",
+        subtitle = "States categorized by level of restrictiveness",
+        fill = "Policy Restrictiveness"
+    ) +
+    theme(
+        plot.title = element_text(size = 14, hjust = 0.5),
+        plot.subtitle = element_text(size = 12, hjust = 0.5),
+        legend.title = element_text(size = 12, hjust = 0.5),
+        legend.text = element_text(size = 10, angle = 45, vjust = 1, hjust = 1),
+        legend.position = "bottom",
+        axis.title = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid = element_blank()
+    )
+```
+
+The map provides a geographic visualization of abortion policies across U.S. states in 2023. One of the most striking details of this map is how it shows a geographic clustering of similar policies. **Specifically, states with similar policies tend to be closer to each other.** For example, the Southeast and most of central U.S. are colored red to darker red, indicating more restrictive policies.
+
+```{r, message = FALSE}
+df <- read_csv("../../website/data/clean_data/merged_data.csv")
+# head(df)
+
+abortion_map_data <- df %>%
+  select(State, `percent_increase_in_clinician_provided_abortions_since_2020`) %>%
+  filter(!is.na(`percent_increase_in_clinician_provided_abortions_since_2020`)) %>%
+  mutate(
+    state = State,
+    change = `percent_increase_in_clinician_provided_abortions_since_2020`
+  )
+
+capitals_df <- data.frame(
+    city = c(
+        "Boise", "Pierre", "Des Moines", "Jefferson City", "Little Rock",
+        "Baton Rouge", "Austin", "Oklahoma City", "Jackson", "Montgomery",
+        "Tallahassee", "Nashville", "Frankfort", "Indianapolis", "Charleston"
+    ),
+    lon = c(
+        -116.200, -100.346, -93.603, -92.189, -92.289,
+        -91.187, -97.743, -97.503, -90.182, -86.279,
+        -84.280, -86.781, -84.878, -86.162, -81.633
+    ),
+    lat = c(
+        43.617, 44.367, 41.591, 38.579, 34.746,
+        30.457, 30.266, 35.482, 32.298, 32.377,
+        30.438, 36.162, 38.186, 39.768, 38.336
+    ),
+    state = c(
+        "Idaho", "South Dakota", "Iowa", "Missouri", "Arkansas",
+        "Louisiana", "Texas", "Oklahoma", "Mississippi", "Alabama",
+        "Florida", "Tennessee", "Kentucky", "Indiana", "West Virginia"
+    )
+)
+
+capitals_mapped <- usmap_transform(capitals_df, input_names = c("lon", "lat"))
+
+capitals_mapped <- capitals_mapped %>%
+    mutate(
+        x = st_coordinates(.)[, 1], # Extract x coordinates
+        y = st_coordinates(.)[, 2] # Extract y coordinates
+    )
+
+plot_usmap(data = abortion_map_data, values = "change") +
+    geom_point(
+        data = capitals_mapped,
+        aes(x = x, y = y),
+        shape = 8, 
+        size = 2, 
+        color = "red", 
+        stroke = 1
+    ) + 
+    scale_fill_gradient2(
+        name = "% Change",
+        low = "#ff6b6b",
+        mid = "#ffffff",
+        high = "#4dbd00",
+        midpoint = 0,
+        na.value = "gray80"
+    ) +
+    theme(
+        legend.position = "right",
+        plot.title = element_text(size = 14, hjust = 0.5),
+        plot.caption = element_text(size = 12, hjust = 0.5)
+    ) +
+    labs(title = "Change in Clinician-Provided Abortions Since 2020 by State", caption = "* indicate 'Most Restrictive' states")
+```
+
+This map shows the variation of clinician-provided abortions since 2020 across U.S. states. **States such as Wyoming and New Mexico have seen about a 300% increase in clinician-provided abortions.** Additionally, there appears to be a geographic pattern, where the most restrictive states (\*) are often adjacent to states showing increases in clinician-provided abortions, implying an increase in demand in neighboring states with more protective policies.
+
+```{r, message = FALSE}
+state_abbreviations <- tibble(
+    abbr = c(
+        "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS",
+        "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY",
+        "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
+    ),
+    full = c(
+        "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida",
+        "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine",
+        "Maryland", "Massachusetts", "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska",
+        "Nevada", "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota",
+        "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota",
+        "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
+    )
+)
+
+# Extract and rename travel data columns, replacing <State ID> with full names
+travel_data <- policy_travel %>%
+    select(State, ends_with("_residence_travelled_to_for_abortion")) %>%
+    rename_with(
+        ~ sub("_residence_travelled_to_for_abortion", "", .), 
+        ends_with("_residence_travelled_to_for_abortion")
+    ) %>%
+    rename_with(
+        ~ ifelse(
+            !is.na(state_abbreviations$full[match(., state_abbreviations$abbr)]), 
+            state_abbreviations$full[match(., state_abbreviations$abbr)], 
+            .
+        ),
+        everything()
+    )
+
+# Convert wide format to long format and flip Source and Target
+flow_data <- travel_data %>%
+    pivot_longer(-State, names_to = "Source", values_to = "Flow") %>%
+    filter(Flow > 0) %>% 
+    rename(Target = State) # Flip Source and Target
+
+# Remove rows where the Source and Target are the same
+flow_data <- flow_data %>%
+    filter(Source != Target)
+
+unique_states <- unique(c(flow_data$Source, flow_data$Target))
+nodes <- data.frame(name = unique_states)
+
+# Add numeric indices for Source and Target nodes
+flow_data <- flow_data %>%
+    mutate(
+        SourceID = match(Source, nodes$name) - 1, # Convert to zero-based index
+        TargetID = match(Target, nodes$name) - 1
+    )
+
+sankey_plot <- sankeyNetwork(
+    Links = flow_data,
+    Nodes = nodes,
+    Source = "SourceID",
+    Target = "TargetID",
+    Value = "Flow",
+    NodeID = "name",
+    units = "People",
+    fontSize = 12,
+    nodeWidth = 10,
+    nodePadding = 10,
+    height = 2400, 
+    width = 1450 
+)
+
+# sankey_plot
+
+title <- tags$h2("Visualization of Abortion Travel Flows Across States (2023)",
+    style = "text-align: center; font-family: Arial; margin-bottom: 20px; font-size:17px;"
+)
+
+left_header <- tags$h3(
+    "Home State",
+    style = "position: absolute; top: 10px; left: 80px; font-family: Arial; font-size:15px; text-align: left;"
+)
+
+right_header <- tags$h3(
+    "Destination State",
+    style = "position: absolute; top: 10px; right: 50px; font-family: Arial; font-size:15px; text-align: right;"
+)
+
+html_output <- tagList(
+    title,
+    div(style = "position: relative;", left_header, right_header, sankey_plot)
+)
+
+html_output
+```
+
+The Sankey diagram depicts a complex web of interstate travel for abortion services, with lines connecting home states (left) to destination states (right). Texas appears to have the highest number of people traveling out of state for abortion-related services, as shown by the multiple thick lines flowing from Texas to various destinations. One interesting finding is that even though Florida is considered a restrictive state, there seems to be an abundance of people traveling there for services.
