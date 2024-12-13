@@ -3,7 +3,6 @@ title: "Appendix"
 format: 
     html:
       embed-resources: true
-
 ---
 
 ## Visualizations and Supplementary Figures
@@ -73,6 +72,6 @@ protection_policy_columns <- c("protections_to_enter_a_clinic", "shield_law_prot
 
 ## Data Download
 
-The data used for this analysis is available for download in CSV format. Click the link below to access the dataset.
+The data used for this analysis is available for download in CSV format. Please click the link below to access the dataset.
 
 -   [Merged Dataset](data/clean_data/merged_data.csv)
