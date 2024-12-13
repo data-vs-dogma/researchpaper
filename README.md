@@ -8,17 +8,16 @@ Abortion policy now varies significantly across states, reflecting the political
 This research project aims to take a data-driven approach to objectively examine how abortion policy affects maternal wellness across the United States. The central research question is: **How do state-level abortion policies impact maternal well-being, and what broader factors contribute to state-to-state variation in these outcomes?** By analyzing public health data at the state level, using abortion policy as a key variable, this research seeks to provide a more concrete, evidence-based understanding of the relationship between abortion policy and maternal health, ultimately contributing to the broader policy discourse.
 
 ## Research Questions
-*Data Science Question:* **What conditions cause variation in maternal wellness by state?**
+**Data Science Question:** *What is the association between health and wellness conditions in a state prior to the Dobbs decision and their abortion policy implemented after the ruling?*
 
-1. What is the association of abortion policy and infant/maternal mortality?
-2. What is the association of race and infant/maternal mortality?
-3. What is the association of healthcare quality and abortion policy?
-4. What is the association of healthcare quality and infant and maternal mortality?
-5. What is the association between mandated policy (for example parental leave) and abortion policy?
-6. Do states with policies that make conditions for women having babies more difficult, tend to have higher infant and maternal mortality rates?
-   1. Parental leave
-   2. Abortion laws
-7. Do states with stricter maternal condition policies have worse healthcare?
+1. What is the association between prior maternal health outcomes and abortion policy? 
+
+2. What is the association between prior infant health outcomes and abortion policy?
+
+3. What is the association between prior overall health outcomes and abortion policy?
+
+4. What is the association between prior maternal wellness conditions and abortion policy?
+
 
 ## Contact Info
 - Kristin Lloyd: [kml301@georgetown.edu](kml301@georgetown.edu) 
