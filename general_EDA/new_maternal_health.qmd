@@ -1,0 +1,109 @@
+---
+title: "Maternal Health EDA"
+author: "Kristin Lloyd"
+format: 
+  html:
+    embed-resources: true
+    code-fold: true
+editor: visual
+---
+
+```{r}
+
+library(readr)
+df <- read_csv("../data/clean_data/new.csv")
+
+```
+
+```{r}
+
+library(readr)
+merged_df <- read_csv("../data/clean_data/merged_data.csv")
+
+```
+
+```{r}
+
+install.packages("ggplot2", repos = "https://cloud.r-project.org/")
+library(ggplot2)
+
+df <- merge(df, merged_df[, c("State", "abortion_policies")], by = "State", all.x = TRUE)
+
+# Convert abortion_policies to a factor with ordered levels
+df$abortion_policies <- factor(df$abortion_policies, 
+                               levels = c("most protective", "very protective", 
+                                          "protective", "some restrictions/protections", 
+                                          "restrictive", "very restrictive", "most restrictive"))
+```
+
+```{r}
+
+# Define the function to create boxplots
+plot_boxplot <- function(df, var_name, y_label, title) {
+  ggplot(df, aes(x = abortion_policies, y = .data[[var_name]], fill = abortion_policies)) +
+    geom_boxplot() +
+    scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) +
+    labs(
+      x = "Abortion Policies", 
+      y = y_label, 
+      fill = "State Abortion Policy Level",
+      title = title
+    ) +
+    theme_minimal() +
+    theme(
+      axis.text.x = element_text(angle = 45, hjust = 1),
+      plot.title = element_text(size = 12, hjust = 0.5)
+    )
+}
+
+# List of variables and their corresponding labels
+variables <- c(
+  "overall_health_ranking" = "Overall Health Ranking for Women",
+  "coverage_access_and_affordability" = "Coverage, Access, and Affordability for Women",
+  "health_care_quality_and_prevention" = "Health Care Quality and Prevention for Women",
+  "health_outcomes" = "Health Outcomes for Women",
+  "low_risk_cesarean_births" = "Low-Risk Cesarean Births",
+  "black_pregnancy_related_mortality" = "Black Pregnancy-Related Mortality",
+  "white_pregnancy_related_mortality" = "White Pregnancy-Related Mortality",
+  "percent_of_live_births_cesarean_delivery" = "Percent of Live Births (Cesarean Delivery)",
+  "percent_of_late_no_prenatal_care" = "Percent of Late/No Prenatal Care",
+  "percent_of_births_financed_by_medicaid" = "Percent of Births Financed by Medicaid"
+)
+
+# Generate boxplots for each variable
+plots <- lapply(names(variables), function(var) {
+  plot_boxplot(df, var, variables[[var]], paste(variables[[var]], "by State Abortion Policy"))
+})
+
+# Display all plots
+plots
+
+```
+
+```{r}
+# Remove NA values
+df_clean <- df[!is.na(df$medicaid_eligibility_for_pregnant_people_at_or_above_twohundredpercent_federal_poverty_level) & 
+                 !is.na(df$abortion_policies), ]
+
+# Convert to factor
+df_clean$medicaid_eligibility <- factor(df_clean$medicaid_eligibility_for_pregnant_people_at_or_above_twohundredpercent_federal_poverty_level, 
+                                        levels = c("0", "1"))
+
+# Stacked bar plot
+ggplot(df_clean, aes(x = medicaid_eligibility, fill = abortion_policies)) +
+  geom_bar(position = "fill") +
+  labs(
+    x = "Medicaid Eligibility (≥200% FPL)", 
+    y = "Proportion", 
+    fill = "State Abortion Policy Level",
+    title = "Medicaid Eligibility (≥200% FPL) by State Abortion Policy"
+  ) +
+  scale_x_discrete(labels = c("0" = "Not Eligible", "1" = "Eligible")) +
+  scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) +
+  theme_classic() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(size = 12, hjust = 0.5)
+  )
+
+```
