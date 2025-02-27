@@ -107,3 +107,41 @@ ggplot(df_clean, aes(x = medicaid_eligibility, fill = abortion_policies)) +
   )
 
 ```
+
+```{r}
+
+# Define the function to create boxplots
+plot_boxplot <- function(df, var_name, y_label, title) {
+  # Extract numbers before dash if present
+  df[[paste0(var_name, "_numeric")]] <- as.numeric(gsub("^(\\d+).*", "\\1", df[[var_name]]))
+  
+  ggplot(df, aes(x = abortion_policies, y = .data[[paste0(var_name, "_numeric")]], fill = abortion_policies)) +
+    geom_boxplot() +
+    scale_fill_manual(values = c("#1c7416", "#68bb59", "#acdf87", "#fab733", "#ff6242", "#ff0000", "#c61a09")) +
+    labs(
+      x = "Abortion Policies", 
+      y = y_label,
+      fill = "State Abortion Policy Level",
+      title = title
+    ) +
+    theme_minimal() +
+    theme(
+      axis.text.x = element_text(angle = 45, hjust = 1),
+      plot.title = element_text(size = 12, hjust = 0.5)
+    )
+}
+
+# List of variables and their corresponding labels
+variables <- c(
+  "maternity_healthcare_providers" = "Maternity Health Providers"
+)
+
+# Generate boxplots for each variable
+plots <- lapply(names(variables), function(var) {
+  plot_boxplot(df, var, variables[[var]], paste(variables[[var]], "by State Abortion Policy"))
+})
+
+# Display all plots
+plots
+
+```
